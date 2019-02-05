@@ -136,7 +136,7 @@ public class RegionIO {
 
         //
 
-        return new Region(blocks, entities);
+        return null;
     }
 
 
