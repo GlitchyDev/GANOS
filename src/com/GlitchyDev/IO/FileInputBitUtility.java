@@ -91,7 +91,7 @@ public class FileInputBitUtility {
     public String getNextString() throws IOException {
         String output = "";
 
-        int stringLength = getCorrectedIntValue(getNextByte());
+        int stringLength = getNextCorrectIntByte();
         for(int i = 0; i < stringLength; i++) {
             output += getNextChar();
         }

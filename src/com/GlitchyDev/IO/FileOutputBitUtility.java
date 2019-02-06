@@ -88,10 +88,9 @@ public class FileOutputBitUtility {
     }
 
     public void writeNextString(String s) throws IOException {
-        System.out.println("A" + s.length());
-        System.out.println("B" + getCorrectByteValue(s.length()));
 
-        writeNextByte(getCorrectByteValue(s.length()));
+
+        writeNextCorrectByteInt(s.length());
         for(char c: s.toCharArray()) {
             writeNextChar(c);
         }
