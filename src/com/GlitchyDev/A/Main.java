@@ -1,24 +1,89 @@
 package com.GlitchyDev.A;
 
+import com.GlitchyDev.IO.FileInputBitUtility;
+import com.GlitchyDev.IO.FileOutputBitUtility;
 import com.GlitchyDev.IO.RegionIO;
 import com.GlitchyDev.World.Utility.HuffmanTreeUtility;
 
+import java.io.*;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class Main {
 
 
+
     public static void main(String[] args) {
+
+        /*
         int[] arrangement = new int[]{0,15,25,35,45,55};
         String[] items = new String[]{"0","15","25","35","45","55"};
-
         HashMap<String,Object> values = HuffmanTreeUtility.getHuffmanValues(items,arrangement);
         for(String s: values.keySet()) {
             System.out.println(values.get(s) + ": " + s);
         }
+        */
 
 
+        File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
 
-        UUID.
+        try {
+            FileOutputBitUtility fileOutputBitUtility = new FileOutputBitUtility(file);
+            boolean bit = false;
+            System.out.println(bit);
+            fileOutputBitUtility.writeNextBit(bit);
+            UUID uuid = UUID.randomUUID();
+            System.out.println(uuid);
+            fileOutputBitUtility.writeNextUUID(uuid);
+            long l = 12L;
+            System.out.println(l);
+            fileOutputBitUtility.writeNextLong(l);
+            boolean bit2 = true;
+            System.out.println(bit2);
+            fileOutputBitUtility.writeNextBit(bit2);
+            short s = 13;
+            System.out.println(s);
+            fileOutputBitUtility.writeNextShort(s);
+            String string = "13";
+            System.out.println(string);
+            fileOutputBitUtility.writeNextChars(string);
+            char c = 'a';
+            System.out.println(c);
+            fileOutputBitUtility.writeNextChar(c);
+            double d = 0.56763;
+            System.out.println(d);
+            fileOutputBitUtility.writeNextDouble(d);
+            float f = 0.00054f;
+            System.out.println(f);
+            fileOutputBitUtility.writeNextFloat(f);
+            int i = 155;
+            System.out.println(i);
+            fileOutputBitUtility.writeNextInteger(i);
+            String str = "Thomas";
+            System.out.println(str);
+            fileOutputBitUtility.writeNextString(str);
+
+            fileOutputBitUtility.close();
+
+
+            System.out.println("----------");
+
+            FileInputBitUtility fileInputBitUtility = new FileInputBitUtility(file);
+            System.out.println(fileInputBitUtility.getNextBit());
+            System.out.println(fileInputBitUtility.getNextUUID());
+            System.out.println(fileInputBitUtility.getNextLong());
+            System.out.println(fileInputBitUtility.getNextBit());
+            System.out.println(fileInputBitUtility.getNextShort());
+            System.out.println(fileInputBitUtility.getNextChars(2));
+            System.out.println(fileInputBitUtility.getNextChar());
+            System.out.println(fileInputBitUtility.getNextDouble());
+            System.out.println(fileInputBitUtility.getNextFloat());
+            System.out.println(fileInputBitUtility.getNextInteger());
+            System.out.println(fileInputBitUtility.getNextString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
