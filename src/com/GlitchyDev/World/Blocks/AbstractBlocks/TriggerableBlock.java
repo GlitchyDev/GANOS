@@ -7,6 +7,7 @@ public interface TriggerableBlock {
 
     /**
      * Triggered when an EntityBase enters a TriggerableBlock, is not final
+     * Should only include logic that can determine if it can enter or not
      * @param movementType
      * @param entityBase
      * @return Success of movement
@@ -15,6 +16,7 @@ public interface TriggerableBlock {
 
     /**
      * Triggered when an EntityBase exits a TriggerableBlock, is not final
+     * Should only include logic that can determine if it can exit or not
      * @param movementType
      * @param entityBase
      * @return Success of movement
@@ -26,6 +28,7 @@ public interface TriggerableBlock {
 
     /**
      * Triggered when an EntityBase enters a TriggerableBlock successfully
+     * Include logic of successful entering
      * @param movementType
      * @param entityBase
      * @return Success of movement
@@ -34,6 +37,7 @@ public interface TriggerableBlock {
 
     /**
      * Triggered when an EntityBase exits a TriggerableBlock successfully
+     * Include logic of successful exit
      * @param movementType
      * @param entityBase
      * @return Success of movement

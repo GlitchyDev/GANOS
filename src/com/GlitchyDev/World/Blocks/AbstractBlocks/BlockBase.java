@@ -10,8 +10,8 @@ import java.io.ObjectOutputStream;
 public abstract class BlockBase {
     private final BlockType blockType;
     private Location location;
-    protected boolean isDisableFrustumCulling = false;
-    protected boolean insideFrustum = false;
+    private boolean isDisableFrustumCulling = false;
+    private boolean insideFrustum = false;
 
     public BlockBase(BlockType blockType, Location location) {
         this.blockType = blockType;
@@ -30,13 +30,7 @@ public abstract class BlockBase {
 
 
     // Getters
-    public boolean isDisableFrustumCulling() {
-        return isDisableFrustumCulling;
-    }
 
-    public boolean isInsideFrustum() {
-        return insideFrustum;
-    }
 
     public Location getLocation() {
         return location;
@@ -48,5 +42,21 @@ public abstract class BlockBase {
 
     public BlockType getBlockType() {
         return blockType;
+    }
+
+    public boolean isDisableFrustumCulling() {
+        return isDisableFrustumCulling;
+    }
+
+    public void setDisableFrustumCulling(boolean disableFrustumCulling) {
+        isDisableFrustumCulling = disableFrustumCulling;
+    }
+
+    public boolean isInsideFrustum() {
+        return insideFrustum;
+    }
+
+    public void setInsideFrustum(boolean insideFrustum) {
+        this.insideFrustum = insideFrustum;
     }
 }

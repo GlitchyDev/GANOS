@@ -10,6 +10,7 @@ public class Region {
     private final ArrayList<EntityBase> entities;
 
 
+
     public Region(BlockBase[][][] blocks, ArrayList<EntityBase> entities) {
         this.blocks = blocks;
         this.entities = entities;
@@ -18,11 +19,11 @@ public class Region {
 
 
     // Helper Methods
-    public BlockBase getBlock(int relativeX, int relativeY, int relativeZ) {
+    public BlockBase getBlockRelative(int relativeX, int relativeY, int relativeZ) {
         return blocks[relativeY][relativeX][relativeZ];
     }
 
-    public void setBlock(int relativeX, int relativeY, int relativeZ, BlockBase block) {
+    public void setBlockRelative(int relativeX, int relativeY, int relativeZ, BlockBase block) {
         blocks[relativeY][relativeX][relativeZ] = block;
     }
 

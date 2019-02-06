@@ -144,23 +144,6 @@ public class RegionIO {
 
 
 
-    private static byte setByteValue(byte b, int pos) {
-        if(pos == 0) {
-            return b |= 1 << 7;
-        }
-        return b |= 1 << (pos-1);
-    }
 
-    private static boolean getByteValue(byte b, int pos) {
-        return ((b >> (pos - 1)) & 1) == 1;
-    }
 
-    private static int getCorrectedIntValue(byte b) {
-        return (b>=0) ? b : (127 + (129 + b));
-    }
-
-    private static byte getCorrectByteValue(int i) {
-        return (byte) (-128 + (i));
-
-    }
 }
