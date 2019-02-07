@@ -28,4 +28,9 @@ public class DebugBlock extends BlockBase {
     public BlockBase clone() {
         return null;
     }
+
+    @Override
+    public boolean isEqual(EntityBase entityBase) {
+        return false;
+    }
 }

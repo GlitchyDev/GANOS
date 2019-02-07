@@ -12,6 +12,7 @@ public abstract class EntityBase {
     private Location location;
     private Direction direction;
 
+
     public EntityBase(EntityType entityType, Location location) {
         this.entityType = entityType;
         this.location = location;
@@ -33,6 +34,8 @@ public abstract class EntityBase {
     public abstract void writeData(ObjectOutputStream objectOutputStream);
 
     public abstract EntityBase clone();
+
+    public abstract boolean isEqual(EntityBase entityBase);
 
 
 

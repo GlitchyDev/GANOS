@@ -28,6 +28,11 @@ public class DebugEntity extends EntityBase {
 
     @Override
     public EntityBase clone() {
-        return null;
+        return new DebugEntity(getLocation().clone());
+    }
+
+    @Override
+    public boolean isEqual(EntityBase entityBase) {
+        return (this.getEntityType() == entityBase.getEntityType());
     }
 }

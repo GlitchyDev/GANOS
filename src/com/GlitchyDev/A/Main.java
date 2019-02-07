@@ -6,6 +6,8 @@ import com.GlitchyDev.IO.RegionIO;
 import com.GlitchyDev.World.Utility.HuffmanTreeUtility;
 
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -23,8 +25,32 @@ public class Main {
             System.out.println(values.get(s) + ": " + s);
         }
         */
+        try {
+            ServerSocket socket = new ServerSocket(5000);
+
+            Socket clientSocket = new Socket("192.168.1.2",5000);
+            Socket serverInteractSocket = socket.accept();
+
+            for(int i = 0; i < 100; i++) {
+                clientSocket.getOutputStream().write(i);
+            }
+            clientSocket.getOutputStream().flush();
+
+            byte[] a = new byte[100];
+            System.out.println("B " + serverInteractSocket.getInputStream().available());
+            int size = serverInteractSocket.getInputStream().read(a);
+            for(int i = 0; i < size; i++) {
+                System.out.println("L: " + a[i]);
+            }
 
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /*
+
+        System.out.println("---------------------");
         File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
 
         try {
@@ -83,7 +109,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        */
 
     }
 }

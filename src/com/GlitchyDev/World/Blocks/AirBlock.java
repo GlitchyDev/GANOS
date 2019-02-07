@@ -29,4 +29,9 @@ public class AirBlock extends BlockBase {
     public BlockBase clone() {
         return null;
     }
+
+    @Override
+    public boolean isEqual(EntityBase entityBase) {
+        return false;
+    }
 }

@@ -25,6 +25,7 @@ public abstract class BlockBase {
 
     public abstract BlockBase clone();
 
+    public abstract boolean isEqual(EntityBase entityBase);
 
 
 
