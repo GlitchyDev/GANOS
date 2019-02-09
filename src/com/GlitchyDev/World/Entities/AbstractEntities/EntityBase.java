@@ -1,5 +1,7 @@
 package com.GlitchyDev.World.Entities.AbstractEntities;
 
+import com.GlitchyDev.IO.InputBitUtility;
+import com.GlitchyDev.IO.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.EntityType;
 import com.GlitchyDev.World.Location;
@@ -28,10 +30,10 @@ public abstract class EntityBase {
     public abstract void tick();
 
 
-    public abstract void readData(ObjectInputStream objectInputStream);
+    public abstract void readData(InputBitUtility inputBitUtility);
 
     // Do not write Location, as that can be refereed engineered from the read protocol
-    public abstract void writeData(ObjectOutputStream objectOutputStream);
+    public abstract void writeData(OutputBitUtility outputBitUtility);
 
     public abstract EntityBase clone();
 

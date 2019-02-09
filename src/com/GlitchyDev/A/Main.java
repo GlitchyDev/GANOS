@@ -1,14 +1,12 @@
 package com.GlitchyDev.A;
 
-import com.GlitchyDev.IO.FileInputBitUtility;
-import com.GlitchyDev.IO.FileOutputBitUtility;
-import com.GlitchyDev.IO.RegionIO;
-import com.GlitchyDev.World.Utility.HuffmanTreeUtility;
+import com.GlitchyDev.IO.InputBitUtility;
+import com.GlitchyDev.IO.OutputBitUtility;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class Main {
@@ -27,34 +25,40 @@ public class Main {
         */
         try {
             ServerSocket socket = new ServerSocket(5000);
-
-            Socket clientSocket = new Socket("192.168.1.2",5000);
+            Socket clientSocket = new Socket(InetAddress.getLocalHost(),5000);
             Socket serverInteractSocket = socket.accept();
 
-            for(int i = 0; i < 100; i++) {
-                clientSocket.getOutputStream().write(i);
-            }
-            clientSocket.getOutputStream().flush();
+            OutputBitUtility outputBitUtility = new OutputBitUtility(serverInteractSocket.getOutputStream());
+            InputBitUtility inputBitUtility = new InputBitUtility(clientSocket.getInputStream());
 
-            byte[] a = new byte[100];
-            System.out.println("B " + serverInteractSocket.getInputStream().available());
-            int size = serverInteractSocket.getInputStream().read(a);
-            for(int i = 0; i < size; i++) {
-                System.out.println("L: " + a[i]);
+
+
+
+            int rand = (int) (Math.random() * 5.0);
+            System.out.println("Rand " + rand);
+            for(int i = 0; i < rand; i++) {
+                outputBitUtility.writeNextDouble(Math.random());
             }
+            outputBitUtility.flush();
+            while(inputBitUtility.getRemainingBytes() != 0) {
+                System.out.println(inputBitUtility.getNextDouble());
+            }
+
+
+
 
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        /*
+
 
         System.out.println("---------------------");
         File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
 
         try {
-            FileOutputBitUtility fileOutputBitUtility = new FileOutputBitUtility(file);
+            OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
             boolean bit = false;
             System.out.println(bit);
             fileOutputBitUtility.writeNextBit(bit);
@@ -94,7 +98,7 @@ public class Main {
 
             System.out.println("----------");
 
-            FileInputBitUtility fileInputBitUtility = new FileInputBitUtility(file);
+            InputBitUtility fileInputBitUtility = new InputBitUtility(file);
             System.out.println(fileInputBitUtility.getNextBit());
             System.out.println(fileInputBitUtility.getNextUUID());
             System.out.println(fileInputBitUtility.getNextLong());
@@ -109,7 +113,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        */
+
 
     }
 }

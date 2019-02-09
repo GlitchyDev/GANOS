@@ -4,14 +4,22 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-public class FileOutputBitUtility {
+public class OutputBitUtility {
     private ObjectOutputStream objectOutputStream;
     private int position;
     private byte currentByte;
 
+    private int totalOutputBytes = 0;
 
-    public FileOutputBitUtility(File file) throws IOException {
-        this.objectOutputStream = new ObjectOutputStream(new ObjectOutputStream(new FileOutputStream(file)));
+
+    public OutputBitUtility(File file) throws IOException {
+        this.objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+        position = 0;
+        currentByte = 0;
+    }
+
+    public OutputBitUtility(OutputStream outputStream) throws IOException {
+        this.objectOutputStream = new ObjectOutputStream(outputStream);
         position = 0;
         currentByte = 0;
     }
@@ -27,6 +35,7 @@ public class FileOutputBitUtility {
             objectOutputStream.writeByte(currentByte);
             position = 0;
             currentByte = 0;
+            totalOutputBytes++;
         }
     }
 
@@ -102,15 +111,21 @@ public class FileOutputBitUtility {
         writeNextLong(uuid.getLeastSignificantBits());
     }
 
+    public int flush() throws IOException {
+        if(position != 0) {
+            writeNextByte(currentByte);
+            totalOutputBytes++;
+            System.out.println("OutputBitUtility: Wasted " + (8-position) + " Bits");
+        }
+        objectOutputStream.flush();
+        return totalOutputBytes;
+    }
+
     /*
     Write the remaining byte info to memory, unused section and all
      */
     public void close() throws IOException {
-        if(position != 0) {
-            writeNextByte(currentByte);
-            System.out.println("FileOutputBitUtility: Wasted " + (8-position));
-
-        }
+        flush();
         objectOutputStream.close();
     }
 
