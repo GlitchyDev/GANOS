@@ -1,5 +1,7 @@
 package com.GlitchyDev.World.Blocks;
 
+import com.GlitchyDev.IO.InputBitUtility;
+import com.GlitchyDev.IO.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.BlockType;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
@@ -14,13 +16,14 @@ public class DebugBlock extends BlockBase {
         super(BlockType.DEBUG, location);
     }
 
+
     @Override
-    public void readData(ObjectInputStream objectInputStream) {
+    public void readData(InputBitUtility inputBitUtility) {
 
     }
 
     @Override
-    public void writeData(ObjectOutputStream objectOutputStream) {
+    public void writeData(OutputBitUtility outputBitUtility) {
 
     }
 
