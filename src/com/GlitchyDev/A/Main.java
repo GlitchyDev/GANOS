@@ -10,6 +10,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 public class Main {
 
@@ -48,7 +51,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        /*
+
 
         System.out.println("---------------------");
         File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
@@ -109,7 +112,37 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        */
 
+
+
+        try {
+
+            // Encode a String into bytes
+            String inputString = "blahblahblah";
+            byte[] input = inputString.getBytes("UTF-8");
+
+            // Compress the bytes
+            byte[] output = new byte[100];
+            Deflater compresser = new Deflater();
+            compresser.setInput(input);
+            compresser.finish();
+            int compressedDataLength = compresser.deflate(output);
+            compresser.end();
+
+            // Decompress the bytes
+            Inflater decompresser = new Inflater();
+            decompresser.setInput(output, 0, compressedDataLength);
+            byte[] result = new byte[100];
+            int resultLength = decompresser.inflate(result);
+            decompresser.end();
+
+
+            System.out.println("Enter Size " + inputString.getBytes().length + " End " + resultLength);
+
+        } catch (DataFormatException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 }

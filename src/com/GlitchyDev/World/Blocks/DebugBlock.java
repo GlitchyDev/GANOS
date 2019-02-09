@@ -26,7 +26,7 @@ public class DebugBlock extends BlockBase {
 
     @Override
     public BlockBase clone() {
-        return null;
+        return new DebugBlock(getLocation().clone());
     }
 
     @Override
