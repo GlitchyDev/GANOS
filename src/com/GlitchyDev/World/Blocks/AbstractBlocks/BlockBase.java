@@ -1,5 +1,7 @@
 package com.GlitchyDev.World.Blocks.AbstractBlocks;
 
+import com.GlitchyDev.IO.InputBitUtility;
+import com.GlitchyDev.IO.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.BlockType;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
@@ -18,10 +20,10 @@ public abstract class BlockBase {
         this.location = location;
     }
 
-    public abstract void readData(ObjectInputStream objectInputStream);
+    public abstract void readData(InputBitUtility inputBitUtility);
 
     // Do not write Location, as that can be refereed engineered from the read protocol
-    public abstract void writeData(ObjectOutputStream objectOutputStream);
+    public abstract void writeData(OutputBitUtility outputBitUtility);
 
     public abstract BlockBase clone();
 
@@ -29,7 +31,7 @@ public abstract class BlockBase {
 
 
 
-
+//
     // Getters
 
 

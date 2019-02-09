@@ -1,5 +1,7 @@
 package com.GlitchyDev.World.Entities;
 
+import com.GlitchyDev.IO.InputBitUtility;
+import com.GlitchyDev.IO.OutputBitUtility;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
 
@@ -17,12 +19,12 @@ public class DebugEntity extends EntityBase {
     }
 
     @Override
-    public void readData(ObjectInputStream objectInputStream) {
+    public void readData(InputBitUtility inputBitUtility) {
 
     }
 
     @Override
-    public void writeData(ObjectOutputStream objectOutputStream) {
+    public void writeData(OutputBitUtility outputBitUtility) {
 
     }
 

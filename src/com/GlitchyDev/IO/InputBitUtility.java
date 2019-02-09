@@ -4,16 +4,21 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-public class FileInputBitUtility {
+public class InputBitUtility {
     private ObjectInputStream objectInputStream;
     private int position;
     private byte currentByte;
 
-    public FileInputBitUtility(File file) throws IOException {
-        this.objectInputStream = new ObjectInputStream(new ObjectInputStream(new FileInputStream(file)));
+    public InputBitUtility(File file) throws IOException {
+        this.objectInputStream = new ObjectInputStream(new FileInputStream(file));
         position = 8;
         currentByte = 0;
+    }
 
+    public InputBitUtility(InputStream inputStream) throws IOException {
+        this.objectInputStream = new ObjectInputStream(inputStream);
+        position = 8;
+        currentByte = 0;
     }
 
 
@@ -102,6 +107,9 @@ public class FileInputBitUtility {
         return new UUID(getNextLong(),getNextLong());
     }
 
+    public int getRemainingBytes() throws IOException {
+        return objectInputStream.available();
+    }
 
 
     // Helper
