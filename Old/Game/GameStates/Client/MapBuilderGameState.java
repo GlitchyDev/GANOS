@@ -315,7 +315,7 @@ public class MapBuilderGameState extends EnvironmentGameState {
                         if(controller.getWestButton()) {
                             direction = Direction.WEST;
                         }
-                        System.out.println("Adding Region in " + direction);
+                        System.out.println("Adding RegionBase in " + direction);
                         world.addRegion(region,cursorLocation.clone(),direction);
 
 

@@ -15,6 +15,7 @@ public abstract class EntityBase {
     private Direction direction;
 
 
+    // REPLICATE!!!!
     public EntityBase(EntityType entityType, Location location) {
         this.entityType = entityType;
         this.location = location;
@@ -50,6 +51,7 @@ public abstract class EntityBase {
         return location;
     }
 
+    // Replicate!
     public void setLocation(Location location) {
         this.location = location;
     }
@@ -58,6 +60,7 @@ public abstract class EntityBase {
         return direction;
     }
 
+    // Replicate!
     public void setDirection(Direction direction) {
         this.direction = direction;
     }

@@ -1,18 +1,5 @@
 package com.GlitchyDev.IO;
 
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
-import com.GlitchyDev.World.Blocks.BlockType;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Entities.EntityType;
-import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region;
-import com.GlitchyDev.World.Utility.HuffmanTreeUtility;
-import com.GlitchyDev.World.Utility.RegionFileType;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class RegionIO {
     private static final int CURRENT_VERSION = 1;
     private static final int LEAST_SUPPORTED_VERSION = 1;
@@ -21,13 +8,13 @@ public class RegionIO {
     /*
 
 
-    public static void writeRegion(File file, Region region) throws IOException {
+    public static void writeRegion(File file, RegionBase region) throws IOException {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
 
 
     }
 
-    public static Region readRegion(File file) throws IOException {
+    public static RegionBase readRegion(File file) throws IOException {
         ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
 
         // Use to confirm compatibility
