@@ -1,4 +1,4 @@
-package com.GlitchyDev.World.Utility;
+package com.GlitchyDev.Utility;
 
 public enum RegionFileType {
     OUTDATED,

@@ -13,7 +13,6 @@ public class Location {
     }
 
     public Location(int x, int y, int z, World world) {
-
         position = new Vector3i(x, y, z);
         this.world = world;
     }
@@ -24,12 +23,13 @@ public class Location {
     }
 
 
+    public Location getOffsetLocation(Location location) {
+        return getOffsetLocation(location.getX(), location.getY(), location.getZ());
+    }
+
     public Location getOffsetLocation(int x, int y, int z) {
         return new Location(this.position.x + x, this.position.y + y, this.position.z + z, world);
     }
-
-
-
 
     public Location getDirectionLocation(Direction direction) {
         switch (direction) {
@@ -73,6 +73,13 @@ public class Location {
         return getOffsetLocation(-1, 0, 0);
     }
 
+    public Location getLocationDifference(Location location) {
+        return new Location(location.getX() - getX(), location.getY() - getY(), location.getZ() - getZ(), getWorld());
+    }
+
+    public double getDistance(Location location) {
+        return Math.sqrt(Math.pow(location.getX() - getX(),2) + Math.pow(location.getY() - getY(),2) + Math.pow(location.getZ() - getZ(),2));
+    }
 
     @Override
     public Location clone() {
@@ -85,7 +92,6 @@ public class Location {
     }
 
     // Getters
-
 
     public int getX() {
         return position.x;
@@ -102,7 +108,6 @@ public class Location {
     public World getWorld() {
         return world;
     }
-
 
     public Vector3i getPosition() {
         return position;

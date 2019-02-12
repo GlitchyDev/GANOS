@@ -1,4 +1,4 @@
-package com.GlitchyDev.World.Utility;
+package com.GlitchyDev.Utility;
 
 import java.util.ArrayList;
 import java.util.HashMap;
