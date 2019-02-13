@@ -8,27 +8,25 @@ import java.util.ArrayList;
 
 public class RegionBase {
     private Location location;
-    private RegionLocation regionLocation;
     private final BlockBase[][][] blocks;
     private final ArrayList<EntityBase> entities;
     private final ArrayList<RegionBase> connectedRegions;
 
 
 
-    public RegionBase(Location location, RegionLocation regionLocation, BlockBase[][][] blocks, ArrayList<EntityBase> entities, ArrayList<RegionBase> connectedRegions) {
+    public RegionBase(Location location, BlockBase[][][] blocks, ArrayList<EntityBase> entities, ArrayList<RegionBase> connectedRegions) {
         this.location = new Location(0,0,0,null);
-        this.regionLocation = regionLocation;
         this.blocks = blocks;
         this.entities = entities;
         this.connectedRegions = connectedRegions;
-        updateLocation(location);
+        changeLocation(location);
     }
 
     /**
      * When we want to change the location of this region, or place it
      * @param newLocation
      */
-    public void updateLocation(Location newLocation) {
+    public void changeLocation(Location newLocation) {
         Location difference = location.getLocationDifference(newLocation);
         location = newLocation;
 
