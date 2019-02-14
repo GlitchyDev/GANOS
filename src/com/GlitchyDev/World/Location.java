@@ -129,6 +129,15 @@ public class Location {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Location) {
+            Location compare = (Location) obj;
+            return compare.getX() == getX() && compare.getY() == getY() && compare.getZ() == getZ() && compare.getWorld() == getWorld();
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "l@" + getX() + "," + getY() + "," + getZ();
     }
