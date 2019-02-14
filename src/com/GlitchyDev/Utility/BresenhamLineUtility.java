@@ -24,14 +24,10 @@ public class BresenhamLineUtility {
         int dy = usesY ? incrementLength/difference.getY() : 0;
         int dz = usesZ ? incrementLength/difference.getZ() : 0;
 
-        int xCount = 0;
-        int yCount = 0;
-        int zCount = 0;
-
         for(int i = 0; i < incrementLength; i++) {
-            xCount = usesX ? i/dx : 0;
-            yCount = usesY ? i/dy : 0;
-            zCount = usesZ ? i/dz : 0;
+            int xCount = usesX ? i/dx : 0;
+            int yCount = usesY ? i/dy : 0;
+            int zCount = usesZ ? i/dz : 0;
             Location nextLocation = origin.getOffsetLocation(xCount,yCount,zCount);
             line.add(nextLocation);
         }
