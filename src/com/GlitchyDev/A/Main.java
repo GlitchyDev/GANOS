@@ -1,17 +1,13 @@
 package com.GlitchyDev.A;
 
-import com.GlitchyDev.IO.InputBitUtility;
-import com.GlitchyDev.IO.OutputBitUtility;
-import com.GlitchyDev.World.Location;
+import com.GlitchyDev.Utility.InputBitUtility;
+import com.GlitchyDev.Utility.OutputBitUtility;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.UUID;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
 
 public class Main {
 

@@ -1,13 +1,10 @@
 package com.GlitchyDev.World.Blocks.AbstractBlocks;
 
-import com.GlitchyDev.IO.InputBitUtility;
-import com.GlitchyDev.IO.OutputBitUtility;
+import com.GlitchyDev.Utility.InputBitUtility;
+import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.BlockType;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
-
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 public abstract class BlockBase {
     private final BlockType blockType;

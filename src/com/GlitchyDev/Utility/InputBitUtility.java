@@ -1,4 +1,4 @@
-package com.GlitchyDev.IO;
+package com.GlitchyDev.Utility;
 
 import java.io.*;
 import java.nio.ByteBuffer;

@@ -1,12 +1,9 @@
 package com.GlitchyDev.World.Entities;
 
-import com.GlitchyDev.IO.InputBitUtility;
-import com.GlitchyDev.IO.OutputBitUtility;
+import com.GlitchyDev.Utility.InputBitUtility;
+import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
-
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 public class DebugEntity extends EntityBase {
     public DebugEntity(Location location) {

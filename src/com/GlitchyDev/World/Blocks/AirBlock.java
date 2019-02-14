@@ -1,14 +1,10 @@
 package com.GlitchyDev.World.Blocks;
 
-import com.GlitchyDev.IO.InputBitUtility;
-import com.GlitchyDev.IO.OutputBitUtility;
+import com.GlitchyDev.Utility.InputBitUtility;
+import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Entities.EntityType;
 import com.GlitchyDev.World.Location;
-
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 public class AirBlock extends BlockBase {
 

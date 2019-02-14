@@ -1,9 +1,11 @@
 package com.GlitchyDev.World.Region;
 
+import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class RegionBase {
@@ -24,11 +26,32 @@ public class RegionBase {
         this.connectedRegions = connectedRegions;
     }
 
+    public RegionBase(InputBitUtility inputBitUtility) {
+        try {
+            RegionFileVersion version = RegionFileVersion.values()[inputBitUtility.getNextCorrectIntByte()];
+            RegionFileType type = RegionFileType.values()[inputBitUtility.getNextCorrectIntByte()];
+            this.id = inputBitUtility.getNextCorrectIntByte();
+            this.blocks = new BlockBase[inputBitUtility.getNextCorrectIntByte()][inputBitUtility.getNextCorrectIntByte()][inputBitUtility.getNextCorrectIntByte()];
+            int blockPalleteSize = inputBitUtility.getNextCorrectIntByte();
+            int totalEntities = inputBitUtility.getNextCorrectIntByte();
+
+            BlockBase[] pallete = new BlockBase[blockPalleteSize];
+            
+
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     /**
      * Data format
      *
-     * Version | Format | ID | Width | Height | Length | Block Palette Size | Entity Length | Block Palette | Entities | < Later Modifiers >
+     * Version | Format | ID | Height | Width | Length | Block Palette Size | Entity Length | Block Palette | Entities | < Later Modifiers >
      *
      *
      */

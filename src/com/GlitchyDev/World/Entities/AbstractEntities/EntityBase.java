@@ -1,13 +1,11 @@
 package com.GlitchyDev.World.Entities.AbstractEntities;
 
-import com.GlitchyDev.IO.InputBitUtility;
-import com.GlitchyDev.IO.OutputBitUtility;
+import com.GlitchyDev.Utility.InputBitUtility;
+import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.EntityType;
 import com.GlitchyDev.World.Location;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.UUID;
 
 public abstract class EntityBase {
