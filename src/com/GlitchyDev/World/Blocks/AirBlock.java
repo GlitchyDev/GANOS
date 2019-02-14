@@ -6,6 +6,8 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
 
+import java.io.IOException;
+
 public class AirBlock extends BlockBase {
 
 
@@ -13,11 +15,12 @@ public class AirBlock extends BlockBase {
         super(BlockType.AIR, location);
     }
 
+    public AirBlock(InputBitUtility inputBitUtility) throws IOException {
+        super(BlockType.AIR, inputBitUtility);
 
-    @Override
-    public void readData(InputBitUtility inputBitUtility) {
 
     }
+
 
     @Override
     public void writeData(OutputBitUtility outputBitUtility) {

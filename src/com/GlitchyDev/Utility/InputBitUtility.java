@@ -39,6 +39,14 @@ public class InputBitUtility {
         return output;
     }
 
+    public int getNextCorrectedIntBit(int bits) throws IOException {
+        int value = 0;
+        for(int i = 0; i < bits; i++) {
+            value+= getNextBit() ? Math.pow(2.0, i) : 0;
+        }
+        return value;
+    }
+
     public byte getNextByte() throws IOException {
         byte output = 0;
         for(int i = 0; i < 8; i++) {

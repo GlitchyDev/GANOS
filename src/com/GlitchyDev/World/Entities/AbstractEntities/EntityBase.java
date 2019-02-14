@@ -5,7 +5,9 @@ import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.EntityType;
 import com.GlitchyDev.World.Location;
+import com.GlitchyDev.World.Region.RegionBase;
 
+import java.io.IOException;
 import java.util.UUID;
 
 public abstract class EntityBase {
@@ -16,12 +18,7 @@ public abstract class EntityBase {
 
 
     // REPLICATE!!!!
-    public EntityBase(EntityType entityType, Location location) {
-        this.entityType = entityType;
-        this.location = location;
-        direction = Direction.NORTH;
-        uuid = null;
-    }
+
 
     public EntityBase(EntityType entityType, Location location, Direction direction) {
         this.entityType = entityType;
@@ -30,14 +27,25 @@ public abstract class EntityBase {
         uuid = null;
     }
 
+    public EntityBase(EntityType entityType, InputBitUtility inputBitUtility) throws IOException {
+        // Entity Type has already been found
+        this.entityType = entityType;
+        this.uuid = inputBitUtility.getNextUUID();
+        this.location = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), null);
+        this.direction = Direction.values()[inputBitUtility.getNextCorrectedIntBit(3)];
+    }
+
     public abstract void tick();
 
-
-    // MAKE A CONSTRUCTOR DUMBASS!!!!
-    public abstract void readData(InputBitUtility inputBitUtility);
-
     // Do not write Location, as that can be refereed engineered from the read protocol
-    public abstract void writeData(OutputBitUtility outputBitUtility);
+    public void writeData(OutputBitUtility outputBitUtility) throws IOException {
+        outputBitUtility.writeNextCorrectByteInt(entityType.ordinal());
+        outputBitUtility.writeNextUUID(uuid);
+        // Get Local Location in Region
+        RegionBase currentRegion = location.getWorld().getRegionAtLocation(location);
+        Location o
+
+    }
 
     // DO NOT COPY UUID FOR THE LOVE OF CHRIST HOLY FUCK
     public abstract EntityBase clone();

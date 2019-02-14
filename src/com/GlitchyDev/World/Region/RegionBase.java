@@ -19,6 +19,7 @@ public class RegionBase {
 
 
 
+
     public RegionBase(BlockBase[][][] blocks, ArrayList<EntityBase> entities, ArrayList<RegionBase> connectedRegions) {
         this.location = new Location(0,0,0,null);
         this.blocks = blocks;
@@ -26,24 +27,25 @@ public class RegionBase {
         this.connectedRegions = connectedRegions;
     }
 
-    public RegionBase(InputBitUtility inputBitUtility) {
-        try {
-            RegionFileVersion version = RegionFileVersion.values()[inputBitUtility.getNextCorrectIntByte()];
-            RegionFileType type = RegionFileType.values()[inputBitUtility.getNextCorrectIntByte()];
-            this.id = inputBitUtility.getNextCorrectIntByte();
-            this.blocks = new BlockBase[inputBitUtility.getNextCorrectIntByte()][inputBitUtility.getNextCorrectIntByte()][inputBitUtility.getNextCorrectIntByte()];
-            int blockPalleteSize = inputBitUtility.getNextCorrectIntByte();
-            int totalEntities = inputBitUtility.getNextCorrectIntByte();
 
-            BlockBase[] pallete = new BlockBase[blockPalleteSize];
+
+    public RegionBase(InputBitUtility inputBitUtility) throws IOException {
+
+
+        RegionFileVersion version = RegionFileVersion.values()[inputBitUtility.getNextCorrectIntByte()];
+        RegionFileType type = RegionFileType.values()[inputBitUtility.getNextCorrectIntByte()];
+        this.id = inputBitUtility.getNextCorrectIntByte();
+        this.blocks = new BlockBase[inputBitUtility.getNextCorrectIntByte()][inputBitUtility.getNextCorrectIntByte()][inputBitUtility.getNextCorrectIntByte()];
+        int blockPalleteSize = inputBitUtility.getNextCorrectIntByte();
+        int totalEntities = inputBitUtility.getNextCorrectIntByte();
+
+        BlockBase[] pallete = new BlockBase[blockPalleteSize];
+
+        this.entities = new ArrayList<>();
+        this.connectedRegions = new ArrayList<>();
             
 
 
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
     }
 

@@ -6,6 +6,8 @@ import com.GlitchyDev.World.Blocks.BlockType;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
 
+import java.io.IOException;
+
 public abstract class BlockBase {
     private final BlockType blockType;
     private Location location;
@@ -18,13 +20,17 @@ public abstract class BlockBase {
         this.location = location;
     }
 
-    public abstract void readData(InputBitUtility inputBitUtility);
+    public BlockBase(BlockType blockType, InputBitUtility inputBitUtility) throws IOException {
+        this.blockType = blockType;
+        location = new Location(0,0,0,null);
+    }
 
     // Do not write Location, as that can be refereed engineered from the read protocol
     public abstract void writeData(OutputBitUtility outputBitUtility);
 
     public abstract BlockBase clone();
 
+    // Do not include location or disable fustruum culling, ect
     public abstract boolean isEqual(EntityBase entityBase);
 
 
@@ -35,10 +41,6 @@ public abstract class BlockBase {
 
     public Location getLocation() {
         return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
     }
 
     public BlockType getBlockType() {

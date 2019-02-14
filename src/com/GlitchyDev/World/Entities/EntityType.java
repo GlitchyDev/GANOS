@@ -1,19 +1,23 @@
 package com.GlitchyDev.World.Entities;
 
+import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+
+import java.io.IOException;
 
 public enum EntityType {
     DEBUG;
 
-    public EntityBase getEntityClass() {
-        switch(this) {
+    public EntityBase getEntityFromInput(InputBitUtility inputBitUtility) throws IOException {
+        switch (this) {
             case DEBUG:
-                return new DebugEntity(null);
+                return new DebugEntity(inputBitUtility);
             default:
-                return new DebugEntity(null);
+                return new DebugEntity(inputBitUtility);
         }
 
     }
+
 
 
 

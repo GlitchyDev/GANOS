@@ -92,6 +92,10 @@ public class Main {
             String str = "Thomas";
             System.out.println(str);
             fileOutputBitUtility.writeNextString(str);
+            int bitLength = 10;
+            int value = 1020;
+            fileOutputBitUtility.writeNextCorrectedBitsInt(value, bitLength);
+            System.out.println(value);
 
             fileOutputBitUtility.close();
 
@@ -110,6 +114,7 @@ public class Main {
             System.out.println(fileInputBitUtility.getNextFloat());
             System.out.println(fileInputBitUtility.getNextInteger());
             System.out.println(fileInputBitUtility.getNextString());
+            System.out.println(fileInputBitUtility.getNextCorrectedIntBit(10));
         } catch (IOException e) {
             e.printStackTrace();
         }

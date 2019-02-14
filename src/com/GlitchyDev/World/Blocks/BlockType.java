@@ -1,6 +1,9 @@
 package com.GlitchyDev.World.Blocks;
 
+import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+
+import java.io.IOException;
 
 public enum BlockType {
     DEBUG,
@@ -8,14 +11,14 @@ public enum BlockType {
 
 
 
-    public BlockBase getBlockClass() {
+    public BlockBase getBlockFromInput(InputBitUtility inputBitUtility) throws IOException {
         switch(this) {
             case DEBUG:
-                return new DebugBlock(null);
+                return new DebugBlock(inputBitUtility);
             case AIR:
-                return new AirBlock(null);
+                return new AirBlock(inputBitUtility);
             default:
-                return new DebugBlock(null);
+                return new DebugBlock(inputBitUtility);
         }
 
     }

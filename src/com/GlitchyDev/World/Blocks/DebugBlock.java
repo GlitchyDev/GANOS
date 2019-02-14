@@ -6,17 +6,18 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
 
+import java.io.IOException;
+
 public class DebugBlock extends BlockBase {
 
     public DebugBlock(Location location) {
         super(BlockType.DEBUG, location);
     }
 
-
-    @Override
-    public void readData(InputBitUtility inputBitUtility) {
-
+    public DebugBlock(InputBitUtility inputBitUtility) throws IOException {
+        super(BlockType.DEBUG, inputBitUtility);
     }
+
 
     @Override
     public void writeData(OutputBitUtility outputBitUtility) {

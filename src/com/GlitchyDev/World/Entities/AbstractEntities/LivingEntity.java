@@ -1,7 +1,12 @@
 package com.GlitchyDev.World.Entities.AbstractEntities;
 
+import com.GlitchyDev.Utility.InputBitUtility;
+import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.EntityType;
 import com.GlitchyDev.World.Location;
+import jdk.internal.util.xml.impl.Input;
+
+import java.io.IOException;
 
 public abstract class LivingEntity extends EntityBase {
     private boolean isAlive = true;
@@ -13,8 +18,14 @@ public abstract class LivingEntity extends EntityBase {
     private long timeDead = 0;
 
 
-    public LivingEntity(EntityType entityType, Location location) {
-        super(entityType, location);
+    public LivingEntity(EntityType entityType, Location location, Direction direction) {
+        super(entityType, location, direction);
+        this.birthTime = System.currentTimeMillis();
+    }
+
+    public LivingEntity(EntityType entityType, InputBitUtility inputBitUtility) throws IOException {
+        super(entityType, inputBitUtility);
+        // Grab Birth time
         this.birthTime = System.currentTimeMillis();
     }
 

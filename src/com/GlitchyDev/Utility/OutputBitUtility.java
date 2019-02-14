@@ -1,5 +1,7 @@
 package com.GlitchyDev.Utility;
 
+import org.lwjgl.system.CallbackI;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.UUID;
@@ -42,6 +44,25 @@ public class OutputBitUtility {
     public void writeNextBits(boolean[] bits) throws IOException {
         for(int i = 0; i < bits.length; i++) {
            writeNextBit(bits[i]);
+        }
+    }
+
+    public void writeNextCorrectedBitsInt(int value, int numBits) throws IOException {
+        boolean[] bits = new boolean[numBits];
+
+        int tempValue = value;
+        for(int i = (numBits - 1); i >= 0; i--) {
+            if (tempValue - Math.pow(2.0, i) >= 0) {
+                bits[i] = true;
+                tempValue -= Math.pow(2.0, i);
+            } else {
+                bits[i] = false;
+            }
+
+        }
+
+        for(int i = 0; i < numBits; i++) {
+            writeNextBit(bits[i]);
         }
     }
 

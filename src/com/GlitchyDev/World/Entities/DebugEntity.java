@@ -2,21 +2,23 @@ package com.GlitchyDev.World.Entities;
 
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
+import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
 
+import java.io.IOException;
+
 public class DebugEntity extends EntityBase {
-    public DebugEntity(Location location) {
-        super(EntityType.DEBUG, location);
+    public DebugEntity(Location location, Direction direction) {
+        super(EntityType.DEBUG, location, direction);
+    }
+
+    public DebugEntity(InputBitUtility inputBitUtility) throws IOException {
+        super(EntityType.DEBUG, inputBitUtility);
     }
 
     @Override
     public void tick() {
-
-    }
-
-    @Override
-    public void readData(InputBitUtility inputBitUtility) {
 
     }
 
@@ -27,7 +29,7 @@ public class DebugEntity extends EntityBase {
 
     @Override
     public EntityBase clone() {
-        return new DebugEntity(getLocation().clone());
+        return new DebugEntity(getLocation(), getDirection());
     }
 
     @Override
