@@ -97,8 +97,6 @@ public class OutputBitUtility {
     }
 
     public void writeNextString(String s) throws IOException {
-
-
         writeNextCorrectByteInt(s.length());
         for(char c: s.toCharArray()) {
             writeNextChar(c);

@@ -7,7 +7,7 @@ import com.GlitchyDev.World.Location;
 import java.util.ArrayList;
 
 public class RegionBase {
-    // ADD UUID FOR WORLD PLACEMENT AHHHH
+    private int id;
     // Placement of the bottom upper righthand corner of the region
     private Location location;
     private final BlockBase[][][] blocks;
@@ -23,6 +23,15 @@ public class RegionBase {
         this.entities = entities;
         this.connectedRegions = connectedRegions;
     }
+
+
+    /**
+     * Data format
+     *
+     * Version | Format | ID | Width | Height | Length | Block Palette Size | Entity Length | Block Palette | Entities | < Later Modifiers >
+     *
+     *
+     */
 
     /**
      * When we want to place a region, or move a region
@@ -107,6 +116,9 @@ public class RegionBase {
         return blockList;
     }
 
+    public void recalculateConnections() {
+        // Spread Algorithum
+    }
 
 
 

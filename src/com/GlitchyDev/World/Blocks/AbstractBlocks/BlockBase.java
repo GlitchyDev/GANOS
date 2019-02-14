@@ -14,6 +14,7 @@ public abstract class BlockBase {
     private Location location;
     private boolean isDisableFrustumCulling = false;
     private boolean insideFrustum = false;
+    // IS OPAQUE?
 
     public BlockBase(BlockType blockType, Location location) {
         this.blockType = blockType;

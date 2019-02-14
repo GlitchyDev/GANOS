@@ -1,5 +1,6 @@
 package com.GlitchyDev.World;
 
+
 import org.joml.Vector3i;
 
 public class Location {

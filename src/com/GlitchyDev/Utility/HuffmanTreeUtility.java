@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class HuffmanTreeUtility {
+
     public static HashMap<String,Object> getHuffmanValues(Object[] objects, int[] frequency) {
         HashMap<String,Object> values = new HashMap<>(objects.length);
         ArrayList<HuffmanNode> unmatchedNodes = new ArrayList<>(objects.length);

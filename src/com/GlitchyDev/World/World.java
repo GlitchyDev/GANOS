@@ -34,14 +34,24 @@ public class World {
     // Remember to replicate
     public void spawnRegion(RegionBase region, Location location) {
         // ADD REGION TO REGIONS
-        region.placeRegion(location);
-        for(EntityBase entity: region.getEntities()) {
-            entities.put(entity.getUUID(), entity);
-        }
-        for(BlockBase block: region.getBlocksArrayList()) {
-            if(block instanceof TickableBlock) {
-                tickableBlocks.put(block.getLocation(), (TickableBlock) block);
+        boolean passesOverlap = true;
+        for(RegionBase testRegion: regions.values()) {
+            if(testRegion.doRegionsIntersect(region)) {
+                passesOverlap = false;
             }
+        }
+        if(passesOverlap) {
+            region.placeRegion(location);
+            for (EntityBase entity : region.getEntities()) {
+                entities.put(entity.getUUID(), entity);
+            }
+            for (BlockBase block : region.getBlocksArrayList()) {
+                if (block instanceof TickableBlock) {
+                    tickableBlocks.put(block.getLocation(), (TickableBlock) block);
+                }
+            }
+        } else {
+            System.out.println("World: Error, spawned region overlaps existing region");
         }
     }
 
@@ -50,6 +60,8 @@ public class World {
         if(isRegionAtLocation(entity.getLocation())) {
             entities.put(entity.getUUID(), entity);
             getRegionAtLocation(entity.getLocation()).getEntities().add(entity);
+        } else {
+            System.out.println("World: Error, Entity can not be spawn outside region");
         }
     }
 
@@ -62,6 +74,8 @@ public class World {
             RegionBase placeRegion = getRegionAtLocation(location);
             Location relativeLocation = location.getLocationDifference(placeRegion.getLocation());
             placeRegion.setBlockRelative(relativeLocation,blockBase);
+        } else {
+            System.out.println("World: Error, Block can not be spawn outside region");
         }
     }
 
@@ -80,21 +94,26 @@ public class World {
 
     // Remember to replicate
     public void despawnEntity(EntityBase entity) {
-        entities.remove(entity.getUUID(), entity);
         if(isRegionAtLocation(entity.getLocation())) {
+            entities.remove(entity.getUUID(), entity);
             getRegionAtLocation(entity.getLocation()).getEntities().remove(entity);
+        } else {
+            System.out.println("World: Error, Entity can not be despawn outside region");
         }
     }
 
     // Remember to replicate
     public void despawnBlock(BlockBase blockBase) {
-        if(blockBase instanceof TickableBlock) {
-            tickableBlocks.remove(blockBase.getLocation());
-        }
         if(isRegionAtLocation(blockBase.getLocation())) {
+            if(blockBase instanceof TickableBlock) {
+                tickableBlocks.remove(blockBase.getLocation());
+            }
+
             RegionBase placeRegion = getRegionAtLocation(blockBase.getLocation());
             Location relativeLocation = blockBase.getLocation().getLocationDifference(placeRegion.getLocation());
-            placeRegion.setBlockRelative(relativeLocation,blockBase);
+            placeRegion.setBlockRelative(relativeLocation,new AirBlock(blockBase.getLocation()));
+        } else {
+            System.out.println("World: Error, Block can not be despawn outside region");
         }
     }
 
@@ -102,7 +121,6 @@ public class World {
 
 
 
-    // Use Chunks, Efficiencies
     public boolean isRegionAtLocation(Location location) {
         for(RegionBase region: regions.values()) {
             if(region.isLocationInRegion(location)) {
@@ -112,7 +130,6 @@ public class World {
         return false;
     }
 
-    // Use Chunks, Efficiencies
     public RegionBase getRegionAtLocation(Location location) {
         for(RegionBase region: regions.values()) {
             if(region.isLocationInRegion(location)) {
@@ -122,7 +139,6 @@ public class World {
         return null;
     }
 
-    // Use Chunks, Efficiencies
     public Location getOriginLocation() {
         return new Location(0,0,0,this);
     }
