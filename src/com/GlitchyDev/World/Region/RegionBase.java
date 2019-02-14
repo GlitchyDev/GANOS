@@ -7,26 +7,28 @@ import com.GlitchyDev.World.Location;
 import java.util.ArrayList;
 
 public class RegionBase {
+    // ADD UUID FOR WORLD PLACEMENT AHHHH
+    // Placement of the bottom upper righthand corner of the region
     private Location location;
     private final BlockBase[][][] blocks;
     private final ArrayList<EntityBase> entities;
+    // All regions that are connected here via openings, doors, mystical portals, EVERYTHING!!!!
     private final ArrayList<RegionBase> connectedRegions;
 
 
 
-    public RegionBase(Location location, BlockBase[][][] blocks, ArrayList<EntityBase> entities, ArrayList<RegionBase> connectedRegions) {
+    public RegionBase(BlockBase[][][] blocks, ArrayList<EntityBase> entities, ArrayList<RegionBase> connectedRegions) {
         this.location = new Location(0,0,0,null);
         this.blocks = blocks;
         this.entities = entities;
         this.connectedRegions = connectedRegions;
-        changeLocation(location);
     }
 
     /**
-     * When we want to change the location of this region, or place it
+     * When we want to place a region, or move a region
      * @param newLocation
      */
-    public void changeLocation(Location newLocation) {
+    public void placeRegion(Location newLocation) {
         Location difference = location.getLocationDifference(newLocation);
         location = newLocation;
 
@@ -49,8 +51,42 @@ public class RegionBase {
         return false;
     }
 
+    public boolean doRegionsIntersect(RegionBase comparedRegion) {
+        if(getLocation().getY() + getHeight() < comparedRegion.getLocation().getY()) {
+            return false;
+        }
+        if(comparedRegion.getLocation().getY() + comparedRegion.getHeight() < getLocation().getY()) {
+            return false;
+        }
+        if(getLocation().getX() + getWidth() < comparedRegion.getLocation().getX()) {
+            return false;
+        }
+        if(comparedRegion.getLocation().getX() + comparedRegion.getWidth() < getLocation().getX()) {
+            return false;
+        }
+        if(getLocation().getZ() + getLength() < comparedRegion.getLocation().getZ()) {
+            return false;
+        }
+        if(comparedRegion.getLocation().getZ() + comparedRegion.getLength() < getLocation().getZ()) {
+            return false;
+        }
+
+
+        return true;
+
+    }
+
 
     // Helper Methods
+
+    public BlockBase getBlockRelative(Location location) {
+        return getBlockRelative(location.getX(), location.getY(), location.getZ());
+    }
+
+    public void setBlockRelative(Location location, BlockBase block) {
+        setBlockRelative(location.getX(), location.getY(), location.getZ(), block);
+    }
+
     public BlockBase getBlockRelative(int relativeX, int relativeY, int relativeZ) {
         return blocks[relativeY][relativeX][relativeZ];
     }

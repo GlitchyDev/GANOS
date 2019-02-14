@@ -22,15 +22,31 @@ public class Location {
         this.world = location.getWorld();
     }
 
-
+    /**
+     *
+     * @param location
+     * @ return Returns a Location offset by the provided Location from the current location
+     */
     public Location getOffsetLocation(Location location) {
         return getOffsetLocation(location.getX(), location.getY(), location.getZ());
     }
 
+    /**
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @ return Returns a Location offset by the provided coordinates from the current location
+     */
     public Location getOffsetLocation(int x, int y, int z) {
         return new Location(this.position.x + x, this.position.y + y, this.position.z + z, world);
     }
 
+    /**
+     *
+     * @param direction
+     * @return Outputs the location one unit in the cardinal direction
+     */
     public Location getDirectionLocation(Direction direction) {
         switch (direction) {
             case ABOVE:
@@ -47,6 +63,20 @@ public class Location {
                 return getWest();
         }
         return this;
+    }
+
+    /**
+     *
+     * @param direction
+     * @param distance
+     * @return Outputs the location X units in the cardinal direction
+     */
+    public Location getDirectionLocation(Direction direction, int distance) {
+        Location output = this;
+        for(int i = 0; i < distance; i++) {
+            output = output.getDirectionLocation(direction);
+        }
+        return output;
     }
 
     public Location getAbove() {
@@ -73,10 +103,21 @@ public class Location {
         return getOffsetLocation(-1, 0, 0);
     }
 
+
+    /**
+     * Outputs a Location difference of the current location and the provided location
+     * @param location
+     * @return
+     */
     public Location getLocationDifference(Location location) {
         return new Location(location.getX() - getX(), location.getY() - getY(), location.getZ() - getZ(), getWorld());
     }
 
+    /**
+     *
+     * @param location
+     * @return The distance between the current and the provided Location
+     */
     public double getDistance(Location location) {
         return Math.sqrt(Math.pow(location.getX() - getX(),2) + Math.pow(location.getY() - getY(),2) + Math.pow(location.getZ() - getZ(),2));
     }
