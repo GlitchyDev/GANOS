@@ -9,45 +9,43 @@ import java.util.ArrayList;
 public class BresenhamLineUtility {
 
 
-
-    public static  ArrayList<Location> findLine(Location origin, Location target) {
+    public static ArrayList<Location> findLineNew(Location origin, Location target) {
         ArrayList<Location> line = new ArrayList<>();
         Location difference = origin.getLocationDifference(target);
 
-        int incrementLength = Math.abs(Math.max(Math.max(difference.getX(),difference.getY()),difference.getZ()));
+        double largest = Math.max(difference.getX(), Math.max(difference.getY(), difference.getZ()));
+        double xMod = difference.getX()/largest;
+        double yMod = difference.getY()/largest;
+        double zMod = difference.getZ()/largest;
 
-        boolean usesX = difference.getX() != 0;
-        boolean usesY = difference.getY() != 0;
-        boolean usesZ = difference.getZ() != 0;
 
-        int dx = usesX ? incrementLength/difference.getX() : 0;
-        int dy = usesY ? incrementLength/difference.getY() : 0;
-        int dz = usesZ ? incrementLength/difference.getZ() : 0;
+        for(int i = 0; i <= largest; i++) {
+            int x = (int) (xMod * i);
+            System.out.println(i + " : " + x + " = " + (xMod * i));
+            int y = (int) (yMod * i);
+            int z = (int) (zMod * i);
 
-        for(int i = 0; i < incrementLength; i++) {
-            int xCount = usesX ? i/dx : 0;
-            int yCount = usesY ? i/dy : 0;
-            int zCount = usesZ ? i/dz : 0;
-            Location nextLocation = origin.getOffsetLocation(xCount,yCount,zCount);
-            line.add(nextLocation);
+            line.add(origin.getOffsetLocation(x,y,z));
         }
-
 
         return line;
     }
 
+
    public static void main(String[] args) {
        boolean[][] area = new boolean[20][20];
        Location origin = new Location(0,0,0,null);
-       Location target = new Location(11,4,0,null);
-       ArrayList<Location> line = findLine(origin, target);
+       Location target = new Location(6,19,0,null);
+       ArrayList<Location> line = findLineNew(origin, target);
 
        for(Location location: line) {
            area[location.getY()][location.getX()] = true;
        }
 
 
+       int count = 0;
        for(boolean[] row: area) {
+           System.out.print(count % 10+ " :");
            for(boolean b: row) {
                if(b) {
                    System.out.print("1");
@@ -56,6 +54,7 @@ public class BresenhamLineUtility {
                }
            }
            System.out.println();
+           count++;
        }
 
 
