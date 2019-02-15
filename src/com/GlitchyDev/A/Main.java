@@ -28,9 +28,9 @@ public class Main {
         File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
         OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
 
-        int width = 50;
-        int length = 50;
-        int height = 1;
+        int width = 9;
+        int length = 20;
+        int height = 9;
 
         BlockBase[][][] blocks = new BlockBase[height][width][length];
         for(int y = 0; y < blocks.length; y++) {
@@ -46,8 +46,8 @@ public class Main {
         }
 
         ArrayList<EntityBase> entities = new ArrayList<>();
-        //entities.add(new DebugEntity(UUID.randomUUID(), new Location(0,0,0,null), Direction.NORTH));
-        //entities.add(new DebugEntity(UUID.randomUUID(), new Location(2,2,2,null), Direction.EAST));
+        entities.add(new DebugEntity(UUID.randomUUID(), new Location(0,0,0,null), Direction.NORTH));
+        entities.add(new DebugEntity(UUID.randomUUID(), new Location(2,2,2,null), Direction.EAST));
 
         RegionBase testRegion = new RegionBase(13,blocks,entities);
         testRegion.writeData(fileOutputBitUtility);

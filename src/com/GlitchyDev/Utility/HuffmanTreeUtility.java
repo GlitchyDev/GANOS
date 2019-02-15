@@ -103,6 +103,17 @@ public class HuffmanTreeUtility {
         return values;
     }
 
+    private static void processNodeDecode(String currentPath, HashMap<String,Object> values, HuffmanNode huffmanNode) {
+        if(huffmanNode instanceof ValueHuffmanNode) {
+            values.put(currentPath,((ValueHuffmanNode) huffmanNode).getObject());
+        } else {
+            HuffmanTreeUtility.processNodeDecode(currentPath + "0" , values, ((ConnectingHuffmanNode)huffmanNode).getNode1());
+            HuffmanTreeUtility.processNodeDecode( currentPath + "1", values, ((ConnectingHuffmanNode)huffmanNode).getNode2());
+        }
+    }
+
+
+
 
     public static void saveHuffmanTreeValues(OutputBitUtility outputBitUtility, Object[] objects, int[] frequency) throws IOException {
         // Make Tree
@@ -118,7 +129,10 @@ public class HuffmanTreeUtility {
         if(inputBitUtility.getNextBit()) {
             return new ConnectingHuffmanNode(decodeNode(inputBitUtility,objectList), decodeNode(inputBitUtility,objectList));
         } else {
-            return new ValueHuffmanNode(0,objectList.get(objectList.size() - 1));
+
+            Object select = objectList.get(objectList.size() - 1);
+            objectList.remove(select);
+            return new ValueHuffmanNode(0,select);
         }
 
     }
@@ -157,16 +171,6 @@ public class HuffmanTreeUtility {
 
     }
 
-
-
-    private static void processNodeDecode(String currentPath, HashMap<String,Object> values, HuffmanNode huffmanNode) {
-        if(huffmanNode instanceof ValueHuffmanNode) {
-            values.put(currentPath,((ValueHuffmanNode) huffmanNode).getObject());
-        } else {
-            HuffmanTreeUtility.processNodeDecode(currentPath + "0" , values, ((ConnectingHuffmanNode)huffmanNode).getNode1());
-            HuffmanTreeUtility.processNodeDecode( currentPath + "1", values, ((ConnectingHuffmanNode)huffmanNode).getNode2());
-        }
-    }
 
     private static void processNodeEncode(String currentPath, HashMap<Object,String> values, HuffmanNode huffmanNode) {
         if(huffmanNode instanceof ValueHuffmanNode) {

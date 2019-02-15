@@ -39,22 +39,30 @@ public class RegionBase {
     public RegionBase(InputBitUtility inputBitUtility) throws IOException {
 
         RegionFileVersion version = RegionFileVersion.values()[inputBitUtility.getNextCorrectIntByte()];
+        //System.out.println(version);
         RegionFileType type = RegionFileType.values()[inputBitUtility.getNextCorrectIntByte()];
+        //System.out.println(type);
         this.id = inputBitUtility.getNextCorrectIntByte();
+        //System.out.println(id);
 
         int width = inputBitUtility.getNextCorrectIntByte();
+        //System.out.println(width);
         int height = inputBitUtility.getNextCorrectIntByte();
+        //System.out.println(height);
         int length = inputBitUtility.getNextCorrectIntByte();
+        //System.out.println(length);
         this.blocks = new BlockBase[height][width][length];
 
         int blockPaletteSize = inputBitUtility.getNextCorrectIntByte();
-        BlockBase[] pallete = new BlockBase[blockPaletteSize];
+        //System.out.println(blockPaletteSize);
+        BlockBase[] palette = new BlockBase[blockPaletteSize];
         // Load Each Block in Pallete
         for(int i = 0; i < blockPaletteSize; i++) {
             BlockType blockType = BlockType.values()[inputBitUtility.getNextCorrectIntByte()];
-            pallete[i] = blockType.getBlockFromInput(inputBitUtility);
+            palette[i] = blockType.getBlockFromInput(inputBitUtility);
+            //System.out.println(palette[i]);
         }
-        HashMap<String,Object> huffmanMap = HuffmanTreeUtility.loadHuffmanTreeValues(inputBitUtility,pallete);
+        HashMap<String,Object> huffmanMap = HuffmanTreeUtility.loadHuffmanTreeValues(inputBitUtility,palette);
 
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < width; x++) {
@@ -69,6 +77,7 @@ public class RegionBase {
         }
 
         int totalEntities = inputBitUtility.getNextCorrectIntByte();
+        //System.out.println(totalEntities);
         this.entities = new ArrayList<>(totalEntities);
         for(int i = 0; i < totalEntities; i++) {
             EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
@@ -81,12 +90,18 @@ public class RegionBase {
 
     public void writeData(OutputBitUtility outputBitUtility) throws IOException {
         outputBitUtility.writeNextCorrectByteInt(CURRENT_VERSION.ordinal());
+        //System.out.println(CURRENT_VERSION.ordinal());
         outputBitUtility.writeNextCorrectByteInt(RegionFileType.NORMAL.ordinal());
+        //System.out.println(RegionFileType.NORMAL.ordinal());
         outputBitUtility.writeNextCorrectByteInt(id);
+        //System.out.println(id);
 
         outputBitUtility.writeNextCorrectByteInt(getWidth());
+        //System.out.println(getWidth());
         outputBitUtility.writeNextCorrectByteInt(getHeight());
+        //System.out.println(getHeight());
         outputBitUtility.writeNextCorrectByteInt(getLength());
+        //System.out.println(getLength());
 
 
         // Count number of unique blocks, like ouch
@@ -109,11 +124,13 @@ public class RegionBase {
                 }
             }
         }
-        System.out.println("Total Uniques " + uniques);
+        //System.out.println("Total Uniques " + uniques);
+
 
         Collections.sort(uniqueBlocks, Comparator.comparingInt(frequencies::indexOf));
         Collections.sort(frequencies);
-
+        Collections.reverse(uniqueBlocks);
+        Collections.reverse(frequencies);
 
 
         // Attempts to sort both these from most frequent to least frequent
@@ -121,22 +138,20 @@ public class RegionBase {
         BlockBase[] palette = new BlockBase[uniques];
 
         int count = 0;
-        System.out.print("Frequency: ");
         for(int i: frequencies) {
-            System.out.print(i + ",");
             frequency[count] = i;
             count++;
         }
-        System.out.println();
+        //System.out.println();
 
         count = 0;
-        System.out.print("Unique: ");
+        //System.out.print("Unique: ");
         for(BlockBase b: uniqueBlocks) {
-            System.out.print(b + ",");
+            //System.out.print(b + " " + frequencies.get(count));
             palette[count] = b;
             count++;
         }
-        System.out.println();
+        //System.out.println();
         // Finshed
 
 
@@ -151,7 +166,7 @@ public class RegionBase {
         // Create Keyset
         HashMap<Object,String> keyset = HuffmanTreeUtility.generateEncodeHuffmanValues(palette,frequency);
 
-        System.out.println(keyset.size());
+        //System.out.println(keyset.size());
 
         for(int y = 0; y < getHeight(); y++) {
             for(int x = 0; x < getWidth(); x++) {
@@ -169,39 +184,6 @@ public class RegionBase {
             entityBase.writeData(outputBitUtility, this);
         }
 
-        // DONE!
-
-
-        /*
-
-        int blockPaletteSize = inputBitUtility.getNextCorrectIntByte();
-        BlockBase[] pallete = new BlockBase[blockPaletteSize];
-        // Load Each Block in Pallete
-        for(int i = 0; i < blockPaletteSize; i++) {
-            BlockType blockType = BlockType.values()[inputBitUtility.getNextCorrectIntByte()];
-            pallete[i] = blockType.getBlockFromInput(inputBitUtility);
-        }
-        HashMap<String,Object> huffmanMap = HuffmanTreeUtility.loadHuffmanTreeValues("",inputBitUtility,pallete);
-
-        for(int y = 0; y < height; y++) {
-            for(int x = 0; x < width; x++) {
-                for(int z = 0; z < length; z++) {
-                    String currentCode = "";
-                    while(!huffmanMap.containsKey(currentCode)) {
-                        currentCode += inputBitUtility.getNextBit() ? "1" : "0";
-                    }
-                    blocks[y][x][z] = ((BlockBase) huffmanMap.get(currentCode)).getCopy();
-                }
-            }
-        }
-
-        int totalEntities = inputBitUtility.getNextCorrectIntByte();
-        this.entities = new ArrayList<>(totalEntities);
-        for(int i = 0; i < totalEntities; i++) {
-            EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
-            entities.add(entityType.getEntityFromInput(inputBitUtility));
-        }
-        */
     }
 
 
