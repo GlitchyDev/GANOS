@@ -1,5 +1,6 @@
 package com.GlitchyDev.A;
 
+import com.GlitchyDev.Utility.HuffmanTreeUtility;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 
@@ -7,22 +8,42 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class Main {
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        /*
-        int[] arrangement = new int[]{0,15,25,35,45,55};
-        String[] items = new String[]{"0","15","25","35","45","55"};
-        HashMap<String,Object> values = HuffmanTreeUtility.getHuffmanValues(items,arrangement);
+
+
+        String[] items = new String[]{"A","B","God is dog","Lucas is king"};
+        int[] frequency = new int[]{0,1,5,7};
+        HashMap<String,Object> values = HuffmanTreeUtility.generateHuffmanValues("",items,frequency);
         for(String s: values.keySet()) {
             System.out.println(values.get(s) + ": " + s);
         }
-        */
+        System.out.println("-------");
+
+
+        File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
+        OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
+        HuffmanTreeUtility.saveHuffmanTree("",fileOutputBitUtility,values);
+        int totalBytes = fileOutputBitUtility.close();
+
+        InputBitUtility inputBitUtility = new InputBitUtility(file);
+        HashMap<String,Object> values2 = HuffmanTreeUtility.loadHuffmanValues("",inputBitUtility,items);
+        for(String s: values2.keySet()) {
+            System.out.println(values.get(s) + ": " + s);
+        }
+        System.out.println("------- " + totalBytes);
+
+
+
+        /*
+
         try {
             ServerSocket socket = new ServerSocket(5000);
             Socket clientSocket = new Socket(InetAddress.getLocalHost(),5000);
@@ -118,7 +139,9 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
 
 
     }
+
 }

@@ -73,7 +73,7 @@ public class InputBitUtility {
         return ByteBuffer.wrap(getNextBytes(4)).getInt();
     }
 
-    public long getNextShort() throws IOException {
+    public short getNextShort() throws IOException {
         return ByteBuffer.wrap(getNextBytes(2)).getShort();
     }
 

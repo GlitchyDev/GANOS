@@ -2,6 +2,7 @@ package com.GlitchyDev.World.Region;
 
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.BlockType;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
 
@@ -40,10 +41,18 @@ public class RegionBase {
         int totalEntities = inputBitUtility.getNextCorrectIntByte();
 
         BlockBase[] pallete = new BlockBase[blockPalleteSize];
+        // Lets wait and see
+        // Create each Pallete,
+        for(int i = 0; i < blockPalleteSize; i++) {
+            BlockType blockType = BlockType.values()[inputBitUtility.getNextCorrectIntByte()];
+            pallete[i] = blockType.getBlockFromInput(inputBitUtility);
+        }
+
+        // Calculate Huntington algorithm
+
 
         this.entities = new ArrayList<>();
         this.connectedRegions = new ArrayList<>();
-            
 
 
 

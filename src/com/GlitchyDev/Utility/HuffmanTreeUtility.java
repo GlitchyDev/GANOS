@@ -1,11 +1,22 @@
 package com.GlitchyDev.Utility;
 
+import com.sun.tools.internal.ws.wsdl.document.Output;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class HuffmanTreeUtility {
 
-    public static HashMap<String,Object> getHuffmanValues(Object[] objects, int[] frequency) {
+    /**
+     * Generates a Huffman Value Table from input, requires at least 2 items to function
+     * @param prefix
+     * @param objects
+     * @param frequency
+     * @return
+     */
+    public static HashMap<String,Object> generateHuffmanValues(String prefix, Object[] objects, int[] frequency) {
         HashMap<String,Object> values = new HashMap<>(objects.length);
         ArrayList<HuffmanNode> unmatchedNodes = new ArrayList<>(objects.length);
         for(int i = 0; i < objects.length; i++) {
@@ -36,13 +47,83 @@ public class HuffmanTreeUtility {
 
         }
 
-        processNode("",values,lastConnectedNode);
-
-
+        processNode(prefix,values,lastConnectedNode);
 
 
         return values;
     }
+
+
+
+    public static HashMap<String,Object> loadHuffmanValues(String prefix, InputBitUtility inputBitUtility, Object[] objects) throws IOException {
+        // Only supports 8 Layers
+        HashMap<String,Object> values = new HashMap<>(objects.length);
+
+        ArrayList<Object> objectList = new ArrayList<>();
+        objectList.addAll(Arrays.asList(objects));
+
+        HuffmanNode topNode = decodeNode(inputBitUtility,objectList);
+
+        processNode(prefix, values, topNode);
+
+        return values;
+    }
+
+
+    public static void saveHuffmanTree(String modifier, OutputBitUtility outputBitUtility, HashMap<String,Object> values) throws IOException {
+        // Make Tree
+        ConnectingHuffmanNode headNode = createConnectingBranch(modifier,values);
+        System.out.print(":");
+        encodeNode(outputBitUtility,headNode);
+        System.out.println(":");
+    }
+
+
+    private static HuffmanNode decodeNode(InputBitUtility inputBitUtility, ArrayList<Object> objectList) throws IOException {
+        if(inputBitUtility.getNextBit()) {
+            return new ConnectingHuffmanNode(decodeNode(inputBitUtility,objectList), decodeNode(inputBitUtility,objectList));
+        } else {
+            return new ValueHuffmanNode(0,objectList.get(objectList.size() - 1));
+        }
+
+    }
+
+
+    private static ConnectingHuffmanNode createConnectingBranch(String currentModifier, HashMap<String,Object> values) {
+        // Left Node
+        HuffmanNode node1;
+        if(values.containsKey(currentModifier + "0")) {
+            node1 = new ValueHuffmanNode(0,null);
+        } else {
+            node1 = createConnectingBranch(currentModifier + "0",values);
+        }
+
+        HuffmanNode node2;
+        if(values.containsKey(currentModifier + "1")) {
+            node2 = new ValueHuffmanNode(0,null);
+        } else {
+            node2 = createConnectingBranch(currentModifier + "1",values);
+        }
+
+        return new ConnectingHuffmanNode(node1, node2);
+
+    }
+
+    private static void encodeNode(OutputBitUtility outputBitUtility, HuffmanNode node) throws IOException {
+        if(node instanceof ConnectingHuffmanNode) {
+            outputBitUtility.writeNextBit(true);
+            System.out.print("1");
+            encodeNode(outputBitUtility,((ConnectingHuffmanNode) node).getNode1());
+            encodeNode(outputBitUtility,((ConnectingHuffmanNode) node).getNode2());
+
+        } else {
+            outputBitUtility.writeNextBit(false);
+            System.out.print("0");
+
+        }
+
+    }
+
 
 
     private static void processNode(String currentPath, HashMap<String,Object> values, HuffmanNode huffmanNode) {

@@ -43,7 +43,11 @@ public abstract class EntityBase {
         outputBitUtility.writeNextUUID(uuid);
         // Get Local Location in Region
         RegionBase currentRegion = location.getWorld().getRegionAtLocation(location);
-        Location o
+        Location internalOffset = currentRegion.getLocation().getLocationDifference(getLocation());
+        outputBitUtility.writeNextCorrectByteInt(internalOffset.getX());
+        outputBitUtility.writeNextCorrectByteInt(internalOffset.getY());
+        outputBitUtility.writeNextCorrectByteInt(internalOffset.getZ());
+        outputBitUtility.writeNextCorrectedBitsInt(direction.ordinal(),3);
 
     }
 
@@ -82,4 +86,8 @@ public abstract class EntityBase {
         return entityType;
     }
 
+    @Override
+    public String toString() {
+        return "e@" + entityType + "," + uuid + "," + location + "," + direction;
+    }
 }

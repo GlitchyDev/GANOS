@@ -10,6 +10,7 @@ import java.io.IOException;
 
 public abstract class BlockBase {
     private final BlockType blockType;
+    // Remember, when loading from Region, its location is its offset in the region
     private Location location;
     private boolean isDisableFrustumCulling = false;
     private boolean insideFrustum = false;
@@ -28,6 +29,7 @@ public abstract class BlockBase {
     // Do not write Location, as that can be refereed engineered from the read protocol
     public abstract void writeData(OutputBitUtility outputBitUtility);
 
+    // DO NOT CLONE LOCATION OR FRUSTUM CULLING/ECT
     public abstract BlockBase clone();
 
     // Do not include location or disable fustruum culling, ect
@@ -38,6 +40,10 @@ public abstract class BlockBase {
 //
     // Getters
 
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
 
     public Location getLocation() {
         return location;
@@ -61,5 +67,10 @@ public abstract class BlockBase {
 
     public void setInsideFrustum(boolean insideFrustum) {
         this.insideFrustum = insideFrustum;
+    }
+
+    @Override
+    public String toString() {
+        return "e@" + blockType + "," + location;
     }
 }

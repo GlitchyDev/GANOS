@@ -143,9 +143,10 @@ public class OutputBitUtility {
     /*
     Write the remaining byte info to memory, unused section and all
      */
-    public void close() throws IOException {
-        flush();
+    public int close() throws IOException {
+        int count = flush();
         objectOutputStream.close();
+        return count;
     }
 
 
