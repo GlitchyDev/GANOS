@@ -20,11 +20,11 @@ public abstract class EntityBase {
     // REPLICATE!!!!
 
 
-    public EntityBase(EntityType entityType, Location location, Direction direction) {
+    public EntityBase(EntityType entityType, UUID uuid, Location location, Direction direction) {
         this.entityType = entityType;
+        this.uuid = uuid;
         this.location = location;
         this.direction = direction;
-        uuid = null;
     }
 
     public EntityBase(EntityType entityType, InputBitUtility inputBitUtility) throws IOException {
@@ -38,23 +38,24 @@ public abstract class EntityBase {
     public abstract void tick();
 
     // Do not write Location, as that can be refereed engineered from the read protocol
-    public void writeData(OutputBitUtility outputBitUtility) throws IOException {
+    public void writeData(OutputBitUtility outputBitUtility, RegionBase hostRegion) throws IOException {
         outputBitUtility.writeNextCorrectByteInt(entityType.ordinal());
         outputBitUtility.writeNextUUID(uuid);
         // Get Local Location in Region
-        RegionBase currentRegion = location.getWorld().getRegionAtLocation(location);
-        Location internalOffset = currentRegion.getLocation().getLocationDifference(getLocation());
+        Location internalOffset = hostRegion.getLocation().getLocationDifference(getLocation());
         outputBitUtility.writeNextCorrectByteInt(internalOffset.getX());
         outputBitUtility.writeNextCorrectByteInt(internalOffset.getY());
         outputBitUtility.writeNextCorrectByteInt(internalOffset.getZ());
+
         outputBitUtility.writeNextCorrectedBitsInt(direction.ordinal(),3);
 
     }
 
     // DO NOT COPY UUID FOR THE LOVE OF CHRIST HOLY FUCK
-    public abstract EntityBase clone();
+    public abstract EntityBase getCopy();
 
-    public abstract boolean isEqual(EntityBase entityBase);
+    // Copmpare basic stuff here, and super it for further editing
+    public abstract boolean equals(Object obj);
 
     // Add a move method that will move it along regions, triggering triggerable blocks and shit like its supposed too
 

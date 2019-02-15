@@ -27,13 +27,22 @@ public abstract class BlockBase {
     }
 
     // Do not write Location, as that can be refereed engineered from the read protocol
-    public abstract void writeData(OutputBitUtility outputBitUtility);
+    public void writeData(OutputBitUtility outputBitUtility) throws IOException {
+        outputBitUtility.writeNextCorrectByteInt(blockType.ordinal());
+    }
 
     // DO NOT CLONE LOCATION OR FRUSTUM CULLING/ECT
-    public abstract BlockBase clone();
+    public abstract BlockBase getCopy();
 
     // Do not include location or disable fustruum culling, ect
-    public abstract boolean isEqual(EntityBase entityBase);
+
+
+    @Override
+    public abstract boolean equals(Object obj);
+
+    @Override
+    public abstract int hashCode();
+
 
 
 

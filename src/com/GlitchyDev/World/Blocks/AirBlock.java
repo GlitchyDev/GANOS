@@ -7,6 +7,7 @@ import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class AirBlock extends BlockBase {
 
@@ -23,17 +24,22 @@ public class AirBlock extends BlockBase {
 
 
     @Override
-    public void writeData(OutputBitUtility outputBitUtility) {
-
+    public void writeData(OutputBitUtility outputBitUtility) throws IOException {
+        super.writeData(outputBitUtility);
     }
 
     @Override
-    public BlockBase clone() {
-        return null;
+    public BlockBase getCopy() {
+        return new AirBlock(getLocation().clone());
     }
 
     @Override
-    public boolean isEqual(EntityBase entityBase) {
-        return false;
+    public boolean equals(Object obj) {
+        return obj instanceof AirBlock;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getBlockType());
     }
 }

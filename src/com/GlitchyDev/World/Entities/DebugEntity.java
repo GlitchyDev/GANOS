@@ -5,12 +5,14 @@ import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
+import com.GlitchyDev.World.Region.RegionBase;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class DebugEntity extends EntityBase {
-    public DebugEntity(Location location, Direction direction) {
-        super(EntityType.DEBUG, location, direction);
+    public DebugEntity(UUID uuid, Location location, Direction direction) {
+        super(EntityType.DEBUG, uuid, location, direction);
     }
 
     public DebugEntity(InputBitUtility inputBitUtility) throws IOException {
@@ -23,17 +25,18 @@ public class DebugEntity extends EntityBase {
     }
 
     @Override
-    public void writeData(OutputBitUtility outputBitUtility) {
-
+    public void writeData(OutputBitUtility outputBitUtility, RegionBase hostRegion) throws IOException {
+        super.writeData(outputBitUtility, hostRegion);
     }
 
     @Override
-    public EntityBase clone() {
-        return new DebugEntity(getLocation(), getDirection());
+    public EntityBase getCopy() {
+        return new DebugEntity(UUID.randomUUID(), getLocation(), getDirection());
     }
 
     @Override
-    public boolean isEqual(EntityBase entityBase) {
-        return (this.getEntityType() == entityBase.getEntityType());
+    public boolean equals(Object obj) {
+        return false;
     }
+
 }

@@ -7,6 +7,10 @@ public class Location {
     private final Vector3i position;
     private final World world;
 
+    public Location() {
+        position = new Vector3i();
+        this.world = null;
+    }
 
     public Location(World world) {
         position = new Vector3i();

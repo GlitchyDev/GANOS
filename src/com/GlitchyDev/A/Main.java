@@ -3,11 +3,18 @@ package com.GlitchyDev.A;
 import com.GlitchyDev.Utility.HuffmanTreeUtility;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AirBlock;
+import com.GlitchyDev.World.Blocks.DebugBlock;
+import com.GlitchyDev.World.Direction;
+import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.DebugEntity;
+import com.GlitchyDev.World.Location;
+import com.GlitchyDev.World.Region.RegionBase;
+import org.lwjgl.system.CallbackI;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -18,10 +25,65 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 
+        File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
+        OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
 
-        String[] items = new String[]{"A","B","God is dog","Lucas is king"};
-        int[] frequency = new int[]{0,1,5,7};
-        HashMap<String,Object> values = HuffmanTreeUtility.generateHuffmanValues("",items,frequency);
+        int width = 50;
+        int length = 50;
+        int height = 1;
+
+        BlockBase[][][] blocks = new BlockBase[height][width][length];
+        for(int y = 0; y < blocks.length; y++) {
+            for(int x = 0; x < blocks[0].length; x++) {
+                for(int z = 0; z < blocks[0][0].length; z++) {
+                    if(Math.random() > 0.5) {
+                        blocks[y][x][z] = new AirBlock(new Location());
+                    } else {
+                        blocks[y][x][z] = new DebugBlock(new Location(), 1);
+                    }
+                }
+            }
+        }
+
+        ArrayList<EntityBase> entities = new ArrayList<>();
+        //entities.add(new DebugEntity(UUID.randomUUID(), new Location(0,0,0,null), Direction.NORTH));
+        //entities.add(new DebugEntity(UUID.randomUUID(), new Location(2,2,2,null), Direction.EAST));
+
+        RegionBase testRegion = new RegionBase(13,blocks,entities);
+        testRegion.writeData(fileOutputBitUtility);
+        int totalBytes = fileOutputBitUtility.close();
+        System.out.println("Region took " + totalBytes + " bytes");
+
+        for(int z = 0; z < length; z++) {
+            for(int x = 0; x < width; x++) {
+                System.out.print(testRegion.getBlockRelative(x,0,z) instanceof AirBlock ? 1 : 0);
+            }
+            System.out.println();
+        }
+        for(EntityBase entityBase: testRegion.getEntities()) {
+            System.out.println(entityBase);
+        }
+
+        System.out.println("------");
+
+
+        InputBitUtility inputBitUtility = new InputBitUtility(file);
+
+        RegionBase loadedRegion = new RegionBase(inputBitUtility);
+
+        for(int z = 0; z < length; z++) {
+            for(int x = 0; x < width; x++) {
+                System.out.print(loadedRegion.getBlockRelative(x,0,z) instanceof AirBlock ? 1 : 0);
+            }
+            System.out.println();
+        }
+        for(EntityBase entityBase: loadedRegion.getEntities()) {
+            System.out.println(entityBase);
+        }
+        /*
+        String[] items = new String[]{"A","B","C","D","E"};
+        int[] frequency = new int[]{5,4,3,2,1};
+        HashMap<String,Object> values = HuffmanTreeUtility.generateDecodeHuffmanValues(items,frequency);
         for(String s: values.keySet()) {
             System.out.println(values.get(s) + ": " + s);
         }
@@ -30,17 +92,26 @@ public class Main {
 
         File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
         OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
-        HuffmanTreeUtility.saveHuffmanTree("",fileOutputBitUtility,values);
+        HuffmanTreeUtility.saveHuffmanTreeValues(fileOutputBitUtility,items,frequency);
         int totalBytes = fileOutputBitUtility.close();
 
         InputBitUtility inputBitUtility = new InputBitUtility(file);
-        HashMap<String,Object> values2 = HuffmanTreeUtility.loadHuffmanValues("",inputBitUtility,items);
+        HashMap<String,Object> values2 = HuffmanTreeUtility.loadHuffmanTreeValues(inputBitUtility,items);
         for(String s: values2.keySet()) {
             System.out.println(values.get(s) + ": " + s);
         }
         System.out.println("------- " + totalBytes);
 
 
+        ArrayList<BlockBase> m = new ArrayList<>();
+        AirBlock a = new AirBlock(new Location(0,0,0,null));
+        m.add(a);
+        m.add(new AirBlock(new Location(0,0,0,null)));
+        m.add(new AirBlock(new Location(0,0,0,null)));
+        m.remove(a);
+        m.remove(a);
+        System.out.println(m.size());
+        */
 
         /*
 

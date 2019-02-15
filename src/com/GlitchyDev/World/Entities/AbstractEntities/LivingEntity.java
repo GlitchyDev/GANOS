@@ -7,6 +7,7 @@ import com.GlitchyDev.World.Location;
 import jdk.internal.util.xml.impl.Input;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public abstract class LivingEntity extends EntityBase {
     private boolean isAlive = true;
@@ -18,8 +19,8 @@ public abstract class LivingEntity extends EntityBase {
     private long timeDead = 0;
 
 
-    public LivingEntity(EntityType entityType, Location location, Direction direction) {
-        super(entityType, location, direction);
+    public LivingEntity(EntityType entityType, UUID uuid, Location location, Direction direction) {
+        super(entityType, uuid, location, direction);
         this.birthTime = System.currentTimeMillis();
     }
 
@@ -49,6 +50,7 @@ public abstract class LivingEntity extends EntityBase {
         }
     }
 
+    // ADD WRITE DATA FOR LIVING ENTITIES SUPER
 
     /**
      * Will Tick while Entity is Alive

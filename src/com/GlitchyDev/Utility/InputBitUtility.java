@@ -119,7 +119,9 @@ public class InputBitUtility {
         return objectInputStream.available();
     }
 
-
+    public void close() throws IOException {
+        objectInputStream.close();
+    }
     // Helper
 
     private static boolean getByteValue(byte b, int pos) {
