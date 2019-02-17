@@ -12,7 +12,7 @@ public interface TriggerableBlock {
      * @param entityBase
      * @return Success of movement
      */
-    boolean enterBlock(MovementType movementType, EntityBase entityBase);
+    boolean attemptEnterBlock(MovementType movementType, EntityBase entityBase);
 
     /**
      * Triggered when an EntityBase exits a TriggerableBlock, is not final
@@ -21,7 +21,7 @@ public interface TriggerableBlock {
      * @param entityBase
      * @return Success of movement
      */
-    boolean exitBlock(MovementType movementType, EntityBase entityBase);
+    boolean attemptExitBlock(MovementType movementType, EntityBase entityBase);
 
 
 

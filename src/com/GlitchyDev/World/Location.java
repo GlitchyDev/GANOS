@@ -5,26 +5,18 @@ import org.joml.Vector3i;
 
 public class Location {
     private final Vector3i position;
-    private final World world;
+
 
     public Location() {
         position = new Vector3i();
-        this.world = null;
     }
 
-    public Location(World world) {
-        position = new Vector3i();
-        this.world = world;
-    }
-
-    public Location(int x, int y, int z, World world) {
+    public Location(int x, int y, int z) {
         position = new Vector3i(x, y, z);
-        this.world = world;
     }
 
     public Location(Location location) {
         position = new Vector3i(location.getPosition());
-        this.world = location.getWorld();
     }
 
     /**
@@ -44,7 +36,7 @@ public class Location {
      * @ return Returns a Location offset by the provided coordinates from the current location
      */
     public Location getOffsetLocation(int x, int y, int z) {
-        return new Location(this.position.x + x, this.position.y + y, this.position.z + z, world);
+        return new Location(this.position.x + x, this.position.y + y, this.position.z + z);
     }
 
     /**
@@ -115,7 +107,7 @@ public class Location {
      * @return
      */
     public Location getLocationDifference(Location location) {
-        return new Location(location.getX() - getX(), location.getY() - getY(), location.getZ() - getZ(), getWorld());
+        return new Location(location.getX() - getX(), location.getY() - getY(), location.getZ() - getZ());
     }
 
     /**
@@ -149,10 +141,6 @@ public class Location {
 
     public int getZ() {
         return position.z;
-    }
-
-    public World getWorld() {
-        return world;
     }
 
     public Vector3i getPosition() {
