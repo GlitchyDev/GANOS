@@ -129,7 +129,7 @@ public class InputBitUtility {
     }
 
     private static int getCorrectedIntValue(byte b) {
-        return (b>=0) ? b : (128 + b);
+        return b + 128;
     }
 
     private static byte setByteValue(byte b, int pos) {

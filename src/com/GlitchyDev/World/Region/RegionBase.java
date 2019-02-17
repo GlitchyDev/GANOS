@@ -45,11 +45,11 @@ public class RegionBase {
         this.id = inputBitUtility.getNextCorrectIntByte();
         //System.out.println(id);
 
-        int width = inputBitUtility.getNextCorrectIntByte();
+        int width = inputBitUtility.getNextCorrectIntByte() + 1;
         //System.out.println(width);
-        int height = inputBitUtility.getNextCorrectIntByte();
+        int height = inputBitUtility.getNextCorrectIntByte() + 1;
         //System.out.println(height);
-        int length = inputBitUtility.getNextCorrectIntByte();
+        int length = inputBitUtility.getNextCorrectIntByte() + 1;
         //System.out.println(length);
         this.blocks = new BlockBase[height][width][length];
 
@@ -96,11 +96,11 @@ public class RegionBase {
         outputBitUtility.writeNextCorrectByteInt(id);
         //System.out.println(id);
 
-        outputBitUtility.writeNextCorrectByteInt(getWidth());
+        outputBitUtility.writeNextCorrectByteInt(getWidth()-1);
         //System.out.println(getWidth());
-        outputBitUtility.writeNextCorrectByteInt(getHeight());
+        outputBitUtility.writeNextCorrectByteInt(getHeight()-1);
         //System.out.println(getHeight());
-        outputBitUtility.writeNextCorrectByteInt(getLength());
+        outputBitUtility.writeNextCorrectByteInt(getLength()-1);
         //System.out.println(getLength());
 
 
