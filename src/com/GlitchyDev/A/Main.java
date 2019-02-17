@@ -26,20 +26,26 @@ public class Main {
 
 
         File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
+
         OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
 
-        int width = 9;
-        int length = 20;
-        int height = 9;
+        int width = 2;
+        int length = 2;
+        int height = 2;
 
+
+
+        int totalByteCount = 0;
         BlockBase[][][] blocks = new BlockBase[height][width][length];
         for(int y = 0; y < blocks.length; y++) {
             for(int x = 0; x < blocks[0].length; x++) {
                 for(int z = 0; z < blocks[0][0].length; z++) {
                     if(Math.random() > 0.5) {
                         blocks[y][x][z] = new AirBlock(new Location());
+                        totalByteCount += 1;
                     } else {
                         blocks[y][x][z] = new DebugBlock(new Location(), 1);
+                        totalByteCount += 2;
                     }
                 }
             }
@@ -50,10 +56,17 @@ public class Main {
         entities.add(new DebugEntity(UUID.randomUUID(), new Location(2,2,2,null), Direction.EAST));
 
         RegionBase testRegion = new RegionBase(13,blocks,entities);
+
+        long timeStart = System.currentTimeMillis();
         testRegion.writeData(fileOutputBitUtility);
         int totalBytes = fileOutputBitUtility.close();
-        System.out.println("Region took " + totalBytes + " bytes");
+        long timeEnd = System.currentTimeMillis();
+        System.out.println("Time: " + (timeEnd-timeStart)/1000.0 + "s");
 
+
+        System.out.println("Region took " + totalBytes + "/" + totalByteCount + " bytes " + (100.0/totalByteCount * totalBytes) + "%");
+
+        /*
         for(int z = 0; z < length; z++) {
             for(int x = 0; x < width; x++) {
                 System.out.print(testRegion.getBlockRelative(x,0,z) instanceof AirBlock ? 1 : 0);
@@ -63,14 +76,19 @@ public class Main {
         for(EntityBase entityBase: testRegion.getEntities()) {
             System.out.println(entityBase);
         }
+        */
 
         System.out.println("------");
 
 
         InputBitUtility inputBitUtility = new InputBitUtility(file);
 
+        timeStart = System.currentTimeMillis();
         RegionBase loadedRegion = new RegionBase(inputBitUtility);
+        timeEnd = System.currentTimeMillis();
+        System.out.println("Time: " + (timeEnd-timeStart)/1000.0 + "s");
 
+        /*
         for(int z = 0; z < length; z++) {
             for(int x = 0; x < width; x++) {
                 System.out.print(loadedRegion.getBlockRelative(x,0,z) instanceof AirBlock ? 1 : 0);
@@ -80,6 +98,11 @@ public class Main {
         for(EntityBase entityBase: loadedRegion.getEntities()) {
             System.out.println(entityBase);
         }
+        */
+
+
+
+
         /*
         String[] items = new String[]{"A","B","C","D","E"};
         int[] frequency = new int[]{5,4,3,2,1};
@@ -90,7 +113,6 @@ public class Main {
         System.out.println("-------");
 
 
-        File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
         OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
         HuffmanTreeUtility.saveHuffmanTreeValues(fileOutputBitUtility,items,frequency);
         int totalBytes = fileOutputBitUtility.close();
@@ -112,6 +134,7 @@ public class Main {
         m.remove(a);
         System.out.println(m.size());
         */
+
 
         /*
 
@@ -143,11 +166,12 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
 
 
+        /*
 
         System.out.println("---------------------");
-        File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
 
         try {
             OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
@@ -188,6 +212,9 @@ public class Main {
             int value = 1020;
             fileOutputBitUtility.writeNextCorrectedBitsInt(value, bitLength);
             System.out.println(value);
+            int correctedByte = 255;
+            fileOutputBitUtility.writeNextCorrectByteInt(correctedByte);
+            System.out.println(correctedByte);
 
             fileOutputBitUtility.close();
 
@@ -207,11 +234,11 @@ public class Main {
             System.out.println(fileInputBitUtility.getNextInteger());
             System.out.println(fileInputBitUtility.getNextString());
             System.out.println(fileInputBitUtility.getNextCorrectedIntBit(10));
+            System.out.println(fileInputBitUtility.getNextCorrectIntByte());
         } catch (IOException e) {
             e.printStackTrace();
         }
         */
-
 
     }
 
