@@ -121,7 +121,7 @@ public class Location {
 
     @Override
     public Location clone() {
-        return new Location(this);
+        return new Location(getX(), getY(), getZ());
     }
 
     @Override

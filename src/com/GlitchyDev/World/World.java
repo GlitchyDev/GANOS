@@ -45,7 +45,7 @@ public class World {
             for (EntityBase entity : region.getEntities()) {
                 entities.put(entity.getUUID(), entity);
             }
-            for (BlockBase block : region.getBlocksArrayList()) {
+            for (BlockBase block : region.getBlocksArray()) {
                 if (block instanceof TickableBlock) {
                     tickableBlocks.put(block.getLocation(), (TickableBlock) block);
                 }
@@ -140,6 +140,6 @@ public class World {
     }
 
     public Location getOriginLocation() {
-        return new Location(0,0,0,this);
+        return new Location(0,0,0);
     }
 }

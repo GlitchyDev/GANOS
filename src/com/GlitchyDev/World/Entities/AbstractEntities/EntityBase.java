@@ -31,7 +31,7 @@ public abstract class EntityBase {
         // Entity Type has already been found
         this.entityType = entityType;
         this.uuid = inputBitUtility.getNextUUID();
-        this.location = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), null);
+        this.location = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte());
         this.direction = Direction.values()[inputBitUtility.getNextCorrectedIntBit(3)];
     }
 

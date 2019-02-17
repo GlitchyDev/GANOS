@@ -25,46 +25,50 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 
-        File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
 
-        OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
+        while(true) {
+            File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
 
-        int width = 2;
-        int length = 2;
-        int height = 2;
+            OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
 
 
+            int size = 256;
+            int width = size;
+            int length = size;
+            int height = size;
+            System.out.println("Main: Generating Region of " + size + " size");
 
-        int totalByteCount = 0;
-        BlockBase[][][] blocks = new BlockBase[height][width][length];
-        for(int y = 0; y < blocks.length; y++) {
-            for(int x = 0; x < blocks[0].length; x++) {
-                for(int z = 0; z < blocks[0][0].length; z++) {
-                    if(Math.random() > 0.5) {
-                        blocks[y][x][z] = new AirBlock(new Location());
-                        totalByteCount += 1;
-                    } else {
-                        blocks[y][x][z] = new DebugBlock(new Location(), 1);
-                        totalByteCount += 2;
+
+            int totalByteCount = 0;
+            BlockBase[][][] blocks = new BlockBase[height][width][length];
+            for (int y = 0; y < blocks.length; y++) {
+                for (int x = 0; x < blocks[0].length; x++) {
+                    for (int z = 0; z < blocks[0][0].length; z++) {
+                        if (Math.random() > 0.5) {
+                            blocks[y][x][z] = new AirBlock(new Location());
+                            totalByteCount += 1;
+                        } else {
+                            blocks[y][x][z] = new DebugBlock(new Location(), 1);
+                            totalByteCount += 2;
+                        }
                     }
                 }
             }
-        }
 
-        ArrayList<EntityBase> entities = new ArrayList<>();
-        entities.add(new DebugEntity(UUID.randomUUID(), new Location(0,0,0,null), Direction.NORTH));
-        entities.add(new DebugEntity(UUID.randomUUID(), new Location(2,2,2,null), Direction.EAST));
+            ArrayList<EntityBase> entities = new ArrayList<>();
+            entities.add(new DebugEntity(UUID.randomUUID(), new Location(0, 0, 0), Direction.NORTH));
+            entities.add(new DebugEntity(UUID.randomUUID(), new Location(2, 2, 2), Direction.EAST));
 
-        RegionBase testRegion = new RegionBase(13,blocks,entities);
+            RegionBase testRegion = new RegionBase(13, blocks, entities);
 
-        long timeStart = System.currentTimeMillis();
-        testRegion.writeData(fileOutputBitUtility);
-        int totalBytes = fileOutputBitUtility.close();
-        long timeEnd = System.currentTimeMillis();
-        System.out.println("Time: " + (timeEnd-timeStart)/1000.0 + "s");
+            long timeStart = System.currentTimeMillis();
+            testRegion.writeData(fileOutputBitUtility);
+            int totalBytes = fileOutputBitUtility.close();
+            long timeEnd = System.currentTimeMillis();
+            System.out.println("Time: " + (timeEnd - timeStart) / 1000.0 + "s");
 
 
-        System.out.println("Region took " + totalBytes + "/" + totalByteCount + " bytes " + (100.0/totalByteCount * totalBytes) + "%");
+            System.out.println("Region took " + totalBytes + "/" + totalByteCount + " bytes " + (100.0 / totalByteCount * totalBytes) + "%");
 
         /*
         for(int z = 0; z < length; z++) {
@@ -78,16 +82,18 @@ public class Main {
         }
         */
 
-        System.out.println("------");
+            System.out.println("------");
 
 
-        InputBitUtility inputBitUtility = new InputBitUtility(file);
+            InputBitUtility inputBitUtility = new InputBitUtility(file);
 
-        timeStart = System.currentTimeMillis();
-        RegionBase loadedRegion = new RegionBase(inputBitUtility);
-        timeEnd = System.currentTimeMillis();
-        System.out.println("Time: " + (timeEnd-timeStart)/1000.0 + "s");
+            timeStart = System.currentTimeMillis();
+            RegionBase loadedRegion = new RegionBase(inputBitUtility);
+            timeEnd = System.currentTimeMillis();
+            System.out.println("Time: " + (timeEnd - timeStart) / 1000.0 + "s");
 
+
+        }
         /*
         for(int z = 0; z < length; z++) {
             for(int x = 0; x < width; x++) {

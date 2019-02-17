@@ -27,7 +27,7 @@ public class RegionBase {
 
     public RegionBase(int id, BlockBase[][][] blocks, ArrayList<EntityBase> entities) {
         this.id = id;
-        this.location = new Location(0,0,0,null);
+        this.location = new Location(0,0,0);
         this.blocks = blocks;
         this.entities = entities;
         //this.connectedRegions = connectedRegions;
@@ -195,7 +195,7 @@ public class RegionBase {
         Location difference = location.getLocationDifference(newLocation);
         location = newLocation;
 
-        for(BlockBase block: getBlocksArrayList()) {
+        for(BlockBase block: getBlocksArray()) {
             block.setLocation(block.getLocation().getOffsetLocation(difference));
         }
         for(EntityBase entity: entities) {
@@ -258,16 +258,18 @@ public class RegionBase {
         blocks[relativeY][relativeX][relativeZ] = block;
     }
 
-    public ArrayList<BlockBase> getBlocksArrayList() {
-        ArrayList<BlockBase> blockList = new ArrayList<>(getWidth() * getLength() * getHeight());
+    public BlockBase[] getBlocksArray() {
+        BlockBase[] blockArray = new BlockBase[getWidth() * getLength() * getHeight()];
+        int i = 0;
         for(int y = 0; y < getHeight(); y++) {
             for (int x = 0; x < getWidth(); x++) {
                 for (int z = 0; z < getLength(); z++) {
-                    blockList.add(blocks[y][x][z]);
+                    blockArray[i] = blocks[y][x][z];
+                    i++;
                 }
             }
         }
-        return blockList;
+        return blockArray;
     }
 
     public void recalculateConnections() {

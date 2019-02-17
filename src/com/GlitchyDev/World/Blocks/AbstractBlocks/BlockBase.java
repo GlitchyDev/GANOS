@@ -23,7 +23,7 @@ public abstract class BlockBase {
 
     public BlockBase(BlockType blockType, InputBitUtility inputBitUtility) throws IOException {
         this.blockType = blockType;
-        location = new Location(0,0,0,null);
+        location = new Location(0,0,0);
     }
 
     // Do not write Location, as that can be refereed engineered from the read protocol
