@@ -11,8 +11,8 @@ import java.io.IOException;
 public class ServerSpawnRegionPacket extends PacketBase {
     private final RegionBase region;
 
-    public ServerSpawnRegionPacket(PacketType packetType, RegionBase region) {
-        super(packetType);
+    public ServerSpawnRegionPacket(RegionBase region) {
+        super(PacketType.SERVER_SPAWN_REGION);
         this.region = region;
     }
 

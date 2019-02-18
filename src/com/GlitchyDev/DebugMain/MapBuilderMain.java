@@ -1,7 +1,7 @@
 package com.GlitchyDev.DebugMain;
 
-import com.GlitchyDev.Old.Game.GANOSGame;
 
+import com.GlitchyDev.Game.GANOSGame;
 
 /**
  * A temporary arg construct for a MapBuilder State

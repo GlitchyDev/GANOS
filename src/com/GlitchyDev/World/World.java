@@ -6,8 +6,6 @@ import com.GlitchyDev.World.Blocks.AirBlock;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Region.RegionBase;
 
-import javax.swing.plaf.synth.Region;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -15,10 +13,10 @@ public class World {
     private HashMap<UUID,RegionBase> regions;
     private HashMap<UUID,EntityBase> entities;
     private HashMap<Location,TickableBlock> tickableBlocks;
-    private final String name;
+    private final WorldType worldType;
 
-    public World(String name) {
-        this.name = name;
+    public World(WorldType worldType) {
+        this.worldType = worldType;
         this.regions = new HashMap<>();
         this.entities = new HashMap<>();
         this.tickableBlocks = new HashMap<>();
@@ -141,5 +139,9 @@ public class World {
 
     public Location getOriginLocation() {
         return new Location(0,0,0,this);
+    }
+
+    public WorldType getWorldType() {
+        return worldType;
     }
 }

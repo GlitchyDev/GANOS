@@ -1,28 +1,16 @@
 package com.GlitchyDev.Rendering.Assets;
 
-import com.GlitchyDev.Old.Rendering.Assets.Shaders.ShaderProgram;
-import com.GlitchyDev.Old.Rendering.Assets.WorldElements.Transformation;
-import com.GlitchyDev.Old.World.Blocks.Abstract.BlockBase;
-import com.GlitchyDev.Old.World.Blocks.Abstract.PartialCubicBlock;
-import com.GlitchyDev.Old.World.Chunk;
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15C.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
-import static org.lwjgl.opengl.GL31C.glDrawElementsInstanced;
 
 public class PartialCubicInstanceMesh extends InstancedMesh {
 
@@ -65,6 +53,8 @@ public class PartialCubicInstanceMesh extends InstancedMesh {
         glDisableVertexAttribArray(6);
     }
 
+
+    /*
     private ArrayList<Matrix4f> modelViewMatrices = new ArrayList<>();
     private ArrayList<Vector2f> textureCords = new ArrayList<>();
     boolean[] faces;
@@ -348,10 +338,13 @@ public class PartialCubicInstanceMesh extends InstancedMesh {
         glDrawElementsInstanced(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0, size);
     }
 
+    */
 
     public InstancedGridTexture getInstancedGridTexture() {
         return instancedGridTexture;
     }
+
+    /*
 
     public int getBlocksIgnored() {
         return blocksIgnored;
@@ -360,4 +353,6 @@ public class PartialCubicInstanceMesh extends InstancedMesh {
     public int getBlocksRendered() {
         return blocksRendered;
     }
+
+    */
 }

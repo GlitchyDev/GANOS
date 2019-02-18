@@ -1,10 +1,8 @@
-package com.GlitchyDev.Old.Networking;
+package com.GlitchyDev.Networking;
 
-
-import com.GlitchyDev.Old.IO.AssetLoader;
-import com.GlitchyDev.Old.Networking.Packets.ClientPackets.ClientIntroductionPacket;
-import com.GlitchyDev.Old.Networking.Packets.NetworkDisconnectType;
-import com.GlitchyDev.Old.Networking.Packets.ServerPackets.General.ServerReturnGreetingPacket;
+import com.GlitchyDev.Networking.Packets.Client.Authentication.ClientAuthGreetingPacket;
+import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
+import com.GlitchyDev.Networking.Packets.Server.Authentication.ServerAuthAcceptClient;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -16,11 +14,8 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * A Connection Hub for a Server to manage its connections to each Client and their respective GameSocket
- */
-public class ServerNetworkConnection {
-    private ConcurrentHashMap<String,GameSocket> connectedClients;
+public class ServerNetworkManager {
+    private ConcurrentHashMap<String, GameSocket> connectedClients;
     private Collection<String> connectedUsers;
     private Collection<String> approvedUsers;
 
@@ -28,16 +23,14 @@ public class ServerNetworkConnection {
     private AtomicBoolean acceptingClients = new AtomicBoolean(false);
 
 
-
-    public ServerNetworkConnection() {
+    public ServerNetworkManager() {
         connectedClients = new ConcurrentHashMap<>();
-
         connectedUsers = Collections.synchronizedCollection(new ArrayList<>());
         approvedUsers = Collections.synchronizedCollection(new ArrayList<>());
 
         System.out.println("ServerNetwork: Loading Approved Users");
-        approvedUsers.addAll(AssetLoader.getConfigListAsset("ApprovedUsers"));
-
+        //approvedUsers.addAll(AssetLoader.getConfigListAsset("ApprovedUsers"));
+        approvedUsers.add("James");
     }
 
 
@@ -50,28 +43,24 @@ public class ServerNetworkConnection {
     }
 
     public void disableAcceptingClients() {
+        System.out.println("ServerNetwork: Disable Login for Users");
         acceptingClients.set(false);
         acceptingClientThread.stopServerSocket();
     }
 
     public void disconnectUser(String name, NetworkDisconnectType reason) {
-        System.out.println("ServerNetwork: Disconnected User " + name);
-
+        System.out.println("ServerNetwork: Disconnected User " + name + " for " + reason);
         connectedClients.get(name).disconnect(reason);
         connectedClients.remove(name);
         connectedUsers.remove(name);
     }
 
     public void disconnectAll(NetworkDisconnectType reason) {
-        System.out.println("ServerNetwork: Disconnected All Users");
+        System.out.println("ServerNetwork: Disconnected All Users for " + reason);
 
         Iterator<String> userIterator = connectedUsers.iterator();
         while(userIterator.hasNext()) {
-            String name = userIterator.next();
-            System.out.println("ServerNetwork: Disconnected User " + name);
-            connectedClients.get(name).disconnect(reason);
-            connectedClients.remove(name);
-            userIterator.remove();
+            disconnectUser(userIterator.next(), reason);
         }
     }
 
@@ -96,6 +85,10 @@ public class ServerNetworkConnection {
     }
 
 
+
+
+
+
     private class AcceptingClientThread extends Thread {
         private ServerSocket serverSocket;
 
@@ -103,8 +96,7 @@ public class ServerNetworkConnection {
         public void run() {
             try {
                 serverSocket = new ServerSocket(8001);
-                while(acceptingClients.get())
-                {
+                while (acceptingClients.get()) {
                     Socket possibleSocket = serverSocket.accept();
                     AuthenticatingClientThread authenticatingClientThreat = new AuthenticatingClientThread(new GameSocket(possibleSocket));
                     authenticatingClientThreat.start();
@@ -113,9 +105,9 @@ public class ServerNetworkConnection {
             }
         }
 
-        public void stopServerSocket()
-        {
+        public void stopServerSocket() {
             try {
+                disconnectAll(NetworkDisconnectType.SERVER_CLOSE_SOCKET);
                 serverSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -132,22 +124,30 @@ public class ServerNetworkConnection {
 
         @Override
         public void run() {
-            System.out.println("ServerNetwork: Processing Incoming User");
-
-            while (!gameSocket.hasUnprocessedPackets()) {
-                Thread.yield();
-            }
-            ClientIntroductionPacket clientIntroductionPacket = new ClientIntroductionPacket(gameSocket.getUnprocessedPackets().get(0));
-            if (approvedUsers.contains(clientIntroductionPacket.getUUID())) {
-                gameSocket.sendPacket(new ServerReturnGreetingPacket());
-                connectedClients.put(clientIntroductionPacket.getUUID(), gameSocket);
-                connectedUsers.add(clientIntroductionPacket.getUUID());
-                System.out.println("ServerNetwork: User " + clientIntroductionPacket.getUUID() + " Authenticated");
-            } else {
-                gameSocket.disconnect(NetworkDisconnectType.KICKED);
-                System.out.println("ServerNetwork: User " + clientIntroductionPacket.getUUID() + " Denied Login");
+            try {
+                System.out.println("ServerNetwork: Processing Incoming User");
+                while (!gameSocket.hasUnprocessedPackets()) {
+                    Thread.yield();
+                }
+                ClientAuthGreetingPacket clientAuthGreetingPacket = (ClientAuthGreetingPacket) gameSocket.getUnprocessedPackets().get(0);
+                String playerName = clientAuthGreetingPacket.getPlayerName();
+                if (approvedUsers.contains(playerName)) {
+                    if(connectedClients.contains(playerName)) {
+                        System.out.println("ServerNetwork: Duplicate user detected! Denying Access");
+                        gameSocket.disconnect(NetworkDisconnectType.SERVER_DUPLICATE_CONNECTION);
+                    } else {
+                        gameSocket.sendPacket(new ServerAuthAcceptClient());
+                        connectedClients.put(playerName, gameSocket);
+                        connectedUsers.add(playerName);
+                        System.out.println("ServerNetwork: User " + playerName + " Authenticated");
+                    }
+                } else {
+                    gameSocket.disconnect(NetworkDisconnectType.SERVER_INCORRECT_ID);
+                    System.out.println("ServerNetwork: User " + playerName + " Denied Login, incorrect information");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
 }
-

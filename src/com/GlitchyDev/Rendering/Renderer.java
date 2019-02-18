@@ -1,19 +1,14 @@
 package com.GlitchyDev.Rendering;
 
-import com.GlitchyDev.Old.IO.AssetLoader;
-import com.GlitchyDev.Old.Rendering.Assets.InstancedMesh;
-import com.GlitchyDev.Old.Rendering.Assets.PartialCubicInstanceMesh;
-import com.GlitchyDev.Old.Rendering.Assets.Shaders.ShaderProgram;
-import com.GlitchyDev.Old.Rendering.Assets.WorldElements.*;
-import com.GlitchyDev.Old.Utility.GameWindow;
-import com.GlitchyDev.Old.World.Blocks.Abstract.PartialCubicBlock;
-import com.GlitchyDev.Old.World.Chunk;
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
+
+import com.GlitchyDev.Rendering.Assets.Shaders.ShaderProgram;
+import com.GlitchyDev.Rendering.Assets.WorldElements.*;
+import com.GlitchyDev.Utility.AssetLoader;
+import com.GlitchyDev.Utility.GameWindow;
+import com.GlitchyDev.World.Region.RegionBase;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -64,13 +59,11 @@ public class Renderer {
     }
 
 
-    /**
-     * Renders the Specified GameItems to the Specified Camera using the Specified Shader
-     * @param window
-     * @param shaderName
-     * @param camera
-     * @param gameItems
-     */
+
+
+
+    /*
+
     public void render3DElements(GameWindow window, String shaderName, Camera camera, List<GameItem> gameItems) {
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
@@ -165,13 +158,6 @@ public class Renderer {
 
 
 
-
-    /**
-     * Renders the Specified HudItems using the Specified Shader
-     * @param window
-     * @param shaderName
-     * @param hudItems
-     */
     public void renderHUD(GameWindow window, String shaderName, List<TextItem> hudItems)
     {
         ShaderProgram shader = loadedShaders.get(shaderName);
@@ -196,12 +182,7 @@ public class Renderer {
     }
 
 
-    /**
-     * Renders the Specified SpriteItems using the Specified Shader
-     * @param window
-     * @param shaderName
-     * @param spriteItems
-     */
+
     public void renderSprites(GameWindow window, String shaderName, List<SpriteItem> spriteItems)
     {
         ShaderProgram shader = loadedShaders.get(shaderName);
@@ -225,6 +206,8 @@ public class Renderer {
         shader.unbind();
     }
 
+    */
+
     public void cleanup() {
         for(String shader :loadedShaders.keySet()) {
             loadedShaders.get(shader).cleanup();
@@ -236,8 +219,8 @@ public class Renderer {
         return transformation;
     }
 
-    public void updateFrustumCullingFilter(GameWindow gameWindow, Camera camera, Collection<Chunk> chunks) {
+    public void updateFrustumCullingFilter(GameWindow gameWindow, Camera camera, Collection<RegionBase> regions) {
         FrustumCullingFilter.updateFrustum(transformation.getProjectionMatrix(FOV, gameWindow.getWidth(), gameWindow.getHeight(), Z_NEAR, Z_FAR),transformation.getViewMatrix(camera));
-        FrustumCullingFilter.filter(chunks);
+        FrustumCullingFilter.filter(regions);
     }
 }

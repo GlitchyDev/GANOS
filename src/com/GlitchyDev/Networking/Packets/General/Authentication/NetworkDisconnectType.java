@@ -1,11 +1,14 @@
 package com.GlitchyDev.Networking.Packets.General.Authentication;
 
 public enum NetworkDisconnectType {
-    INCORRECT_ID,
-    LOGOUT,
-    WINDOW_CLOSED,
-    KICKED,
-    BANNED,
-    GAME_CRASH,
-    DEBUG
+    SERVER_INCORRECT_ID,
+    SERVER_KICK,
+    SERVER_BAN,
+    SERVER_DUPLICATE_CONNECTION,
+    SERVER_CLOSE_SOCKET,
+
+
+    CLIENT_GAME_CRASH,
+    CLIENT_LOGOUT,
+    CLIENT_WINDOW_CLOSED,
 }

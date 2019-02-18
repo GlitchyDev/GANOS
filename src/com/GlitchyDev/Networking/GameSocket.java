@@ -1,8 +1,8 @@
 package com.GlitchyDev.Networking;
 
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
-import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
+import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 

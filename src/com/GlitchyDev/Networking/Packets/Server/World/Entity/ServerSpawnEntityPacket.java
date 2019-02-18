@@ -12,8 +12,8 @@ import java.io.IOException;
 public class ServerSpawnEntityPacket extends PacketBase {
     private final EntityBase entityBase;
 
-    public ServerSpawnEntityPacket(PacketType packetType, EntityBase entityBase) {
-        super(packetType);
+    public ServerSpawnEntityPacket(EntityBase entityBase) {
+        super(PacketType.SERVER_SPAWN_ENTITY);
         this.entityBase = entityBase;
     }
 
@@ -25,6 +25,6 @@ public class ServerSpawnEntityPacket extends PacketBase {
 
     @Override
     protected void transmitPacketBody(OutputBitUtility outputBitUtility) throws IOException {
-        entityBase.writeData(outputBitUtility);
+        //entityBase.writeData(outputBitUtility);
     }
 }

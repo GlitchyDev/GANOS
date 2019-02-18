@@ -10,8 +10,8 @@ import java.io.IOException;
 public class GeneralAuthDisconnectPacket extends PacketBase {
     private final NetworkDisconnectType disconnectType;
 
-    public GeneralAuthDisconnectPacket(PacketType packetType, NetworkDisconnectType disconnectType) {
-        super(packetType);
+    public GeneralAuthDisconnectPacket(NetworkDisconnectType disconnectType) {
+        super(PacketType.GENERAL_AUTH_DISCONNECT);
         this.disconnectType = disconnectType;
     }
 

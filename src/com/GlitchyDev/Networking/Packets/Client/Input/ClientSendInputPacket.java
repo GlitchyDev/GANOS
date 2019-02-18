@@ -10,8 +10,8 @@ import java.io.IOException;
 public class ClientSendInputPacket extends PacketBase {
     private final ClientInputType clientInputType;
 
-    public ClientSendInputPacket(PacketType packetType, ClientInputType clientInputType) {
-        super(packetType);
+    public ClientSendInputPacket(ClientInputType clientInputType) {
+        super(PacketType.CLIENT_SEND_INPUT_PACKET);
         this.clientInputType = clientInputType;
     }
 

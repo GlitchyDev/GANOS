@@ -1,7 +1,7 @@
 package com.GlitchyDev.Rendering.Assets.Fonts;
 
-import com.GlitchyDev.Old.IO.AssetLoader;
 import com.GlitchyDev.Rendering.Assets.Texture;
+import com.GlitchyDev.Utility.AssetLoader;
 
 
 public class CustomFontTexture extends HudTexture {
@@ -22,7 +22,7 @@ public class CustomFontTexture extends HudTexture {
     }
 
     protected String getAllAvailableChars(String charsetName) {
-        return String.join("@",AssetLoader.getConfigListAsset(charsetName + "Config"));
+        return String.join("@", AssetLoader.getConfigListAsset(charsetName + "Config"));
     }
 
     protected void buildTexture() {

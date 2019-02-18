@@ -1,8 +1,7 @@
 package com.GlitchyDev.Rendering.Assets.WorldElements;
 
-import com.GlitchyDev.Old.Rendering.Assets.Mesh;
-import com.GlitchyDev.Old.Rendering.Assets.Texture;
-import com.GlitchyDev.Old.Rendering.Assets.Utils;
+import com.GlitchyDev.Rendering.Assets.Texture;
+import com.GlitchyDev.Rendering.Assets.Utils;
 
 import java.util.ArrayList;
 

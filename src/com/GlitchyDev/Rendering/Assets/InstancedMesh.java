@@ -1,7 +1,7 @@
 package com.GlitchyDev.Rendering.Assets;
 
-import com.GlitchyDev.Old.Rendering.Assets.WorldElements.GameItem;
-import com.GlitchyDev.Old.Rendering.Assets.WorldElements.Transformation;
+import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
+import com.GlitchyDev.Rendering.Assets.WorldElements.Transformation;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;

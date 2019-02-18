@@ -1,6 +1,6 @@
 package com.GlitchyDev.Rendering.Assets.Shaders;
 
-import com.GlitchyDev.Old.IO.AssetLoader;
+import com.GlitchyDev.Utility.AssetLoader;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;

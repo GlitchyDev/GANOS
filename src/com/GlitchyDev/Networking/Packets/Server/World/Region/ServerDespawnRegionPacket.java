@@ -10,8 +10,8 @@ import java.io.IOException;
 public class ServerDespawnRegionPacket extends PacketBase {
     private final int despawnID;
 
-    public ServerDespawnRegionPacket(PacketType packetType, int despawnID) {
-        super(packetType);
+    public ServerDespawnRegionPacket(int despawnID) {
+        super(PacketType.SERVER_DESPAWN_REGION);
         this.despawnID = despawnID;
     }
 

@@ -1,8 +1,6 @@
 package com.GlitchyDev.Utility;
 
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.World;
-import org.joml.Vector2i;
 
 import java.util.ArrayList;
 

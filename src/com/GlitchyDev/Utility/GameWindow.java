@@ -1,4 +1,4 @@
-package com.GlitchyDev.Old.Utility;
+package com.GlitchyDev.Utility;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2i;

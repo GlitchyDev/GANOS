@@ -1,6 +1,7 @@
 package com.GlitchyDev.GameInput;
 
-import com.GlitchyDev.Old.World.Direction;
+
+import com.GlitchyDev.World.Direction;
 
 public enum ControllerDirectionPad {
     NONE,

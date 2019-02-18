@@ -1,7 +1,5 @@
 package com.GlitchyDev.Utility;
 
-import org.lwjgl.system.CallbackI;
-
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.UUID;

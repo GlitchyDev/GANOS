@@ -1,8 +1,8 @@
 package com.GlitchyDev.Rendering;
 
-import com.GlitchyDev.Old.Rendering.Assets.WorldElements.GameItem;
-import com.GlitchyDev.Old.World.Blocks.Abstract.BlockBase;
-import com.GlitchyDev.Old.World.Chunk;
+import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Region.RegionBase;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -38,20 +38,14 @@ public class FrustumCullingFilter {
         }
     }
 
-    public static void filter(Collection<Chunk> chunks) {
+    public static void filter(Collection<RegionBase> regions) {
         float boundingRadius;
         Vector3i pos;
-        for(Chunk chunk: chunks) {
-            for(BlockBase[][] blockSelection: chunk.getBlocks()) {
-                for(BlockBase[] blockLine: blockSelection) {
-                    for(BlockBase block: blockLine) {
-                        if (block != null && !block.isDisableFrustumCulling()) {
-                            boundingRadius = block.getScale() * 1.80f;
-                            pos = block.getNormalizedPosition();
-                            block.setInsideFrustum(insideFrustum(pos.x, pos.y, pos.z, boundingRadius));
-                        }
-                    }
-                }
+        for(RegionBase region: regions) {
+            for(BlockBase block: region.getBlocksArray()) {
+                boundingRadius = 1.80f;
+                pos = block.getLocation().getNormalizedPosition();
+                block.setInsideFrustum(insideFrustum(pos.x, pos.y, pos.z, boundingRadius));
             }
         }
     }

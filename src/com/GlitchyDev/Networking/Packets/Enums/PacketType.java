@@ -4,6 +4,7 @@ import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.Client.Authentication.ClientAuthGreetingPacket;
 import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.GeneralAuthDisconnectPacket;
+import com.GlitchyDev.Networking.Packets.Server.Authentication.ServerAuthAcceptClient;
 import com.GlitchyDev.Utility.InputBitUtility;
 
 import java.io.IOException;
@@ -20,6 +21,8 @@ public enum PacketType {
 
 
     // SERVER
+    // Authentication
+    SERVER_AUTH_ACCEPT_CLIENT,
     // Spawn
     SERVER_SPAWN_REGION,
     SERVER_SPAWN_ENTITY,
@@ -40,6 +43,8 @@ public enum PacketType {
                 return new ClientAuthGreetingPacket(inputBitUtility);
             case CLIENT_SEND_INPUT_PACKET:
                 return new ClientSendInputPacket(inputBitUtility);
+            case SERVER_AUTH_ACCEPT_CLIENT:
+                return new ServerAuthAcceptClient(inputBitUtility);
             case SERVER_SPAWN_REGION:
             case SERVER_SPAWN_ENTITY:
             case SERVER_SPAWN_BLOCK:

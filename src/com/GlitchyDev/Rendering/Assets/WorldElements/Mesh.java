@@ -1,6 +1,6 @@
 package com.GlitchyDev.Rendering.Assets.WorldElements;
 
-import com.GlitchyDev.Old.Rendering.Assets.Texture;
+import com.GlitchyDev.Rendering.Assets.Texture;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;

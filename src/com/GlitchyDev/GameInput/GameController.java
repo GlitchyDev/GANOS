@@ -1,9 +1,10 @@
 package com.GlitchyDev.GameInput;
 
-import com.GlitchyDev.Old.IO.AssetLoader;
-import com.GlitchyDev.Old.Rendering.Assets.WorldElements.SpriteItem;
-import com.GlitchyDev.Old.Rendering.Renderer;
-import com.GlitchyDev.Old.Utility.GameWindow;
+
+import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
+import com.GlitchyDev.Rendering.Renderer;
+import com.GlitchyDev.Utility.AssetLoader;
+import com.GlitchyDev.Utility.GameWindow;
 import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
@@ -242,7 +243,7 @@ public abstract class GameController {
 
 
 
-        renderer.renderSprites(gameWindow,shader,items);
+        //renderer.renderSprites(gameWindow,shader,items);
     }
 
     private ByteBuffer clone(ByteBuffer original) {

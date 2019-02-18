@@ -1,7 +1,8 @@
-package com.GlitchyDev.Old.Utility;
+package com.GlitchyDev.Utility;
 
-import com.GlitchyDev.Old.Game.GameStates.Abstract.GameStateBase;
-import com.GlitchyDev.Old.Game.GameStates.GameStateType;
+import com.GlitchyDev.Game.GameStates.Abstract.GameStateBase;
+import com.GlitchyDev.Game.GameStates.GameStateType;
+
 
 import java.util.HashMap;
 
@@ -10,7 +11,7 @@ import java.util.HashMap;
  */
 public class GlobalGameData {
     private GameWindow gameWindow;
-    private HashMap<GameStateType,GameStateBase> loadedGameStates;
+    private HashMap<GameStateType, GameStateBase> loadedGameStates;
     private GameStateType currentGameState;
 
     public GlobalGameData(GameWindow gameWindow)

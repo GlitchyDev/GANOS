@@ -6,32 +6,31 @@ import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 
 import java.io.IOException;
-import java.util.UUID;
 
 public class ClientAuthGreetingPacket extends PacketBase {
-    private final UUID playerUUID;
+    private final String playerName;
 
-    public ClientAuthGreetingPacket(UUID playerUUID) {
+    public ClientAuthGreetingPacket(String playerName) {
         super(PacketType.CLIENT_AUTH_GREETING_PACKET);
-        this.playerUUID = playerUUID;
+        this.playerName = playerName;
     }
 
     public ClientAuthGreetingPacket(InputBitUtility inputBitUtility) throws IOException {
         super(PacketType.CLIENT_AUTH_GREETING_PACKET);
-        playerUUID = inputBitUtility.getNextUUID();
+        playerName = inputBitUtility.getNextString();
     }
 
     @Override
     protected void transmitPacketBody(OutputBitUtility outputBitUtility) throws IOException {
-        outputBitUtility.writeNextUUID(playerUUID);
+        outputBitUtility.writeNextString(playerName);
     }
 
     @Override
     public String toString() {
-        return super.toString() + "," + playerUUID;
+        return super.toString() + "," + playerName;
     }
 
-    public UUID getPlayerUUID() {
-        return playerUUID;
+    public String getPlayerName() {
+        return playerName;
     }
 }
