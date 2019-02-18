@@ -4,6 +4,7 @@ import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.RegionBase;
 

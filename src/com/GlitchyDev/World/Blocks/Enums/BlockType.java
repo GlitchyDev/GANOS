@@ -1,7 +1,9 @@
-package com.GlitchyDev.World.Blocks;
+package com.GlitchyDev.World.Blocks.Enums;
 
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AirBlock;
+import com.GlitchyDev.World.Blocks.DebugBlock;
 
 import java.io.IOException;
 
@@ -18,7 +20,7 @@ public enum BlockType {
             case AIR:
                 return new AirBlock(inputBitUtility);
             default:
-                return new DebugBlock(inputBitUtility);
+                return new AirBlock(inputBitUtility);
         }
 
     }

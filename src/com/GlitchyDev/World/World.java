@@ -140,6 +140,6 @@ public class World {
     }
 
     public Location getOriginLocation() {
-        return new Location(0,0,0);
+        return new Location(0,0,0,this);
     }
 }

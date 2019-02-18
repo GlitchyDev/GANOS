@@ -4,9 +4,9 @@ import com.GlitchyDev.Utility.HuffmanTreeUtility;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
-import com.GlitchyDev.World.Blocks.BlockType;
+import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Entities.EntityType;
+import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
@@ -107,22 +107,29 @@ public class RegionBase {
         // Count number of unique blocks, like ouch
 
         // Counts the total number of unique blocks, stores them block, count
-        ArrayList<BlockBase> uniqueBlocks = new ArrayList<>();
-        ArrayList<Integer> frequencies = new ArrayList<>();
+
+        HashMap<BlockBase,Integer> countMap = new HashMap<>();
         int uniques = 0;
         for(int y = 0; y < getHeight(); y++) {
             for(int x = 0; x < getWidth(); x++) {
                 for(int z = 0; z < getLength(); z++) {
                     BlockBase blockAtSpot = getBlockRelative(x,y,z);
-                    if(!uniqueBlocks.contains(blockAtSpot)) {
-                        uniqueBlocks.add(blockAtSpot);
-                        frequencies.add(1);
+                    if(!countMap.containsKey(blockAtSpot)) {
+                        countMap.put(blockAtSpot,1);
                         uniques++;
                     } else {
-                        frequencies.set(uniqueBlocks.indexOf(blockAtSpot),frequencies.get(uniqueBlocks.indexOf(blockAtSpot)) + 1);
+                        countMap.put(blockAtSpot,countMap.get(blockAtSpot));
                     }
                 }
             }
+        }
+
+        ArrayList<BlockBase> uniqueBlocks = new ArrayList<>();
+        ArrayList<Integer> frequencies = new ArrayList<>();
+
+        for(BlockBase block: countMap.keySet()) {
+            uniqueBlocks.add(block);
+            frequencies.add(countMap.get(block));
         }
         //System.out.println("Total Uniques " + uniques);
 
@@ -185,6 +192,7 @@ public class RegionBase {
         }
 
     }
+
 
 
     /**
@@ -265,7 +273,6 @@ public class RegionBase {
             for (int x = 0; x < getWidth(); x++) {
                 for (int z = 0; z < getLength(); z++) {
                     blockArray[i] = blocks[y][x][z];
-                    i++;
                 }
             }
         }

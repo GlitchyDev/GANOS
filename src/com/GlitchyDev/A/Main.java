@@ -32,11 +32,11 @@ public class Main {
             OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
 
 
-            int size = 256;
-            int width = size;
-            int length = size;
-            int height = size;
-            System.out.println("Main: Generating Region of " + size + " size");
+
+            int width = 9;
+            int length = 30;
+            int height = 9;
+
 
 
             int totalByteCount = 0;

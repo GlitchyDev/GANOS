@@ -1,7 +1,8 @@
-package com.GlitchyDev.World.Entities;
+package com.GlitchyDev.World.Entities.Enums;
 
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.DebugEntity;
 
 import java.io.IOException;
 
