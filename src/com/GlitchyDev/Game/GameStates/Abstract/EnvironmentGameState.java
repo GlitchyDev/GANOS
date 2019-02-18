@@ -1,13 +1,15 @@
 package com.GlitchyDev.Game.GameStates.Abstract;
 
 import com.GlitchyDev.Game.GameStates.GameStateType;
-import com.GlitchyDev.Old.Rendering.Assets.WorldElements.Camera;
-import com.GlitchyDev.Old.Rendering.Assets.WorldElements.GameItem;
-import com.GlitchyDev.Old.Utility.GameWindow;
-import com.GlitchyDev.Old.Utility.GlobalGameData;
-import com.GlitchyDev.Old.World.Blocks.Abstract.BlockBase;
+import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
+import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
+import com.GlitchyDev.Utility.GameWindow;
+import com.GlitchyDev.Utility.GlobalGameData;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.World;
 import org.joml.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -16,11 +18,14 @@ import java.util.List;
  * Methods identify selected Gameitems from the Center of a selected Camera or selected by the Cursor
  */
 public abstract class EnvironmentGameState extends InputGameStateBase {
+
+
+
+    // Cache'd values
     private Vector3f dir = new Vector3f();
     private Vector3f max = new Vector3f();
     private Vector3f min = new Vector3f();
     private Vector2f nearFar = new Vector2f();
-    //
     private Matrix4f invProjectionMatrix = new Matrix4f();
     private Matrix4f invViewMatrix = new Matrix4f();
     private Vector3f mouseDir = new Vector3f();
@@ -101,10 +106,10 @@ public abstract class EnvironmentGameState extends InputGameStateBase {
 
         for (BlockBase block : blocks) {
             if (block != null) {
-                min.set(block.getNormalizedPosition());
-                max.set(block.getNormalizedPosition());
-                min.add(-block.getScale(), -block.getScale(), -block.getScale());
-                max.add(block.getScale(), block.getScale(), block.getScale());
+                min.set(block.getLocation().getNormalizedPosition());
+                max.set(block.getLocation().getNormalizedPosition());
+                min.add(-1, -1, -1);
+                max.add(1, 1, 1);
                 if (Intersectionf.intersectRayAab(center, dir, min, max, nearFar) && nearFar.x < closestDistance) {
                     closestDistance = nearFar.x;
                     selectedBlock = block;

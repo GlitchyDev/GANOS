@@ -5,25 +5,32 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Blocks.AirBlock;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Region.RegionBase;
+import org.lwjgl.system.CallbackI;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 public class World {
-    private HashMap<UUID,RegionBase> regions;
+    private HashMap<Integer,RegionBase> regions;
     private HashMap<UUID,EntityBase> entities;
     private HashMap<Location,TickableBlock> tickableBlocks;
-    private final WorldType worldType;
+    private final int worldID;
 
-    public World(WorldType worldType) {
-        this.worldType = worldType;
+    public World(int worldID) {
+        this.worldID = worldID;
         this.regions = new HashMap<>();
         this.entities = new HashMap<>();
         this.tickableBlocks = new HashMap<>();
     }
 
     public void tick() {
-        // Tick Region Blocks
+        for(TickableBlock tickableBlock: tickableBlocks.values()) {
+            tickableBlock.tick();
+        }
+        for(EntityBase entityBase: entities.values()) {
+            entityBase.tick();
+        }
+        // Hopefully regions don't need to be ticked d_d
     }
 
 
@@ -141,7 +148,7 @@ public class World {
         return new Location(0,0,0,this);
     }
 
-    public WorldType getWorldType() {
-        return worldType;
+    public int getWorldID() {
+        return worldID;
     }
 }

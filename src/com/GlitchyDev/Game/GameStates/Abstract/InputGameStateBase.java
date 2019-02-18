@@ -1,9 +1,9 @@
 package com.GlitchyDev.Game.GameStates.Abstract;
 
 import com.GlitchyDev.Game.GameStates.GameStateType;
-import com.GlitchyDev.Old.GameInput.GameInput;
-import com.GlitchyDev.Old.GameInput.GameInputTimings;
-import com.GlitchyDev.Old.Utility.GlobalGameData;
+import com.GlitchyDev.GameInput.GameInput;
+import com.GlitchyDev.GameInput.GameInputTimings;
+import com.GlitchyDev.Utility.GlobalGameData;
 
 /**
  * A rendering framework for GameStates that include Keyboard Inputs,

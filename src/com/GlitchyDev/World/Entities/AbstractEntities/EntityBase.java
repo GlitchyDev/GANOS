@@ -13,6 +13,7 @@ import java.util.UUID;
 public abstract class EntityBase {
     private final EntityType entityType;
     private final UUID uuid;
+    // Required
     private RegionBase region;
     private Location location;
     private Direction direction;
@@ -20,6 +21,7 @@ public abstract class EntityBase {
 
     // REPLICATE!!!!
 
+    // Entities and Blocks should be provided their World/Region on spawn
 
     public EntityBase(EntityType entityType, UUID uuid, RegionBase region, Location location, Direction direction) {
         this.entityType = entityType;
