@@ -13,6 +13,7 @@ import java.util.UUID;
 public abstract class EntityBase {
     private final EntityType entityType;
     private final UUID uuid;
+    private RegionBase region;
     private Location location;
     private Direction direction;
 
@@ -20,9 +21,10 @@ public abstract class EntityBase {
     // REPLICATE!!!!
 
 
-    public EntityBase(EntityType entityType, UUID uuid, Location location, Direction direction) {
+    public EntityBase(EntityType entityType, UUID uuid, RegionBase region, Location location, Direction direction) {
         this.entityType = entityType;
         this.uuid = uuid;
+        this.region = region;
         this.location = location;
         this.direction = direction;
     }

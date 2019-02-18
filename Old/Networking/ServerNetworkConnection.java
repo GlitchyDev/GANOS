@@ -29,8 +29,7 @@ public class ServerNetworkConnection {
 
 
 
-    public ServerNetworkConnection()
-    {
+    public ServerNetworkConnection() {
         connectedClients = new ConcurrentHashMap<>();
 
         connectedUsers = Collections.synchronizedCollection(new ArrayList<>());
@@ -42,8 +41,7 @@ public class ServerNetworkConnection {
     }
 
 
-    public void enableAcceptingClients()
-    {
+    public void enableAcceptingClients() {
         System.out.println("ServerNetwork: Enabled Login for Users");
         acceptingClientThread = new AcceptingClientThread();
         acceptingClients.set(true);
@@ -51,14 +49,12 @@ public class ServerNetworkConnection {
 
     }
 
-    public void disableAcceptingClients()
-    {
+    public void disableAcceptingClients() {
         acceptingClients.set(false);
         acceptingClientThread.stopServerSocket();
     }
 
-    public void disconnectUser(String name, NetworkDisconnectType reason)
-    {
+    public void disconnectUser(String name, NetworkDisconnectType reason) {
         System.out.println("ServerNetwork: Disconnected User " + name);
 
         connectedClients.get(name).disconnect(reason);
@@ -66,8 +62,7 @@ public class ServerNetworkConnection {
         connectedUsers.remove(name);
     }
 
-    public void disconnectAll(NetworkDisconnectType reason)
-    {
+    public void disconnectAll(NetworkDisconnectType reason) {
         System.out.println("ServerNetwork: Disconnected All Users");
 
         Iterator<String> userIterator = connectedUsers.iterator();

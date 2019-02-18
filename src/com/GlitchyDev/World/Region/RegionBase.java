@@ -90,18 +90,12 @@ public class RegionBase {
 
     public void writeData(OutputBitUtility outputBitUtility) throws IOException {
         outputBitUtility.writeNextCorrectByteInt(CURRENT_VERSION.ordinal());
-        //System.out.println(CURRENT_VERSION.ordinal());
         outputBitUtility.writeNextCorrectByteInt(RegionFileType.NORMAL.ordinal());
-        //System.out.println(RegionFileType.NORMAL.ordinal());
         outputBitUtility.writeNextCorrectByteInt(id);
-        //System.out.println(id);
 
         outputBitUtility.writeNextCorrectByteInt(getWidth()-1);
-        //System.out.println(getWidth());
         outputBitUtility.writeNextCorrectByteInt(getHeight()-1);
-        //System.out.println(getHeight());
         outputBitUtility.writeNextCorrectByteInt(getLength()-1);
-        //System.out.println(getLength());
 
 
         // Count number of unique blocks, like ouch
@@ -131,7 +125,6 @@ public class RegionBase {
             uniqueBlocks.add(block);
             frequencies.add(countMap.get(block));
         }
-        //System.out.println("Total Uniques " + uniques);
 
 
         Collections.sort(uniqueBlocks, Comparator.comparingInt(frequencies::indexOf));
@@ -149,16 +142,12 @@ public class RegionBase {
             frequency[count] = i;
             count++;
         }
-        //System.out.println();
 
         count = 0;
-        //System.out.print("Unique: ");
         for(BlockBase b: uniqueBlocks) {
-            //System.out.print(b + " " + frequencies.get(count));
             palette[count] = b;
             count++;
         }
-        //System.out.println();
         // Finshed
 
 
@@ -172,8 +161,6 @@ public class RegionBase {
         HuffmanTreeUtility.saveHuffmanTreeValues(outputBitUtility, palette, frequency);
         // Create Keyset
         HashMap<Object,String> keyset = HuffmanTreeUtility.generateEncodeHuffmanValues(palette,frequency);
-
-        //System.out.println(keyset.size());
 
         for(int y = 0; y < getHeight(); y++) {
             for(int x = 0; x < getWidth(); x++) {

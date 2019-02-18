@@ -1,16 +1,16 @@
 package com.GlitchyDev.Networking;
 
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
-import com.GlitchyDev.Networking.Packets.Enums.NetworkDisconnectType;
+import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.sun.xml.internal.ws.api.message.Packet;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameSocket {
@@ -19,7 +19,7 @@ public class GameSocket {
     private final InputBitUtility input;
 
     private final PacketReadThread packetReadThread;
-    private final ArrayList<PacketBase> receivedPackets;
+    private final Collection<PacketBase> receivedPackets;
 
 
 
@@ -28,7 +28,7 @@ public class GameSocket {
         input = new InputBitUtility(socket.getInputStream());
         output = new OutputBitUtility(socket.getOutputStream());
 
-        receivedPackets = new ArrayList<>();
+        receivedPackets = Collections.synchronizedCollection(new ArrayList<>());
 
         packetReadThread = new PacketReadThread();
         packetReadThread.start();
@@ -48,10 +48,8 @@ public class GameSocket {
 
     public ArrayList<PacketBase> getUnprocessedPackets() {
         ArrayList<PacketBase> packets = new ArrayList<>();
-        synchronized(receivedPackets) {
-            packets.addAll(receivedPackets);
-            receivedPackets.clear();
-        }
+        packets.addAll(receivedPackets);
+        receivedPackets.clear();
         return packets;
     }
 
@@ -80,7 +78,6 @@ public class GameSocket {
     private class PacketReadThread extends Thread {
         private AtomicBoolean keepThreadAlive;
 
-
         public PacketReadThread() {
             keepThreadAlive = new AtomicBoolean(true);
         }
@@ -92,9 +89,7 @@ public class GameSocket {
                     if(input.ready()) {
                         PacketType packetType = PacketType.values()[input.getNextCorrectIntByte()];
                         PacketBase packet = packetType.getPacketFromInput(input);
-                        synchronized (receivedPackets) {
-                            receivedPackets.add(packet);
-                        }
+                        receivedPackets.add(packet);
                     }
                 }
             } catch (IOException e) {
