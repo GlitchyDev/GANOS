@@ -32,10 +32,10 @@ public class Main {
             OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
 
 
-
             int width = 9;
             int length = 30;
             int height = 9;
+
 
 
 
