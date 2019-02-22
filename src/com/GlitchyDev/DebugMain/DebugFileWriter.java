@@ -1,5 +1,7 @@
 package com.GlitchyDev.DebugMain;
 
+import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.Game.GameStates.GameStateType;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
@@ -28,6 +30,7 @@ public class DebugFileWriter {
             File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
 
             OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
+            int totalByteCount = 0;
 
 
             int width = 9;
@@ -37,27 +40,22 @@ public class DebugFileWriter {
 
 
 
-            int totalByteCount = 0;
-            BlockBase[][][] blocks = new BlockBase[height][width][length];
-            for (int y = 0; y < blocks.length; y++) {
-                for (int x = 0; x < blocks[0].length; x++) {
-                    for (int z = 0; z < blocks[0][0].length; z++) {
+            RegionBase testRegion = new RegionBase(width,length,height);
+            for (int y = 0; y < testRegion.getHeight(); y++) {
+                for (int x = 0; x < testRegion.getWidth(); x++) {
+                    for (int z = 0; z < testRegion.getLength(); z++) {
                         if (Math.random() > 0.5) {
-                            blocks[y][x][z] = new AirBlock(new Location());
+                            testRegion.setBlockRelative(x,y,z,new AirBlock(new Location(x,y,z)));
                             totalByteCount += 1;
                         } else {
-                            blocks[y][x][z] = new DebugBlock(new Location(), 1);
+                            testRegion.setBlockRelative(x,y,z,new DebugBlock(new Location(x,y,z),1));
                             totalByteCount += 2;
                         }
                     }
                 }
             }
-
-            ArrayList<EntityBase> entities = new ArrayList<>();
-            entities.add(new DebugEntity(UUID.randomUUID(), new Location(0, 0, 0), Direction.NORTH));
-            entities.add(new DebugEntity(UUID.randomUUID(), new Location(2, 2, 2), Direction.EAST));
-
-            RegionBase testRegion = new RegionBase(13, blocks, entities);
+            //testRegion.getEntities().add(new DebugEntity(UUID.randomUUID(), new Location(0, 0, 0), Direction.NORTH));
+            //testRegion.getEntities().add(new DebugEntity(UUID.randomUUID(), new Location(2, 2, 2), Direction.EAST));
 
             long timeStart = System.currentTimeMillis();
             testRegion.writeData(fileOutputBitUtility);
@@ -86,6 +84,7 @@ public class DebugFileWriter {
             InputBitUtility inputBitUtility = new InputBitUtility(file);
 
             timeStart = System.currentTimeMillis();
+            // Needs whole system to run
             RegionBase loadedRegion = new RegionBase(inputBitUtility);
             timeEnd = System.currentTimeMillis();
             System.out.println("Time: " + (timeEnd - timeStart) / 1000.0 + "s");

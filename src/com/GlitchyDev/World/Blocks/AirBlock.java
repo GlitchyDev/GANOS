@@ -1,5 +1,6 @@
 package com.GlitchyDev.World.Blocks;
 
+import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
@@ -12,12 +13,12 @@ import java.util.Objects;
 public class AirBlock extends BlockBase {
 
 
-    public AirBlock(Location location) {
-        super(BlockType.AIR, location);
+    public AirBlock(WorldGameState worldGameState, Location location) {
+        super(worldGameState, BlockType.AIR, location);
     }
 
-    public AirBlock(InputBitUtility inputBitUtility) throws IOException {
-        super(BlockType.AIR, inputBitUtility);
+    public AirBlock(WorldGameState worldGameState, InputBitUtility inputBitUtility) throws IOException {
+        super(worldGameState, BlockType.AIR, inputBitUtility);
 
 
     }
@@ -30,7 +31,7 @@ public class AirBlock extends BlockBase {
 
     @Override
     public BlockBase getCopy() {
-        return new AirBlock(getLocation().clone());
+        return new AirBlock(worldGameState, getLocation().clone());
     }
 
     @Override

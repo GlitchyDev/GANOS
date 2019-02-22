@@ -1,5 +1,6 @@
 package com.GlitchyDev.World.Entities.AbstractEntities;
 
+import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
@@ -11,28 +12,36 @@ import java.io.IOException;
 import java.util.UUID;
 
 public abstract class EntityBase {
+    // Utill
+    protected WorldGameState worldGameState;
+    private UUID currentRegionUUID;
+    // Saved to file
     private final EntityType entityType;
     private final UUID uuid;
-    // Required
-    private RegionBase region;
     private Location location;
     private Direction direction;
+
+
 
 
     // REPLICATE!!!!
 
     // Entities and Blocks should be provided their World/Region on spawn
 
-    public EntityBase(EntityType entityType, UUID uuid, RegionBase region, Location location, Direction direction) {
+    public EntityBase(WorldGameState worldGameState, UUID currentRegionUUID, EntityType entityType, UUID uuid, Location location, Direction direction) {
+        this.worldGameState = worldGameState;
+        this.currentRegionUUID = currentRegionUUID;
+
         this.entityType = entityType;
         this.uuid = uuid;
-        this.region = region;
         this.location = location;
         this.direction = direction;
     }
 
-    public EntityBase(EntityType entityType, InputBitUtility inputBitUtility) throws IOException {
-        // Entity Type has already been found
+    public EntityBase(WorldGameState worldGameState, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+        this.worldGameState = worldGameState;
+        this.currentRegionUUID = currentRegionUUID;
+
         this.entityType = entityType;
         this.uuid = inputBitUtility.getNextUUID();
         this.location = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte());
@@ -42,11 +51,12 @@ public abstract class EntityBase {
     public abstract void tick();
 
     // Do not write Location, as that can be refereed engineered from the read protocol
-    public void writeData(OutputBitUtility outputBitUtility, RegionBase hostRegion) throws IOException {
+    public void writeData(OutputBitUtility outputBitUtility) throws IOException {
         outputBitUtility.writeNextCorrectByteInt(entityType.ordinal());
         outputBitUtility.writeNextUUID(uuid);
-        // Get Local Location in Region
-        Location internalOffset = hostRegion.getLocation().getLocationDifference(getLocation());
+
+        RegionBase currentRegion = worldGameState.getRegionAtLocation(location);
+        Location internalOffset = currentRegion.getLocation().getLocationDifference(getLocation());
         outputBitUtility.writeNextCorrectByteInt(internalOffset.getX());
         outputBitUtility.writeNextCorrectByteInt(internalOffset.getY());
         outputBitUtility.writeNextCorrectByteInt(internalOffset.getZ());
@@ -67,6 +77,14 @@ public abstract class EntityBase {
 
     public UUID getUUID() {
         return uuid;
+    }
+
+    public UUID getCurrentRegionUUID() {
+        return currentRegionUUID;
+    }
+
+    public void setCurrentRegionUUID(UUID currentRegionUUID) {
+        this.currentRegionUUID = currentRegionUUID;
     }
 
     public Location getLocation() {

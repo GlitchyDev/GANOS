@@ -3,34 +3,41 @@ package com.GlitchyDev.World;
 
 import org.joml.Vector3i;
 
+import java.util.UUID;
+
 public class Location {
     private final Vector3i position;
-    private final World world;
+    private final UUID worldUUID;
 
 
     public Location() {
         position = new Vector3i();
-        world = null;
+        worldUUID = null;
     }
 
-    public Location(World world) {
+    public Location(UUID worldUUID) {
         position = new Vector3i();
-        this.world = world;
+        this.worldUUID = worldUUID;
     }
 
-    public Location(int x, int y, int z, World world) {
+    public Location(int x, int y, int z, UUID worldUUID) {
         position = new Vector3i(x, y, z);
-        this.world = world;
+        this.worldUUID = worldUUID;
     }
 
     public Location(int x, int y, int z) {
         position = new Vector3i(x, y, z);
-        this.world = null;
+        this.worldUUID = null;
     }
 
     public Location(Location location) {
         position = new Vector3i(location.getPosition());
-        this.world = location.getWorld();
+        this.worldUUID = location.getWorldUUID();
+    }
+
+    public Location(Location location, UUID worldUUID) {
+        position = new Vector3i(location.getPosition());
+        this.worldUUID = worldUUID;
     }
 
     /**
@@ -50,7 +57,7 @@ public class Location {
      * @ return Returns a Location offset by the provided coordinates from the current location
      */
     public Location getOffsetLocation(int x, int y, int z) {
-        return new Location(this.position.x + x, this.position.y + y, this.position.z + z, world);
+        return new Location(this.position.x + x, this.position.y + y, this.position.z + z, worldUUID);
     }
 
     /**
@@ -121,7 +128,7 @@ public class Location {
      * @return
      */
     public Location getLocationDifference(Location location) {
-        return new Location(location.getX() - getX(), location.getY() - getY(), location.getZ() - getZ(), world);
+        return new Location(location.getX() - getX(), location.getY() - getY(), location.getZ() - getZ(), worldUUID);
     }
 
     /**
@@ -135,7 +142,7 @@ public class Location {
 
     @Override
     public Location clone() {
-        return new Location(getX(), getY(), getZ(), world);
+        return new Location(getX(), getY(), getZ(), worldUUID);
     }
 
     @Override
@@ -165,7 +172,11 @@ public class Location {
         return new Vector3i(position).mul(2);
     }
 
-    public World getWorld() {
-        return world;
+    public UUID getWorldUUID() {
+        return worldUUID;
+    }
+
+    public boolean hasWorldUUID() {
+        return worldUUID != null;
     }
 }

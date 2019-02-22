@@ -1,5 +1,6 @@
 package com.GlitchyDev.World.Blocks.AbstractBlocks;
 
+import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
@@ -8,19 +9,25 @@ import com.GlitchyDev.World.Location;
 import java.io.IOException;
 
 public abstract class BlockBase {
+    protected final WorldGameState worldGameState;
+
     private final BlockType blockType;
-    // Remember, when loading from Region, its location is its offset in the region
-    private Location location;
+    private Location location; // Remember, when loading from Region, its location is its offset in the region
+    // No loaded variables
     private boolean isDisableFrustumCulling = false;
     private boolean insideFrustum = false;
     // IS OPAQUE?
 
-    public BlockBase(BlockType blockType, Location location) {
+    public BlockBase(WorldGameState worldGameState, BlockType blockType, Location location) {
+        this.worldGameState = worldGameState;
+
         this.blockType = blockType;
         this.location = location;
     }
 
-    public BlockBase(BlockType blockType, InputBitUtility inputBitUtility) throws IOException {
+    public BlockBase(WorldGameState worldGameState, BlockType blockType, InputBitUtility inputBitUtility) throws IOException {
+        this.worldGameState = worldGameState;
+
         this.blockType = blockType;
         location = new Location(0,0,0);
     }

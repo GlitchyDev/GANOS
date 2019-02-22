@@ -1,5 +1,6 @@
 package com.GlitchyDev.World.Region;
 
+import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.HuffmanTreeUtility;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
@@ -10,60 +11,46 @@ import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
+
+/**
+ * A Holder class for Regions, used to keep track of Blocks, Entities, the connections between it and other Regions, Ect
+ */
 public class RegionBase {
-    private final int id;
-    // Placement of the bottom upper righthand corner of the region
-    private Location location;
-    private final BlockBase[][][] blocks;
-    private final ArrayList<EntityBase> entities;
-    // All regions that are connected here via openings, doors, mystical portals, EVERYTHING!!!!
-    //private final ArrayList<RegionBase> connectedRegions;
-
     public static final RegionFileVersion CURRENT_VERSION = RegionFileVersion.VERSION_0;
     public static final RegionFileVersion LEAST_SUPPORTED_VERSION = RegionFileVersion.VERSION_0;
 
+    private final UUID regionUUID; // Identifies the region as UNIQUE
+    private final BlockBase[][][] blocks;
+    private final ArrayList<EntityBase> entities;
+    private Location location;     // Placement of the bottom upper right hand corner of the region
 
-    public RegionBase(int id, BlockBase[][][] blocks, ArrayList<EntityBase> entities) {
-        this.id = id;
+
+    public RegionBase(int width, int length, int height) {
+        this.regionUUID = UUID.randomUUID();
         this.location = new Location(0,0,0);
-        this.blocks = blocks;
-        this.entities = entities;
-        //this.connectedRegions = connectedRegions;
+        this.blocks = new BlockBase[height][width][length];
+        this.entities = new ArrayList<>();
     }
 
-
-
-
-    public RegionBase(InputBitUtility inputBitUtility) throws IOException {
+    public RegionBase(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
 
         RegionFileVersion version = RegionFileVersion.values()[inputBitUtility.getNextCorrectIntByte()];
-        //System.out.println(version);
         RegionFileType type = RegionFileType.values()[inputBitUtility.getNextCorrectIntByte()];
-        //System.out.println(type);
-        this.id = inputBitUtility.getNextCorrectIntByte();
-        //System.out.println(id);
+
+        this.regionUUID = inputBitUtility.getNextUUID();
 
         int width = inputBitUtility.getNextCorrectIntByte() + 1;
-        //System.out.println(width);
         int height = inputBitUtility.getNextCorrectIntByte() + 1;
-        //System.out.println(height);
         int length = inputBitUtility.getNextCorrectIntByte() + 1;
-        //System.out.println(length);
         this.blocks = new BlockBase[height][width][length];
 
         int blockPaletteSize = inputBitUtility.getNextCorrectIntByte();
-        //System.out.println(blockPaletteSize);
         BlockBase[] palette = new BlockBase[blockPaletteSize];
-        // Load Each Block in Pallete
         for(int i = 0; i < blockPaletteSize; i++) {
             BlockType blockType = BlockType.values()[inputBitUtility.getNextCorrectIntByte()];
             palette[i] = blockType.getBlockFromInput(inputBitUtility);
-            //System.out.println(palette[i]);
         }
         HashMap<String,Object> huffmanMap = HuffmanTreeUtility.loadHuffmanTreeValues(inputBitUtility,palette);
 
@@ -75,16 +62,17 @@ public class RegionBase {
                         currentCode += inputBitUtility.getNextBit() ? "1" : "0";
                     }
                     setBlockRelative(x,y,z,((BlockBase) huffmanMap.get(currentCode)).getCopy());
+                    getBlockRelative(x,y,z).setLocation(new Location(x,y,z));
                 }
             }
         }
 
         int totalEntities = inputBitUtility.getNextCorrectIntByte();
-        //System.out.println(totalEntities);
         this.entities = new ArrayList<>(totalEntities);
         for(int i = 0; i < totalEntities; i++) {
             EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
-            entities.add(entityType.getEntityFromInput(inputBitUtility));
+            EntityBase entity = entityType.getEntityFromInput(inputBitUtility, worldGameState, regionUUID);
+            entities.add(entity);
         }
 
 
@@ -94,17 +82,13 @@ public class RegionBase {
     public void writeData(OutputBitUtility outputBitUtility) throws IOException {
         outputBitUtility.writeNextCorrectByteInt(CURRENT_VERSION.ordinal());
         outputBitUtility.writeNextCorrectByteInt(RegionFileType.NORMAL.ordinal());
-        outputBitUtility.writeNextCorrectByteInt(id);
+        outputBitUtility.writeNextUUID(regionUUID);
 
         outputBitUtility.writeNextCorrectByteInt(getWidth()-1);
         outputBitUtility.writeNextCorrectByteInt(getHeight()-1);
         outputBitUtility.writeNextCorrectByteInt(getLength()-1);
-
-
         // Count number of unique blocks, like ouch
-
         // Counts the total number of unique blocks, stores them block, count
-
         HashMap<BlockBase,Integer> countMap = new HashMap<>();
         int uniques = 0;
         for(int y = 0; y < getHeight(); y++) {
@@ -128,7 +112,6 @@ public class RegionBase {
             uniqueBlocks.add(block);
             frequencies.add(countMap.get(block));
         }
-
 
         Collections.sort(uniqueBlocks, Comparator.comparingInt(frequencies::indexOf));
         Collections.sort(frequencies);
@@ -178,7 +161,7 @@ public class RegionBase {
 
         outputBitUtility.writeNextCorrectByteInt(getEntities().size());
         for(EntityBase entityBase: getEntities()) {
-            entityBase.writeData(outputBitUtility, this);
+            entityBase.writeData(outputBitUtility);
         }
 
     }
@@ -238,14 +221,27 @@ public class RegionBase {
     }
 
 
-    // Helper Methods
-
-    public BlockBase getBlockRelative(Location location) {
-        return getBlockRelative(location.getX(), location.getY(), location.getZ());
+    public void setLocation(Location location) {
+        Location oldLocation = getLocation();
+        Location offset = oldLocation.getLocationDifference(location);
+        for(EntityBase entity: entities) {
+            entity.setLocation(entity.getLocation().getOffsetLocation(offset));
+        }
+        for(BlockBase block: getBlocksArray()) {
+            block.setLocation(block.getLocation().getOffsetLocation(offset));
+        }
+        this.location = location;
     }
 
-    public void setBlockRelative(Location location, BlockBase block) {
-        setBlockRelative(location.getX(), location.getY(), location.getZ(), block);
+
+    // Helper Methods
+
+    public BlockBase getBlockRelative(Location relativeLocation) {
+        return getBlockRelative(relativeLocation.getX(), relativeLocation.getY(), relativeLocation.getZ());
+    }
+
+    public void setBlockRelative(Location relativeLocation, BlockBase block) {
+        setBlockRelative(relativeLocation.getX(), relativeLocation.getY(), relativeLocation.getZ(), block);
     }
 
     public BlockBase getBlockRelative(int relativeX, int relativeY, int relativeZ) {
@@ -269,17 +265,12 @@ public class RegionBase {
         return blockArray;
     }
 
-    public void recalculateConnections() {
-        // Spread Algorithum
-    }
-
     @Override
     public String toString() {
-        return "R@" + id + "," + getLocation();
+        return "R@" + regionUUID + "," + getLocation();
     }
 
     // Getters
-
 
     public BlockBase[][][] getBlocks() {
         return blocks;
@@ -305,7 +296,7 @@ public class RegionBase {
         return location;
     }
 
-    public int getId() {
-        return id;
+    public UUID getRegionUUID() {
+        return regionUUID;
     }
 }

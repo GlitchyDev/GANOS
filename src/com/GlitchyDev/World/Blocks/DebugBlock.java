@@ -1,5 +1,6 @@
 package com.GlitchyDev.World.Blocks;
 
+import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
@@ -12,13 +13,13 @@ import java.util.Objects;
 public class DebugBlock extends BlockBase {
     private final int testValue;
 
-    public DebugBlock(Location location, int testValue) {
-        super(BlockType.DEBUG, location);
+    public DebugBlock(WorldGameState worldGameState, Location location, int testValue) {
+        super(worldGameState, BlockType.DEBUG, location);
         this.testValue = testValue;
     }
 
-    public DebugBlock(InputBitUtility inputBitUtility) throws IOException {
-        super(BlockType.DEBUG, inputBitUtility);
+    public DebugBlock(WorldGameState worldGameState, InputBitUtility inputBitUtility) throws IOException {
+        super(worldGameState, BlockType.DEBUG, inputBitUtility);
         testValue = inputBitUtility.getNextCorrectIntByte();
     }
 
@@ -31,7 +32,7 @@ public class DebugBlock extends BlockBase {
 
     @Override
     public BlockBase getCopy() {
-        return new DebugBlock(getLocation().clone(), testValue);
+        return new DebugBlock(worldGameState, getLocation().clone(), testValue);
     }
 
     @Override

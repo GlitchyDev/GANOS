@@ -1,5 +1,6 @@
 package com.GlitchyDev.World.Entities;
 
+import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
@@ -12,12 +13,13 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class DebugEntity extends EntityBase {
-    public DebugEntity(UUID uuid, Location location, Direction direction) {
-        super(EntityType.DEBUG, uuid, location, direction);
+    public DebugEntity(WorldGameState worldGameState, UUID currentRegionUUID, UUID uuid, Location location, Direction direction) {
+        super(worldGameState, currentRegionUUID, EntityType.DEBUG, uuid, location, direction);
     }
 
-    public DebugEntity(InputBitUtility inputBitUtility) throws IOException {
-        super(EntityType.DEBUG, inputBitUtility);
+
+    public DebugEntity(WorldGameState worldGameState, UUID currentRegionUUID, InputBitUtility inputBitUtility) throws IOException {
+        super(worldGameState, currentRegionUUID, inputBitUtility, EntityType.DEBUG);
     }
 
     @Override
@@ -26,13 +28,13 @@ public class DebugEntity extends EntityBase {
     }
 
     @Override
-    public void writeData(OutputBitUtility outputBitUtility, RegionBase hostRegion) throws IOException {
-        super.writeData(outputBitUtility, hostRegion);
+    public void writeData(OutputBitUtility outputBitUtility) throws IOException {
+        super.writeData(outputBitUtility);
     }
 
     @Override
     public EntityBase getCopy() {
-        return new DebugEntity(UUID.randomUUID(), getLocation(), getDirection());
+        return new DebugEntity(worldGameState, UUID.randomUUID(), getCurrentRegionUUID(), getLocation().clone(), getDirection());
     }
 
     @Override
