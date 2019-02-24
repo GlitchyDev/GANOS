@@ -18,8 +18,8 @@ public class DebugEntity extends EntityBase {
     }
 
 
-    public DebugEntity(WorldGameState worldGameState, UUID currentRegionUUID, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, currentRegionUUID, inputBitUtility, EntityType.DEBUG);
+    public DebugEntity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility) throws IOException {
+        super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, EntityType.DEBUG);
     }
 
     @Override

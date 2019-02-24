@@ -1,29 +1,48 @@
-package com.GlitchyDev.Networking;
+package com.GlitchyDev.Networking.Sockets;
 
+import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
+import com.GlitchyDev.Networking.Packets.General.Authentication.GeneralAuthDisconnectPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class GameSocket {
+public abstract class GameSocketBase {
+    protected WorldGameState worldGameState;
     private final Socket socket;
     private final OutputBitUtility output;
     private final InputBitUtility input;
+
+    private AtomicBoolean isConnected = new AtomicBoolean(true);
 
     private final PacketReadThread packetReadThread;
     private final Collection<PacketBase> receivedPackets;
 
 
+    public GameSocketBase(WorldGameState worldGameState, InetAddress ipAddress, int port) throws IOException {
+        this.worldGameState = worldGameState;
+        this.socket = new Socket(ipAddress, port);
+        input = new InputBitUtility(socket.getInputStream());
+        output = new OutputBitUtility(socket.getOutputStream());
 
-    public GameSocket(Socket socket) throws IOException {
+        receivedPackets = Collections.synchronizedCollection(new ArrayList<>());
+
+        packetReadThread = new PacketReadThread();
+        packetReadThread.start();
+    }
+
+    public GameSocketBase(WorldGameState worldGameState, Socket socket) throws IOException {
+        this.worldGameState = worldGameState;
         this.socket = socket;
         input = new InputBitUtility(socket.getInputStream());
         output = new OutputBitUtility(socket.getOutputStream());
@@ -33,6 +52,8 @@ public class GameSocket {
         packetReadThread = new PacketReadThread();
         packetReadThread.start();
     }
+
+
 
     public void sendPacket(PacketBase packet) throws IOException {
         packet.transmit(output);
@@ -73,6 +94,11 @@ public class GameSocket {
         }
     }
 
+    public abstract void notifyDisconnect(NetworkDisconnectType networkDisconnectType);
+    public boolean isConnected() {
+        return isConnected.get();
+    }
+
 
 
     private class PacketReadThread extends Thread {
@@ -84,15 +110,24 @@ public class GameSocket {
 
         @Override
         public void run() {
+            isConnected.set(true);
             try {
                 while(keepThreadAlive.get()) {
                     if(input.ready()) {
                         PacketType packetType = PacketType.values()[input.getNextCorrectIntByte()];
-                        PacketBase packet = packetType.getPacketFromInput(input);
+                        PacketBase packet = packetType.getPacketFromInput(input, worldGameState);
+                        if(packet instanceof GeneralAuthDisconnectPacket) {
+                            isConnected.set(false);
+                            killThread();
+                            socket.close();
+                            notifyDisconnect(((GeneralAuthDisconnectPacket) packet).getDisconnectType());
+                        }
                         receivedPackets.add(packet);
+
                     }
                 }
             } catch (IOException e) {
+                // Eventually add an way to notify GameState if disconnected for other reasons like PING
                 e.printStackTrace();
             }
         }

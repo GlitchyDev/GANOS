@@ -5,6 +5,7 @@ import com.GlitchyDev.Utility.HuffmanTreeUtility;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AirBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
@@ -20,6 +21,7 @@ import java.util.*;
 public class RegionBase {
     public static final RegionFileVersion CURRENT_VERSION = RegionFileVersion.VERSION_0;
     public static final RegionFileVersion LEAST_SUPPORTED_VERSION = RegionFileVersion.VERSION_0;
+    private final UUID worldUUID;
 
     private final UUID regionUUID; // Identifies the region as UNIQUE
     private final BlockBase[][][] blocks;
@@ -27,14 +29,33 @@ public class RegionBase {
     private Location location;     // Placement of the bottom upper right hand corner of the region
 
 
-    public RegionBase(int width, int length, int height) {
+    public RegionBase(WorldGameState worldGameState, UUID worldUUID, int width, int length, int height) {
+        this.worldUUID = worldUUID;
+
         this.regionUUID = UUID.randomUUID();
         this.location = new Location(0,0,0);
         this.blocks = new BlockBase[height][width][length];
         this.entities = new ArrayList<>();
+
+        populateRegions(worldGameState);
     }
 
-    public RegionBase(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
+    /**
+     * Fills newly created regions so they literally can't be null
+     * @param worldGameState
+     */
+    private void populateRegions(WorldGameState worldGameState) {
+        for(int y = 0; y < getHeight(); y++) {
+            for(int x = 0; x < getWidth(); x++) {
+                for(int z = 0; z < getLength(); z++) {
+                    setBlockRelative(x,y,z, new AirBlock(worldGameState, new Location(x,y,z)));
+                }
+            }
+        }
+    }
+
+    public RegionBase(InputBitUtility inputBitUtility, WorldGameState worldGameState, UUID worldUUID) throws IOException {
+        this.worldUUID = worldUUID;
 
         RegionFileVersion version = RegionFileVersion.values()[inputBitUtility.getNextCorrectIntByte()];
         RegionFileType type = RegionFileType.values()[inputBitUtility.getNextCorrectIntByte()];
@@ -50,7 +71,7 @@ public class RegionBase {
         BlockBase[] palette = new BlockBase[blockPaletteSize];
         for(int i = 0; i < blockPaletteSize; i++) {
             BlockType blockType = BlockType.values()[inputBitUtility.getNextCorrectIntByte()];
-            palette[i] = blockType.getBlockFromInput(inputBitUtility);
+            palette[i] = blockType.getBlockFromInput(worldGameState, inputBitUtility);
         }
         HashMap<String,Object> huffmanMap = HuffmanTreeUtility.loadHuffmanTreeValues(inputBitUtility,palette);
 
@@ -71,7 +92,7 @@ public class RegionBase {
         this.entities = new ArrayList<>(totalEntities);
         for(int i = 0; i < totalEntities; i++) {
             EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
-            EntityBase entity = entityType.getEntityFromInput(inputBitUtility, worldGameState, regionUUID);
+            EntityBase entity = entityType.getEntityFromInput(inputBitUtility, worldGameState, regionUUID, worldUUID);
             entities.add(entity);
         }
 
@@ -166,23 +187,6 @@ public class RegionBase {
 
     }
 
-
-
-    /**
-     * When we want to place a region, or move a region
-     * @param newLocation
-     */
-    public void placeRegion(Location newLocation) {
-        Location difference = location.getLocationDifference(newLocation);
-        location = newLocation;
-
-        for(BlockBase block: getBlocksArray()) {
-            block.setLocation(block.getLocation().getOffsetLocation(difference));
-        }
-        for(EntityBase entity: entities) {
-            entity.setLocation(entity.getLocation().getOffsetLocation(difference));
-        }
-    }
 
     public boolean isLocationInRegion(Location selectLocation) {
         if(getLocation().getY() <= selectLocation.getY() && selectLocation.getY()  < getLocation().getY() + getHeight()) {
@@ -298,5 +302,9 @@ public class RegionBase {
 
     public UUID getRegionUUID() {
         return regionUUID;
+    }
+
+    public UUID getWorldUUID() {
+        return worldUUID;
     }
 }

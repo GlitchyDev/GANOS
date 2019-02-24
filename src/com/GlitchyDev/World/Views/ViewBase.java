@@ -9,14 +9,14 @@ import java.util.ArrayList;
 public class ViewBase {
     // What entity is tied to this view, what will be updated when
     private final EntityBase tiedEntity;
-    private ArrayList<RegionBase> viewingRegions;
+    private ArrayList<RegionBase> viewableRegions;
     private ArrayList<EntityBase> effectViewedEntities;
     private ArrayList<BlockBase> effectViewedBlocks;
 
 
     public ViewBase(EntityBase entityBase) {
         this.tiedEntity = entityBase;
-        this.viewingRegions = new ArrayList<>();
+        this.viewableRegions = new ArrayList<>();
         this.effectViewedEntities = new ArrayList<>();
         this.effectViewedBlocks = new ArrayList<>();
     }

@@ -1,6 +1,7 @@
 package com.GlitchyDev.Game;
 
 import com.GlitchyDev.Game.GameStates.Abstract.GameStateBase;
+import com.GlitchyDev.Game.GameStates.DebugClientGameState;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.GameWindow;
 import com.GlitchyDev.Utility.GlobalGameData;
@@ -35,7 +36,7 @@ public class GANOSGame {
         if(args.length != 0) {
             switch (args[0]) {
                 case "CLIENT":
-                    //globalGameData.registerGameState(new DebugGameState1(globalGameData));
+                    globalGameData.registerGameState(new DebugClientGameState(globalGameData));
                     break;
                 case "SERVER":
                     //globalGameData.registerGameState(new DebugGameState2(globalGameData));

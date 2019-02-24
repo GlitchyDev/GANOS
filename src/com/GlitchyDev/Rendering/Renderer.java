@@ -6,9 +6,11 @@ import com.GlitchyDev.Rendering.Assets.WorldElements.*;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.GameWindow;
 import com.GlitchyDev.World.Region.RegionBase;
+import org.joml.Matrix4f;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -62,7 +64,7 @@ public class Renderer {
 
 
 
-    /*
+
 
     public void render3DElements(GameWindow window, String shaderName, Camera camera, List<GameItem> gameItems) {
         ShaderProgram shader = loadedShaders.get(shaderName);
@@ -88,6 +90,7 @@ public class Renderer {
         //shader.unbind();
     }
 
+    /*
     public void renderInstanced3DElements(GameWindow window, String shaderName, Camera camera, InstancedMesh instancedMesh, List<GameItem> gameItems) {
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
@@ -107,9 +110,9 @@ public class Renderer {
 
         //shader.unbind();
     }
+    */
 
-
-    //
+    /*
     public void renderInstancedPartialCubic(GameWindow window, String shaderName, Camera camera, PartialCubicInstanceMesh instancedMesh, List<PartialCubicBlock> blocks) {
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
@@ -131,8 +134,9 @@ public class Renderer {
 
         //shader.unbind();
     }
+    */
 
-    //
+    /*
     public void renderInstancedPartialCubicChunk(GameWindow window, String shaderName, Camera camera, PartialCubicInstanceMesh instancedMesh, Collection<Chunk> chunks, boolean useFrustumCullingFilter) {
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
@@ -154,8 +158,7 @@ public class Renderer {
 
         //shader.unbind();
     }
-
-
+    */
 
 
     public void renderHUD(GameWindow window, String shaderName, List<TextItem> hudItems)
@@ -206,7 +209,7 @@ public class Renderer {
         shader.unbind();
     }
 
-    */
+
 
     public void cleanup() {
         for(String shader :loadedShaders.keySet()) {

@@ -11,12 +11,12 @@ import java.util.UUID;
 public enum EntityType {
     DEBUG;
 
-    public EntityBase getEntityFromInput(InputBitUtility inputBitUtility, WorldGameState worldGameState, UUID regionUUID) throws IOException {
+    public EntityBase getEntityFromInput(InputBitUtility inputBitUtility, WorldGameState worldGameState, UUID worldUUID, UUID regionUUID) throws IOException {
         switch (this) {
             case DEBUG:
-                return new DebugEntity(worldGameState, regionUUID, inputBitUtility);
+                return new DebugEntity(worldGameState, worldUUID, regionUUID, inputBitUtility);
             default:
-                return new DebugEntity(worldGameState, regionUUID, inputBitUtility);
+                return new DebugEntity(worldGameState, worldUUID, regionUUID, inputBitUtility);
         }
 
     }

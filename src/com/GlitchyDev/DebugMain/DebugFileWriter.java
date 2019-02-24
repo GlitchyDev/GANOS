@@ -21,11 +21,12 @@ import java.util.UUID;
 public class DebugFileWriter {
 
 
-
     public static void main(String[] args) throws IOException {
 
 
+    }
 
+        /*
         while(true) {
             File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
 
@@ -66,7 +67,7 @@ public class DebugFileWriter {
 
             System.out.println("Region took " + totalBytes + "/" + totalByteCount + " bytes " + (100.0 / totalByteCount * totalBytes) + "%");
 
-        /*
+
         for(int z = 0; z < length; z++) {
             for(int x = 0; x < width; x++) {
                 System.out.print(testRegion.getBlockRelative(x,0,z) instanceof AirBlock ? 1 : 0);
@@ -76,7 +77,7 @@ public class DebugFileWriter {
         for(EntityBase entityBase: testRegion.getEntities()) {
             System.out.println(entityBase);
         }
-        */
+
 
             System.out.println("------");
 
@@ -89,8 +90,10 @@ public class DebugFileWriter {
             timeEnd = System.currentTimeMillis();
             System.out.println("Time: " + (timeEnd - timeStart) / 1000.0 + "s");
 
+            */
 
-        }
+
+
         /*
         for(int z = 0; z < length; z++) {
             for(int x = 0; x < width; x++) {
@@ -243,6 +246,6 @@ public class DebugFileWriter {
         }
         */
 
-    }
+
 
 }

@@ -28,6 +28,15 @@ public abstract class EntityBase {
 
     // Entities and Blocks should be provided their World/Region on spawn
 
+    /**
+     * Creates Entities naturally
+     * @param worldGameState
+     * @param currentRegionUUID
+     * @param entityType
+     * @param uuid
+     * @param location
+     * @param direction
+     */
     public EntityBase(WorldGameState worldGameState, UUID currentRegionUUID, EntityType entityType, UUID uuid, Location location, Direction direction) {
         this.worldGameState = worldGameState;
         this.currentRegionUUID = currentRegionUUID;
@@ -38,19 +47,35 @@ public abstract class EntityBase {
         this.direction = direction;
     }
 
-    public EntityBase(WorldGameState worldGameState, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+
+    /**
+     * Allows Entities to be constructed from IO/Packets
+     * @param worldGameState
+     * @param worldUUID
+     * @param currentRegionUUID
+     * @param inputBitUtility
+     * @param entityType
+     * @throws IOException
+     */
+    public EntityBase(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
         this.worldGameState = worldGameState;
         this.currentRegionUUID = currentRegionUUID;
 
         this.entityType = entityType;
         this.uuid = inputBitUtility.getNextUUID();
-        this.location = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte());
+        Location regionLocation = worldGameState.getRegion(currentRegionUUID,worldUUID).getLocation();
+        Location relativeLocation = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte());
+        this.location = regionLocation.getOffsetLocation(relativeLocation);
         this.direction = Direction.values()[inputBitUtility.getNextCorrectedIntBit(3)];
     }
 
     public abstract void tick();
 
-    // Do not write Location, as that can be refereed engineered from the read protocol
+    /**
+     * Writes file to IO and Packet
+     * @param outputBitUtility
+     * @throws IOException
+     */
     public void writeData(OutputBitUtility outputBitUtility) throws IOException {
         outputBitUtility.writeNextCorrectByteInt(entityType.ordinal());
         outputBitUtility.writeNextUUID(uuid);
