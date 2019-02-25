@@ -1,6 +1,5 @@
 package com.GlitchyDev.Networking.Packets.Client.Authentication;
 
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
@@ -17,8 +16,8 @@ public class ClientAuthGreetingPacket extends PacketBase {
         this.playerUUID = playerUUID;
     }
 
-    public ClientAuthGreetingPacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
-        super(inputBitUtility, worldGameState);
+    public ClientAuthGreetingPacket(InputBitUtility inputBitUtility) throws IOException {
+        super(PacketType.CLIENT_AUTH_GREETING_PACKET, inputBitUtility);
         this.playerUUID = inputBitUtility.getNextUUID();
     }
 

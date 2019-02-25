@@ -1,6 +1,5 @@
 package com.GlitchyDev.Networking.Packets.General.Authentication;
 
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
@@ -16,8 +15,8 @@ public class GeneralAuthDisconnectPacket extends PacketBase {
         this.disconnectType = disconnectType;
     }
 
-    public GeneralAuthDisconnectPacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
-        super(inputBitUtility, worldGameState);
+    public GeneralAuthDisconnectPacket(InputBitUtility inputBitUtility) throws IOException {
+        super(PacketType.GENERAL_AUTH_DISCONNECT, inputBitUtility);
         disconnectType = NetworkDisconnectType.values()[inputBitUtility.getNextCorrectIntByte()];
     }
 

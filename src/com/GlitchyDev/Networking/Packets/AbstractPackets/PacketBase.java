@@ -1,6 +1,5 @@
 package com.GlitchyDev.Networking.Packets.AbstractPackets;
 
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
@@ -14,8 +13,8 @@ public abstract class PacketBase {
         this.packetType = packetType;
     }
 
-    public PacketBase(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
-        this.packetType = PacketType.values()[inputBitUtility.getNextCorrectIntByte()];
+    public PacketBase(PacketType packetType, InputBitUtility inputBitUtility) throws IOException {
+        this.packetType = packetType;
     }
 
     public void transmit(OutputBitUtility outputBitUtility) throws IOException {

@@ -46,7 +46,7 @@ public class AssetLoader {
         }
 
         System.out.println("AssetLoader: Initialing Assets");
-        InputStream is = AssetLoader.class.getResourceAsStream("/GameAssets/Configs/General/AssetRegistry.txt");
+        InputStream is = AssetLoader.class.getResourceAsStream("/Configs/General/AssetRegistry.txt");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         while(br.ready())

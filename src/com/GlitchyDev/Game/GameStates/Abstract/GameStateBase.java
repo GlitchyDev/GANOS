@@ -21,7 +21,7 @@ public abstract class GameStateBase {
         this.renderer = new Renderer();
     }
 
-    public abstract void init() throws Exception;
+    public abstract void init();
 
     public abstract void doRender();
 

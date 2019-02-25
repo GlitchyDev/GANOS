@@ -14,8 +14,8 @@ public abstract class WorldStateModifyingPackets extends PacketBase {
         super(packetType);
     }
 
-    public WorldStateModifyingPackets(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
-        super(inputBitUtility, worldGameState);
+    public WorldStateModifyingPackets(PacketType packetType, InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
+        super(packetType, inputBitUtility);
     }
 
     public abstract void executeModification(WorldGameState worldGameState);

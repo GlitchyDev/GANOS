@@ -21,7 +21,7 @@ public class ServerSpawnEntityPacket extends WorldStateModifyingPackets {
 
     // PacketType | WorldUUID | RegionUUID | EntityData
     public ServerSpawnEntityPacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
-        super(inputBitUtility, worldGameState);
+        super(PacketType.SERVER_SPAWN_ENTITY, inputBitUtility, worldGameState);
         UUID worldUUID = inputBitUtility.getNextUUID();
         UUID regionUUID = inputBitUtility.getNextUUID();
         EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];

@@ -6,7 +6,13 @@ import com.GlitchyDev.Networking.Packets.Client.Authentication.ClientAuthGreetin
 import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.GeneralAuthDisconnectPacket;
 import com.GlitchyDev.Networking.Packets.Server.Authentication.ServerAuthAcceptClient;
+import com.GlitchyDev.Networking.Packets.Server.World.Block.ServerChangeBlockPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerDespawnEntityPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerChangeDirectionEntityPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerMoveEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerSpawnEntityPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerDespawnRegionPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerSpawnRegionPacket;
 import com.GlitchyDev.Utility.InputBitUtility;
 
 import java.io.IOException;
@@ -44,19 +50,27 @@ public enum PacketType {
     public PacketBase getPacketFromInput(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
         switch (this) {
             case GENERAL_AUTH_DISCONNECT:
-                return new GeneralAuthDisconnectPacket(inputBitUtility, worldGameState);
+                return new GeneralAuthDisconnectPacket(inputBitUtility);
             case CLIENT_AUTH_GREETING_PACKET:
-                return new ClientAuthGreetingPacket(inputBitUtility, worldGameState);
+                return new ClientAuthGreetingPacket(inputBitUtility);
             case CLIENT_SEND_INPUT_PACKET:
-                return new ClientSendInputPacket(inputBitUtility, worldGameState);
+                return new ClientSendInputPacket(inputBitUtility);
             case SERVER_AUTH_ACCEPT_CLIENT:
-                return new ServerAuthAcceptClient(inputBitUtility, worldGameState);
+                return new ServerAuthAcceptClient(inputBitUtility);
             case SERVER_SPAWN_REGION:
+                return new ServerSpawnRegionPacket(inputBitUtility, worldGameState);
+            case SERVER_DESPAWN_REGION:
+                return new ServerDespawnRegionPacket(inputBitUtility, worldGameState);
             case SERVER_SPAWN_ENTITY:
                 return new ServerSpawnEntityPacket(inputBitUtility, worldGameState);
-            case SERVER_DESPAWN_REGION:
             case SERVER_DESPAWN_ENTITY:
+                return new ServerDespawnEntityPacket(inputBitUtility, worldGameState);
             case SERVER_MOVE_ENTITY:
+                return new ServerMoveEntityPacket(inputBitUtility, worldGameState);
+            case SERVER_CHANGE_DIRECTION_ENTITY:
+                return new ServerChangeDirectionEntityPacket(inputBitUtility, worldGameState);
+            case SERVER_CHANGE_BLOCK:
+                return new ServerChangeBlockPacket(inputBitUtility, worldGameState);
             default:
         }
         return null;

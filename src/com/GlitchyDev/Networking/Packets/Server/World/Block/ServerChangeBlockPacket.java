@@ -12,16 +12,16 @@ import com.GlitchyDev.World.Location;
 import java.io.IOException;
 import java.util.UUID;
 
-public class ServerBlockChangePacket extends WorldStateModifyingPackets {
+public class ServerChangeBlockPacket extends WorldStateModifyingPackets {
     private final BlockBase changedBlock;
 
-    public ServerBlockChangePacket(BlockBase changedBlock) {
+    public ServerChangeBlockPacket(BlockBase changedBlock) {
         super(PacketType.SERVER_CHANGE_BLOCK);
         this.changedBlock = changedBlock;
     }
 
-    public ServerBlockChangePacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
-        super(inputBitUtility, worldGameState);
+    public ServerChangeBlockPacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
+        super(PacketType.SERVER_CHANGE_BLOCK, inputBitUtility, worldGameState);
         BlockType blockType = BlockType.values()[inputBitUtility.getNextCorrectIntByte()];
         changedBlock = blockType.getBlockFromInput(worldGameState, inputBitUtility);
         UUID worldUUID = inputBitUtility.getNextUUID();

@@ -5,45 +5,46 @@ import com.GlitchyDev.Networking.Packets.AbstractPackets.WorldStateModifyingPack
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
 import java.util.UUID;
 
-public class ServerEntityChangeDirectionPacket extends WorldStateModifyingPackets {
+public class ServerMoveEntityPacket extends WorldStateModifyingPackets {
     private final UUID entityUUID;
     private final UUID worldUUID;
-    private final Direction newDirection;
+    private final Location newLocation;
 
-    public ServerEntityChangeDirectionPacket(UUID entityUUID, UUID worldUUID, Direction newDirection) {
+    public ServerMoveEntityPacket(UUID entityUUID, Location newLocation) {
         super(PacketType.SERVER_MOVE_ENTITY);
         this.entityUUID = entityUUID;
-        this.worldUUID = worldUUID;
-        this.newDirection = newDirection;
+        this.worldUUID = newLocation.getWorldUUID();
+        this.newLocation = newLocation;
     }
 
-    public ServerEntityChangeDirectionPacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
-        super(inputBitUtility, worldGameState);
+    public ServerMoveEntityPacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
+        super(PacketType.SERVER_MOVE_ENTITY, inputBitUtility, worldGameState);
         this.entityUUID = inputBitUtility.getNextUUID();
         this.worldUUID = inputBitUtility.getNextUUID();
-        this.newDirection = Direction.values()[inputBitUtility.getNextCorrectedIntBit(3)];
+        this.newLocation = new Location(inputBitUtility.getNextInteger(),inputBitUtility.getNextInteger(),inputBitUtility.getNextInteger(),worldUUID);
     }
 
     @Override
     public void executeModification(WorldGameState worldGameState) {
-        worldGameState.getEntity(entityUUID,worldUUID).setDirection(newDirection);
+        worldGameState.getEntity(entityUUID,worldUUID).setLocation(newLocation);
     }
 
     @Override
     protected void transmitPacketBody(OutputBitUtility outputBitUtility) throws IOException {
         outputBitUtility.writeNextUUID(entityUUID);
         outputBitUtility.writeNextUUID(worldUUID);
-        outputBitUtility.writeNextCorrectedBitsInt(newDirection.ordinal(),3);
+        outputBitUtility.writeNextInteger(newLocation.getX());
+        outputBitUtility.writeNextInteger(newLocation.getY());
+        outputBitUtility.writeNextInteger(newLocation.getZ());
     }
 
     @Override
     public String toString() {
-        return super.toString() + "," + entityUUID + "," + worldUUID + "," + newDirection;
+        return super.toString() + "," + entityUUID + "," + worldUUID + "," + newLocation;
     }
 }

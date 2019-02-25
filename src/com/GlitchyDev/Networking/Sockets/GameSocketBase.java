@@ -10,7 +10,6 @@ import com.GlitchyDev.Utility.OutputBitUtility;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +24,7 @@ public abstract class GameSocketBase {
 
     private AtomicBoolean isConnected = new AtomicBoolean(true);
 
+    private AtomicBoolean keepThreadAlive;
     private final PacketReadThread packetReadThread;
     private final Collection<PacketBase> receivedPackets;
 
@@ -32,8 +32,8 @@ public abstract class GameSocketBase {
     public GameSocketBase(WorldGameState worldGameState, InetAddress ipAddress, int port) throws IOException {
         this.worldGameState = worldGameState;
         this.socket = new Socket(ipAddress, port);
-        input = new InputBitUtility(socket.getInputStream());
         output = new OutputBitUtility(socket.getOutputStream());
+        input = new InputBitUtility(socket.getInputStream());
 
         receivedPackets = Collections.synchronizedCollection(new ArrayList<>());
 
@@ -78,14 +78,15 @@ public abstract class GameSocketBase {
         return receivedPackets.size() != 0;
     }
 
-    public void disconnect(NetworkDisconnectType reason) {
-        //sendPacket(new GoodbyePacket(reason));
-        disconnect();
+    public void disconnect(NetworkDisconnectType reason) throws IOException {
+        System.out.println("Disconnecting for reason " + reason);
+        sendPacket(new GeneralAuthDisconnectPacket(reason));
+        //disconnect();
     }
 
     public void disconnect() {
-        packetReadThread.killThread();
         try {
+            keepThreadAlive.set(false);
             socket.close();
             input.close();
             output.close();
@@ -102,8 +103,6 @@ public abstract class GameSocketBase {
 
 
     private class PacketReadThread extends Thread {
-        private AtomicBoolean keepThreadAlive;
-
         public PacketReadThread() {
             keepThreadAlive = new AtomicBoolean(true);
         }
@@ -113,27 +112,19 @@ public abstract class GameSocketBase {
             isConnected.set(true);
             try {
                 while(keepThreadAlive.get()) {
-                    if(input.ready()) {
-                        PacketType packetType = PacketType.values()[input.getNextCorrectIntByte()];
-                        PacketBase packet = packetType.getPacketFromInput(input, worldGameState);
-                        if(packet instanceof GeneralAuthDisconnectPacket) {
-                            isConnected.set(false);
-                            killThread();
-                            socket.close();
-                            notifyDisconnect(((GeneralAuthDisconnectPacket) packet).getDisconnectType());
-                        }
-                        receivedPackets.add(packet);
-
+                    PacketType packetType = PacketType.values()[input.getNextCorrectIntByte()];
+                    PacketBase packet = packetType.getPacketFromInput(input, worldGameState);
+                    if (packet instanceof GeneralAuthDisconnectPacket) {
+                        keepThreadAlive.set(false);
+                        socket.close();
+                        notifyDisconnect(((GeneralAuthDisconnectPacket) packet).getDisconnectType());
                     }
+                    receivedPackets.add(packet);
                 }
             } catch (IOException e) {
                 // Eventually add an way to notify GameState if disconnected for other reasons like PING
                 e.printStackTrace();
             }
-        }
-
-        public void killThread() {
-            keepThreadAlive.set(false);
         }
     }
 

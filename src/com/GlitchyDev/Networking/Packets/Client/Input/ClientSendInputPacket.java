@@ -1,15 +1,13 @@
 package com.GlitchyDev.Networking.Packets.Client.Input;
 
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
-import com.GlitchyDev.Networking.Packets.AbstractPackets.WorldStateModifyingPackets;
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 
 import java.io.IOException;
 
-public class ClientSendInputPacket extends WorldStateModifyingPackets {
+public class ClientSendInputPacket extends PacketBase {
     private final ClientInputType clientInputType;
 
     public ClientSendInputPacket(ClientInputType clientInputType) {
@@ -17,15 +15,11 @@ public class ClientSendInputPacket extends WorldStateModifyingPackets {
         this.clientInputType = clientInputType;
     }
 
-    public ClientSendInputPacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
-        super(inputBitUtility, worldGameState);
+    public ClientSendInputPacket(InputBitUtility inputBitUtility) throws IOException {
+        super(PacketType.CLIENT_SEND_INPUT_PACKET, inputBitUtility);
         clientInputType = ClientInputType.values()[inputBitUtility.getNextCorrectIntByte()];
     }
 
-    @Override
-    public void executeModification(WorldGameState worldGameState) {
-        // Add when relevant,
-    }
 
     @Override
     protected void transmitPacketBody(OutputBitUtility outputBitUtility) throws IOException {

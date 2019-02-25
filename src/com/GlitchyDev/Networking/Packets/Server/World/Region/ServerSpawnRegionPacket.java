@@ -1,7 +1,6 @@
 package com.GlitchyDev.Networking.Packets.Server.World.Region;
 
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
-import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.WorldStateModifyingPackets;
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
@@ -23,7 +22,7 @@ public class ServerSpawnRegionPacket extends WorldStateModifyingPackets {
     }
 
     public ServerSpawnRegionPacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
-        super(inputBitUtility, worldGameState);
+        super(PacketType.SERVER_SPAWN_REGION, inputBitUtility, worldGameState);
         this.worldUUID = inputBitUtility.getNextUUID();
         region = new RegionBase(inputBitUtility, worldGameState, worldUUID);
     }

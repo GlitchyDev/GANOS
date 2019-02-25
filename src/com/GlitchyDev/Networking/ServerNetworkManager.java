@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerNetworkManager {
     private final ServerWorldGameState worldGameState;
-    private final int assignedPort;
 
     private final ConcurrentHashMap<UUID, GameSocketBase> connectedClients;
     private final Collection<UUID> connectedUsers;
@@ -29,7 +28,6 @@ public class ServerNetworkManager {
 
     public ServerNetworkManager(ServerWorldGameState worldGameState, int assignedPort) {
         this.worldGameState = worldGameState;
-        this.assignedPort = assignedPort;
         connectedClients = new ConcurrentHashMap<>();
         connectedUsers = Collections.synchronizedCollection(new ArrayList<>());
         approvedUsers = Collections.synchronizedCollection(new ArrayList<>());
@@ -37,10 +35,10 @@ public class ServerNetworkManager {
     }
 
 
-    public void enableAcceptingClients() {
+    public void enableAcceptingClients(int assignedPort) {
         System.out.println("ServerNetwork: Enabled Login for Users");
-        acceptingClientThread = new AcceptingClientThread(this);
         acceptingClients.set(true);
+        acceptingClientThread = new AcceptingClientThread(this, assignedPort);
         acceptingClientThread.start();
 
     }
@@ -51,20 +49,29 @@ public class ServerNetworkManager {
         acceptingClientThread.stopServerSocket();
     }
 
-    public void disconnectUser(UUID playerUUID, NetworkDisconnectType reason) {
+    public void disconnectUser(UUID playerUUID, NetworkDisconnectType reason) throws IOException {
         System.out.println("ServerNetwork: Disconnected User " + playerUUID + " for " + reason);
         connectedClients.get(playerUUID).disconnect(reason);
         connectedClients.remove(playerUUID);
         connectedUsers.remove(playerUUID);
     }
 
-    public void disconnectAll(NetworkDisconnectType reason) {
+    public void disconnectAll(NetworkDisconnectType reason) throws IOException {
         System.out.println("ServerNetwork: Disconnected All Users for " + reason);
 
-        Iterator<UUID> userIterator = connectedUsers.iterator();
-        while(userIterator.hasNext()) {
-            disconnectUser(userIterator.next(), reason);
+        ArrayList<UUID> clone = new ArrayList<>();
+        for(UUID uuid: connectedUsers) {
+            clone.add(uuid);
         }
+
+        for(UUID uuid: clone) {
+            disconnectUser(uuid, reason);
+        }
+
+    }
+
+    public void closeServer() {
+        acceptingClientThread.stopServerSocket();
     }
 
     public Collection<UUID> getApprovedUsers()
@@ -109,17 +116,21 @@ public class ServerNetworkManager {
 
 
 
+
     private class AcceptingClientThread extends Thread {
         private ServerSocket serverSocket;
         private final ServerNetworkManager serverNetworkManager;
+        private final int assignedPort;
 
-        public AcceptingClientThread(ServerNetworkManager serverNetworkManager) {
+        public AcceptingClientThread(ServerNetworkManager serverNetworkManager, int assignedPort) {
             this.serverNetworkManager = serverNetworkManager;
+            this.assignedPort = assignedPort;
         }
 
         @Override
         public void run() {
             try {
+                System.out.println("ServerNetworkManager: Start Accepting Clients");
                 serverSocket = new ServerSocket(assignedPort);
                 while (acceptingClients.get()) {
                     Socket possibleSocket = serverSocket.accept();
@@ -132,7 +143,7 @@ public class ServerNetworkManager {
 
         public void stopServerSocket() {
             try {
-                disconnectAll(NetworkDisconnectType.SERVER_CLOSE_SOCKET);
+                disconnectAll(NetworkDisconnectType.SERVER_CLOSE);
                 serverSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -141,15 +152,9 @@ public class ServerNetworkManager {
     }
 
     private class ServerAuthenticationThread extends Thread {
-        private final ServerWorldGameState worldGameState;
-        private final Socket socket;
-        private final ServerNetworkManager serverNetworkManager;
         private final ServerGameSocket gameSocket;
 
         public ServerAuthenticationThread(ServerWorldGameState worldGameState, Socket socket, ServerNetworkManager serverNetworkManager) throws IOException {
-            this.worldGameState = worldGameState;
-            this.socket = socket;
-            this.serverNetworkManager = serverNetworkManager;
             gameSocket = new ServerGameSocket(worldGameState,socket,serverNetworkManager);
         }
 
@@ -160,7 +165,7 @@ public class ServerNetworkManager {
                     Thread.yield();
                 }
                 PacketBase initPacket = gameSocket.getUnprocessedPackets().get(0);
-                if(initPacket instanceof  ClientAuthGreetingPacket) {
+                if(initPacket instanceof ClientAuthGreetingPacket) {
                     UUID playerUUID = ((ClientAuthGreetingPacket) initPacket).getPlayerUUID();
                     if (approvedUsers.contains(playerUUID)) {
                         if (connectedClients.contains(playerUUID)) {
@@ -178,6 +183,7 @@ public class ServerNetworkManager {
                         System.out.println("ServerNetwork: User " + playerUUID + " Denied Login, incorrect information");
                     }
                 } else {
+                    System.out.println("Wth is this packet " + initPacket);
 
                 }
             } catch (IOException e) {

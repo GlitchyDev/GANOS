@@ -20,7 +20,7 @@ public class ServerDespawnEntityPacket extends WorldStateModifyingPackets {
     }
 
     public ServerDespawnEntityPacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
-        super(inputBitUtility, worldGameState);
+        super(PacketType.SERVER_DESPAWN_ENTITY, inputBitUtility, worldGameState);
         this.entityUUID = inputBitUtility.getNextUUID();
         this.worldUUID = inputBitUtility.getNextUUID();
     }

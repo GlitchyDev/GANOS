@@ -40,8 +40,16 @@ public abstract class ServerWorldGameState extends WorldGameState {
             }
         }
 
+        for(UUID uuid: serverNetworkManager.getConnectedUsers()) {
+            for(PacketBase packet: serverNetworkManager.getUsersGameSocket(uuid).getUnprocessedPackets()) {
+                processPacket(uuid, packet);
+            }
+        }
+
 
     }
+
+    public abstract void processPacket(UUID uuid, PacketBase packet);
 
     public abstract void onPlayerLogin(UUID playerUUID);
 

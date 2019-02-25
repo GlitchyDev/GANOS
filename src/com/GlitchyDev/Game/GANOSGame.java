@@ -1,7 +1,8 @@
 package com.GlitchyDev.Game;
 
 import com.GlitchyDev.Game.GameStates.Abstract.GameStateBase;
-import com.GlitchyDev.Game.GameStates.DebugClientGameState;
+import com.GlitchyDev.Game.GameStates.Client.DebugClientGameState;
+import com.GlitchyDev.Game.GameStates.Server.DebugServerGameState;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.GameWindow;
 import com.GlitchyDev.Utility.GlobalGameData;
@@ -39,7 +40,7 @@ public class GANOSGame {
                     globalGameData.registerGameState(new DebugClientGameState(globalGameData));
                     break;
                 case "SERVER":
-                    //globalGameData.registerGameState(new DebugGameState2(globalGameData));
+                    globalGameData.registerGameState(new DebugServerGameState(globalGameData));
                     break;
                 case "GENERAL":
                     //globalGameData.registerGameState(new DebugGameState3(globalGameData));

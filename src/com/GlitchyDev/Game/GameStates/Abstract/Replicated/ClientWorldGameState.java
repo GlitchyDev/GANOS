@@ -2,6 +2,7 @@ package com.GlitchyDev.Game.GameStates.Abstract.Replicated;
 
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Game.GameStates.GameStateType;
+import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Sockets.ClientGameSocket;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Utility.GlobalGameData;
@@ -24,18 +25,24 @@ public abstract class ClientWorldGameState extends WorldGameState {
             for (PacketBase packet : gameSocket.getUnprocessedPackets()) {
                 processPacket(packet);
             }
-            processOutput();
         }
     }
 
     public abstract void processPacket(PacketBase packet);
     // ((WorldStateModifyingPackets) packet).executeModification(this);
 
-    public abstract void processOutput();
 
     protected void connectToServer(UUID playerUUID, ClientWorldGameState worldGameState, InetAddress ipAddress, int port) {
         try {
-            this.gameSocket = new ClientGameSocket(playerUUID, worldGameState, ipAddress, port);
+            gameSocket = new ClientGameSocket(playerUUID, worldGameState, ipAddress, port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void disconnectFromServer(NetworkDisconnectType reason) {
+        try {
+            gameSocket.disconnect(reason);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,9 +50,9 @@ public abstract class ClientWorldGameState extends WorldGameState {
 
 
 
-    public abstract void connectedToServer();
+    public abstract void onConnectedToServer();
 
-    public abstract void disconnectedFromServer();
+    public abstract void onDisconnectFromServer();
 
     // Send input to server
 }
