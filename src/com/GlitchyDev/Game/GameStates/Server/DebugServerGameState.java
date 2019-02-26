@@ -7,6 +7,8 @@ import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnec
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
 import com.GlitchyDev.Utility.GlobalGameData;
+import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.World;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ public class DebugServerGameState extends ServerWorldGameState {
             item.setPosition(XOffset,YOffset + i*12,0);
             textItems.add(item);
         }
+
     }
 
 
@@ -111,5 +114,6 @@ public class DebugServerGameState extends ServerWorldGameState {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.exit(0);
     }
 }

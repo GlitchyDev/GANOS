@@ -1,4 +1,4 @@
-package com.GlitchyDev.GameInput;
+package com.GlitchyDev.GameInput.Controllers;
 
 public class XBox360Controller extends GameController {
     private boolean previousLeftTriggerToggleState = false;
@@ -99,83 +99,6 @@ public class XBox360Controller extends GameController {
     public float getRightTrigger() {
         return axes[0].get(5);
     }
-
-    @Override
-    public boolean getToggleSouthButton() {
-        return getSouthButton() && !getPreviousSouthButton();
-    }
-
-    @Override
-    public boolean getToggleEastButton() {
-        return getEastButton() && !getPreviousEastButton();
-    }
-
-    @Override
-    public boolean getToggleWestButton() {
-        return getWestButton() && !getPreviousWestButton();
-    }
-
-    @Override
-    public boolean getToggleNorthButton() {
-        return getNorthButton() && !getPreviousNorthButton();
-    }
-
-    @Override
-    public boolean getToggleLeftBumperButton() {
-        return getLeftBumperButton() && !getPreviousLeftBumperButton();
-    }
-
-    @Override
-    public boolean getToggleRightBumperButton() {
-        return getRightBumperButton() && !getPreviousRightBumperButton();
-    }
-
-    @Override
-    public boolean getToggleLeftHomeButton() {
-        return getLeftHomeButton() && !getPreviousLeftHomeButton();
-    }
-
-    @Override
-    public boolean getToggleRightHomeButton() {
-        return getRightHomeButton() && !getPreviousRightHomeButton();
-    }
-
-    @Override
-    public boolean getToggleLeftJoyStickButton() {
-        return getLeftJoyStickButton() && !getPreviousLeftJoyStickButton();
-    }
-
-    @Override
-    public boolean getToggleRightJoyStickButton() {
-        return getRightJoyStickButton() && !getPreviousRightJoyStickButton();
-    }
-
-    @Override
-    public ControllerDirectionPad getToggleDirectionPad() {
-        if(getPreviousDirectionPad() == ControllerDirectionPad.NONE && getDirectionPad() != ControllerDirectionPad.NONE) {
-            return getDirectionPad();
-        }
-        return ControllerDirectionPad.NONE;
-    }
-
-
-
-    @Override
-    public boolean getToggleLeftTrigger() {
-        return (currentLeftTriggerToggleState && !previousLeftTriggerToggleState);
-    }
-
-    @Override
-    public boolean getToggleRightTrigger() {
-        return (currentRightTriggerToggleState && !previousRightTriggerToggleState);
-
-    }
-
-    @Override
-    public boolean getToggleCurrentlyActive() {
-        return (currentlyActive && !previousCurrentlyActive);
-    }
-
 
     // Previous
 

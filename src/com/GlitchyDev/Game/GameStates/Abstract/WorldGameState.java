@@ -23,14 +23,6 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
 
-    public synchronized void addWorld(World world) {
-        currentWorlds.put(world.getWorldID(),world);
-    }
-
-    public synchronized void removeWorld(UUID worldUUID) {
-        currentWorlds.remove(worldUUID);
-    }
-
     public synchronized boolean hasWorld(UUID worldUUID) {
         return currentWorlds.containsKey(worldUUID);
     }
@@ -47,6 +39,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
         return getWorld(worldUUID).getRegions().get(regionUUID);
     }
 
+
     public synchronized boolean isRegionAtLocation(Location location) {
         return getWorld(location.getWorldUUID()).isRegionAtLocation(location);
     }
@@ -54,6 +47,46 @@ public abstract class WorldGameState extends EnvironmentGameState {
     public synchronized RegionBase getRegionAtLocation(Location location) {
         return getWorld(location.getWorldUUID()).getRegionAtLocation(location);
     }
+
+    public synchronized boolean isEntityAtLocation(Location location) {
+        for(EntityBase entity: getWorld(location.getWorldUUID()).getRegionAtLocation(location).getEntities()) {
+            if(entity.getLocation().equals(location)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized EntityBase getEntityAtLocation(Location location) {
+        for(EntityBase entity: getWorld(location.getWorldUUID()).getRegionAtLocation(location).getEntities()) {
+            if(entity.getLocation().equals(location)) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
+    public synchronized boolean isBlockAtLocation(Location location) {
+        return getWorld(location.getWorldUUID()).isRegionAtLocation(location);
+    }
+
+    public synchronized BlockBase getBlockAtLocation(Location location) {
+        Location offset = getWorld(location.getWorldUUID()).getRegionAtLocation(location).getLocation().getLocationDifference(location);
+        return getWorld(location.getWorldUUID()).getRegionAtLocation(location).getBlockRelative(offset);
+    }
+
+
+
+    //
+
+    public synchronized void addWorld(World world) {
+        currentWorlds.put(world.getWorldID(),world);
+    }
+
+    public synchronized void removeWorld(UUID worldUUID) {
+        currentWorlds.remove(worldUUID);
+    }
+
 
     public synchronized void spawnRegion(RegionBase regionBase, UUID worldUUID) {
         getWorld(worldUUID).getRegions().put(regionBase.getRegionUUID(),regionBase);
@@ -102,17 +135,17 @@ public abstract class WorldGameState extends EnvironmentGameState {
         // Do nothing
     }
 
-    public void changeDirectionEntity(UUID entityUUID, UUID worldUUID, Direction direction) {
+    public synchronized void changeDirectionEntity(UUID entityUUID, UUID worldUUID, Direction direction) {
 
     }
 
-    public void setBlocks(Collection<BlockBase> blocks) {
+    public synchronized void setBlocks(Collection<BlockBase> blocks) {
         for(BlockBase block: blocks) {
             setBlock(block);
         }
     }
 
-    public void setBlock(BlockBase block) {
+    public synchronized void setBlock(BlockBase block) {
         World world = getWorld(block.getLocation().getWorldUUID());
         RegionBase region = world.getRegionAtLocation(block.getLocation());
         Location relativeLocation = region.getLocation().getLocationDifference(block.getLocation());

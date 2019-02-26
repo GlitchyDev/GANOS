@@ -1,27 +1,12 @@
-package com.GlitchyDev.GameInput;
+package com.GlitchyDev.GameInput.Controllers;
 
 public class PS4Controller extends GameController {
-    private boolean previousLeftTriggerToggleState = false;
-    private boolean currentLeftTriggerToggleState = false;
-    private boolean previousRightTriggerToggleState = false;
-    private boolean currentRightTriggerToggleState = false;
+
 
     public PS4Controller(int controllerID) {
         super(controllerID);
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-        previousLeftTriggerToggleState = currentLeftTriggerToggleState;
-        currentLeftTriggerToggleState = getLeftTrigger() >= 0.95f;
-
-        previousRightTriggerToggleState = currentRightTriggerToggleState;
-        currentRightTriggerToggleState = getRightTrigger() >= 0.95f;
-
-
-
-    }
 
     // South
     public boolean getEastButton() {
@@ -117,82 +102,6 @@ public class PS4Controller extends GameController {
     @Override
     public float getRightTrigger() {
         return axes[0].get(4);
-    }
-
-    @Override
-    public boolean getToggleSouthButton() {
-        return getSouthButton() && !getPreviousSouthButton();
-    }
-
-    @Override
-    public boolean getToggleEastButton() {
-        return getEastButton() && !getPreviousEastButton();
-    }
-
-    @Override
-    public boolean getToggleWestButton() {
-        return getWestButton() && !getPreviousWestButton();
-    }
-
-    @Override
-    public boolean getToggleNorthButton() {
-        return getNorthButton() && !getPreviousNorthButton();
-    }
-
-    @Override
-    public boolean getToggleLeftBumperButton() {
-        return getLeftBumperButton() && !getPreviousLeftBumperButton();
-    }
-
-    @Override
-    public boolean getToggleRightBumperButton() {
-        return getRightBumperButton() && !getPreviousRightBumperButton();
-    }
-
-    @Override
-    public boolean getToggleLeftHomeButton() {
-        return getLeftHomeButton() && !getPreviousLeftHomeButton();
-    }
-
-    @Override
-    public boolean getToggleRightHomeButton() {
-        return getRightHomeButton() && !getPreviousRightHomeButton();
-    }
-
-    @Override
-    public boolean getToggleLeftJoyStickButton() {
-        return getLeftJoyStickButton() && !getPreviousLeftJoyStickButton();
-    }
-
-    @Override
-    public boolean getToggleRightJoyStickButton() {
-        return getRightJoyStickButton() && !getPreviousRightJoyStickButton();
-    }
-
-    @Override
-    public ControllerDirectionPad getToggleDirectionPad() {
-        if(getPreviousDirectionPad() == ControllerDirectionPad.NONE && getDirectionPad() != ControllerDirectionPad.NONE) {
-            return getDirectionPad();
-        }
-        return ControllerDirectionPad.NONE;
-    }
-
-
-
-    @Override
-    public boolean getToggleLeftTrigger() {
-        return (currentLeftTriggerToggleState && !previousLeftTriggerToggleState);
-    }
-
-    @Override
-    public boolean getToggleRightTrigger() {
-        return (currentRightTriggerToggleState && !previousRightTriggerToggleState);
-
-    }
-
-    @Override
-    public boolean getToggleCurrentlyActive() {
-        return (currentlyActive && !previousCurrentlyActive);
     }
 
 

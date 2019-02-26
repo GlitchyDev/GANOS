@@ -1,4 +1,4 @@
-package com.GlitchyDev.GameInput;
+package com.GlitchyDev.GameInput.Controllers;
 
 
 import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
@@ -14,16 +14,24 @@ import java.util.HashMap;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+/**
+ * ADD KEY HOLD FRAME COUNT AND time since held
+ */
 public abstract class GameController {
     // For Input
     private final int controllerID;
-    private String name;
-    ByteBuffer[] buttons =  new ByteBuffer[2];
-    FloatBuffer[] axes = new FloatBuffer[2];
-    boolean currentlyActive = false;
-    boolean previousCurrentlyActive = false;
+    protected String name;
+    protected ByteBuffer[] buttons =  new ByteBuffer[2];
+    protected FloatBuffer[] axes = new FloatBuffer[2];;
     // For Visualization
-    private HashMap<String, SpriteItem> buttonSprites = new HashMap<>();
+    private final HashMap<String, SpriteItem> buttonSprites = new HashMap<>();
+    // For Toggle Tracking
+    protected boolean currentlyActive = false;
+    protected boolean previousCurrentlyActive = false;
+    private boolean previousLeftTriggerToggleState = false;
+    private boolean currentLeftTriggerToggleState = false;
+    private boolean previousRightTriggerToggleState = false;
+    private boolean currentRightTriggerToggleState = false;
 
 
 
@@ -171,8 +179,13 @@ public abstract class GameController {
             buttons[0] = glfwGetJoystickButtons(controllerID);
             axes[0] = glfwGetJoystickAxes(controllerID);
             name = glfwGetJoystickName(controllerID);
-
         }
+
+        previousLeftTriggerToggleState = currentLeftTriggerToggleState;
+        currentLeftTriggerToggleState = getLeftTrigger() >= 0.95f;
+
+        previousRightTriggerToggleState = currentRightTriggerToggleState;
+        currentRightTriggerToggleState = getRightTrigger() >= 0.95f;
 
 
     }
@@ -237,14 +250,105 @@ public abstract class GameController {
         int southWestDirectionId = getDirectionPad() == ControllerDirectionPad.SOUTH_WEST ? (getToggleDirectionPad() == ControllerDirectionPad.SOUTH_WEST ? 1 : 2) : 0;
         items.add(buttonSprites.get("SouthWest" + southWestDirectionId));
 
-
-
-
-
-
-
-        //renderer.renderSprites(gameWindow,shader,items);
+        renderer.renderSprites(gameWindow,shader,items);
     }
+
+    public boolean getToggleSouthButton() {
+        return getSouthButton() && !getPreviousSouthButton();
+    }
+
+    public boolean getToggleEastButton() {
+        return getEastButton() && !getPreviousEastButton();
+    }
+
+    public boolean getToggleWestButton() {
+        return getWestButton() && !getPreviousWestButton();
+    }
+
+    public boolean getToggleNorthButton() {
+        return getNorthButton() && !getPreviousNorthButton();
+    }
+
+    public boolean getToggleLeftBumperButton() {
+        return getLeftBumperButton() && !getPreviousLeftBumperButton();
+    }
+
+    public boolean getToggleRightBumperButton() {
+        return getRightBumperButton() && !getPreviousRightBumperButton();
+    }
+
+    public boolean getToggleLeftHomeButton() {
+        return getLeftHomeButton() && !getPreviousLeftHomeButton();
+    }
+
+    public boolean getToggleRightHomeButton() {
+        return getRightHomeButton() && !getPreviousRightHomeButton();
+    }
+
+    public boolean getToggleLeftJoyStickButton() {
+        return getLeftJoyStickButton() && !getPreviousLeftJoyStickButton();
+    }
+
+    public boolean getToggleRightJoyStickButton() {
+        return getRightJoyStickButton() && !getPreviousRightJoyStickButton();
+    }
+
+    public ControllerDirectionPad getToggleDirectionPad() {
+        if(getPreviousDirectionPad() == ControllerDirectionPad.NONE && getDirectionPad() != ControllerDirectionPad.NONE) {
+            return getDirectionPad();
+        }
+        return ControllerDirectionPad.NONE;
+    }
+
+    public boolean getToggleLeftTrigger() {
+        return (currentLeftTriggerToggleState && !previousLeftTriggerToggleState);
+    }
+
+    public boolean getToggleRightTrigger() {
+        return (currentRightTriggerToggleState && !previousRightTriggerToggleState);
+
+    }
+
+    public float getRightJoyStickXDifference() {
+        return getPreviousRightJoyStickX() - getRightJoyStickX();
+    }
+
+    public float getRightJoyStickYDifference() {
+        return getPreviousRightJoyStickY() - getRightJoyStickY();
+    }
+
+    public float getLeftJoyStickXDifference() {
+        return getPreviousLeftJoyStickX() - getLeftJoyStickX();
+    }
+
+    public float getLeftJoyStickYDifference() {
+        return getPreviousLeftJoyStickY() - getLeftJoyStickY();
+    }
+
+    public float getRightTriggerDifference() {
+        return getPreviousRightTrigger() - getRightTrigger();
+    }
+
+
+    public float getLeftTriggerDifference() {
+        return getPreviousLeftTrigger() - getLeftTrigger();
+    }
+
+    public boolean getToggleCurrentlyActive() {
+        return (currentlyActive && !previousCurrentlyActive);
+    }
+
+
+    public boolean isCurrentlyActive() {
+        return currentlyActive;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getControllerID() { return controllerID; }
+
 
     private ByteBuffer clone(ByteBuffer original) {
         ByteBuffer clone = ByteBuffer.allocate(original.capacity());
@@ -263,6 +367,8 @@ public abstract class GameController {
         clone.flip();
         return clone;
     }
+
+
 
     public abstract boolean getSouthButton();
     public abstract boolean getEastButton();
@@ -287,39 +393,6 @@ public abstract class GameController {
 
     public abstract float getLeftTrigger();
     public abstract float getRightTrigger();
-
-    public boolean isCurrentlyActive() {
-        return currentlyActive;
-    }
-    public String getName() {
-        return name;
-    }
-    public int getControllerID() { return controllerID; }
-// Get Toggled
-
-    public abstract boolean getToggleSouthButton();
-    public abstract boolean getToggleEastButton();
-    public abstract boolean getToggleWestButton();
-    public abstract boolean getToggleNorthButton();
-
-    public abstract boolean getToggleLeftBumperButton();
-    public abstract boolean getToggleRightBumperButton();
-    public abstract boolean getToggleLeftHomeButton();
-    public abstract boolean getToggleRightHomeButton();
-
-    public abstract boolean getToggleLeftJoyStickButton();
-    public abstract boolean getToggleRightJoyStickButton();
-
-    public abstract ControllerDirectionPad getToggleDirectionPad();
-
-    public abstract boolean getToggleLeftTrigger();
-    public abstract boolean getToggleRightTrigger();
-
-    public abstract boolean getToggleCurrentlyActive();
-
-
-
-
 
     // Get Previous
     public abstract boolean getPreviousSouthButton();

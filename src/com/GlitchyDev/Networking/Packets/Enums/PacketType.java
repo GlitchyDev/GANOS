@@ -31,6 +31,9 @@ public enum PacketType {
     // SERVER
     // Authentication
     SERVER_AUTH_ACCEPT_CLIENT,
+    // World
+    SERVER_SPAWN_WORLD,
+    SERVER_DESPAWN_WORLD,
     // Region
     SERVER_SPAWN_REGION,
     SERVER_DESPAWN_REGION,

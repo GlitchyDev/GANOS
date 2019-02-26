@@ -4,6 +4,7 @@ import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Game.GameStates.GameStateType;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
+import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Networking.ServerNetworkManager;
 import com.GlitchyDev.Utility.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
@@ -11,7 +12,9 @@ import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.World;
 
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -56,39 +59,63 @@ public abstract class ServerWorldGameState extends WorldGameState {
     public abstract void onPlayerLogout(UUID playerUUID, NetworkDisconnectType reason);
 
 
+
+    @Override
+    public synchronized void addWorld(World world) {
+        super.addWorld(world);
+        // No replication needed, players won't start initially in a newly made world, must be manually moved
+    }
+
+    @Override
+    public synchronized void removeWorld(UUID worldUUID) {
+        super.removeWorld(worldUUID);
+        // No replication needed. Players won't be in a world that is removed
+    }
+
+
     @Override
     public synchronized void spawnRegion(RegionBase regionBase, UUID worldUUID) {
         super.spawnRegion(regionBase, worldUUID);
+        // No replication needed, Players wouldn't be able to see it by default
     }
 
     @Override
     public synchronized void despawnRegion(UUID regionUUID, UUID worldUUID) {
         super.despawnRegion(regionUUID, worldUUID);
+        // No replication needed, Regions should not be despawned during normal play
     }
 
 
     @Override
     public synchronized void spawnEntity(EntityBase entity) {
+        // This is replicated, mark for Entities who can view its region
         super.spawnEntity(entity);
     }
 
     @Override
     public synchronized void despawnEntity(UUID entityUUID, UUID worldUUID) {
+        // This is replicated, mark for entities who can view its region
         super.despawnEntity(entityUUID, worldUUID);
     }
 
     @Override
     public synchronized void moveEntity(UUID entityUUID, UUID worldUUID, Location oldLocation, Location newLocation) {
+        // This is replicated, mark for entities who can view its region
+        // Also mark if it enters and or exits Regions, update viewing
         super.moveEntity(entityUUID, worldUUID, oldLocation, newLocation);
     }
 
     @Override
     public synchronized void changeDirectionEntity(UUID entityUUID, UUID worldUUID, Direction direction) {
+        // This is replicated, mark for entities who can view its region
         super.changeDirectionEntity(entityUUID, worldUUID, direction);
     }
 
     @Override
     public synchronized void setBlock(BlockBase block) {
+        // This is replicated, mark for entities who can view it
         super.setBlock(block);
     }
+
+
 }

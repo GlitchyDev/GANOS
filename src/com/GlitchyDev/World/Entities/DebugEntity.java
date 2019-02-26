@@ -33,11 +33,6 @@ public class DebugEntity extends EntityBase {
     }
 
     @Override
-    public EntityBase getCopy() {
-        return new DebugEntity(worldGameState, UUID.randomUUID(), getCurrentRegionUUID(), getLocation().clone(), getDirection());
-    }
-
-    @Override
     public boolean equals(Object obj) {
         return false;
     }

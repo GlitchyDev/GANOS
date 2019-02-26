@@ -3,7 +3,10 @@ package com.GlitchyDev.World.Entities.AbstractEntities;
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.TriggerableBlock;
 import com.GlitchyDev.World.Direction;
+import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.RegionBase;
@@ -69,7 +72,52 @@ public abstract class EntityBase {
         this.direction = Direction.values()[inputBitUtility.getNextCorrectedIntBit(3)];
     }
 
+
+
     public abstract void tick();
+
+    /**
+     *
+     * @param newLocation
+     * @param movementType
+     * @return If successful
+     */
+    public boolean attemptMove(Location newLocation, EntityMovementType movementType) {
+        BlockBase currentBlock = worldGameState.getBlockAtLocation(getLocation());
+        if(currentBlock instanceof TriggerableBlock) {
+            if(!((TriggerableBlock) currentBlock).attemptExitBlock(movementType,this)) {
+                return false;
+            }
+        }
+        BlockBase nextBlock = worldGameState.getBlockAtLocation(newLocation);
+        if(nextBlock instanceof TriggerableBlock) {
+            if(!((TriggerableBlock) nextBlock).attemptExitBlock(movementType,this)) {
+                return false;
+            }
+        }
+        // Can move
+        Location oldLocation = getLocation();
+        move(newLocation, movementType);
+        worldGameState.moveEntity(uuid,getLocation().getWorldUUID(),oldLocation,newLocation);
+        return true;
+    }
+
+    /**
+     *
+     * @param newLocation
+     * @param movementType
+     */
+    public void move(Location newLocation, EntityMovementType movementType) {
+        BlockBase currentBlock = worldGameState.getBlockAtLocation(getLocation());
+        if(currentBlock instanceof TriggerableBlock) {
+            ((TriggerableBlock) currentBlock).exitBlockSuccessfully(movementType,this);
+        }
+        BlockBase nextBlock = worldGameState.getBlockAtLocation(newLocation);
+        if(nextBlock instanceof TriggerableBlock) {
+            ((TriggerableBlock) newLocation).enterBlockSccessfully(movementType,this);
+        }
+
+    }
 
     /**
      * Writes file to IO and Packet
@@ -89,14 +137,6 @@ public abstract class EntityBase {
         outputBitUtility.writeNextCorrectedBitsInt(direction.ordinal(),3);
 
     }
-
-    // DO NOT COPY UUID FOR THE LOVE OF CHRIST HOLY FUCK
-    public abstract EntityBase getCopy();
-
-    // Copmpare basic stuff here, and super it for further editing
-    public abstract boolean equals(Object obj);
-
-    // Add a move method that will move it along regions, triggering triggerable blocks and shit like its supposed too
 
 
 

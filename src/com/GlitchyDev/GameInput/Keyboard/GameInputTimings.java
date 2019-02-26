@@ -1,9 +1,12 @@
-package com.GlitchyDev.GameInput;
+package com.GlitchyDev.GameInput.Keyboard;
+
+import com.GlitchyDev.GameInput.Keyboard.GameInput;
 
 import java.util.HashMap;
 
 /**
  * Takes the information gained from GameInput, and allows for timings to be associated with keys
+ * ADD ABILITY TO CHECK KEYBOARD HELD TIME AND FRAME TIME
  */
 public class GameInputTimings {
     private final GameInput gameInput;
@@ -13,8 +16,7 @@ public class GameInputTimings {
     private int activeMouseButton3Time = 0;
     private double currentScroll = 0.0;
 
-    public GameInputTimings(GameInput gameInput)
-    {
+    public GameInputTimings(GameInput gameInput) {
 
         this.gameInput = gameInput;
         for(int i = 0; i < GameInput.KEYBOARD_SIZE; i++) {

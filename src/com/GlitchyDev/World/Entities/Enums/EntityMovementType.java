@@ -4,5 +4,7 @@ public enum EntityMovementType {
     WALKING,
     RUNNING,
     FALLING,
+    TELEPORT,
+    PUSHED,
     DEBUG;
 }

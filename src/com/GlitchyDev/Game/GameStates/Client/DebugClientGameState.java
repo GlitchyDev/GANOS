@@ -2,6 +2,8 @@ package com.GlitchyDev.Game.GameStates.Client;
 
 import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ClientWorldGameState;
 import com.GlitchyDev.Game.GameStates.GameStateType;
+import com.GlitchyDev.GameInput.Controllers.GameController;
+import com.GlitchyDev.GameInput.Controllers.PS4Controller;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.WorldStateModifyingPackets;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
@@ -19,6 +21,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_C;
 public class DebugClientGameState extends ClientWorldGameState {
     private final ArrayList<TextItem> textItems;
     private boolean isConnected = false;
+    private GameController gameController;
 
     public DebugClientGameState(GlobalGameData globalGameDataBase) {
         super(globalGameDataBase, GameStateType.DEBUG_CLIENT);
@@ -33,6 +36,9 @@ public class DebugClientGameState extends ClientWorldGameState {
             item.setPosition(XOffset,YOffset + i*12,0);
             textItems.add(item);
         }
+
+        gameController = new PS4Controller(0);
+
 
     }
 
@@ -49,7 +55,7 @@ public class DebugClientGameState extends ClientWorldGameState {
             }
         } else {
             textItems.get(0).setText("Not Connected");
-            textItems.get(1).setText("" + gameInput.getKeyValue(GLFW_KEY_C));
+            textItems.get(1).setText("" + gameInput.getKeyValue(GLFW_KEY_C) + "." + gameInputTimings.getActiveMouseButton1Time());
             if(lastKey == 0 && gameInput.getKeyValue(GLFW_KEY_C) == 1) {
                 try {
                     System.out.println("Attempt connection to server");
@@ -59,6 +65,10 @@ public class DebugClientGameState extends ClientWorldGameState {
                 }
             }
             lastKey = gameInput.getKeyValue(GLFW_KEY_C);
+        }
+
+        if(gameInputTimings.getActiveMouseButton1Time() > 60) {
+            System.exit(0);
         }
     }
 
@@ -110,6 +120,8 @@ public class DebugClientGameState extends ClientWorldGameState {
 
     @Override
     public void windowClose() {
-        disconnectFromServer(NetworkDisconnectType.CLIENT_WINDOW_CLOSED);
+        if(isConnected) {
+            disconnectFromServer(NetworkDisconnectType.CLIENT_WINDOW_CLOSED);
+        }
     }
 }

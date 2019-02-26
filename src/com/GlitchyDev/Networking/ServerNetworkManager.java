@@ -34,6 +34,11 @@ public class ServerNetworkManager {
 
     }
 
+    public void sendPacketToAll(PacketBase packet) throws IOException {
+        for(UUID user: connectedUsers) {
+            getUsersGameSocket(user).sendPacket(packet);
+        }
+    }
 
     public void enableAcceptingClients(int assignedPort) {
         System.out.println("ServerNetwork: Enabled Login for Users");

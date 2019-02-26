@@ -1,4 +1,4 @@
-package com.GlitchyDev.GameInput;
+package com.GlitchyDev.GameInput.Controllers;
 
 
 import com.GlitchyDev.World.Direction;

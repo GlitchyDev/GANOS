@@ -1,4 +1,8 @@
-package com.GlitchyDev.GameInput;
+package com.GlitchyDev.GameInput.Controllers;
+
+import com.GlitchyDev.GameInput.Controllers.GameController;
+import com.GlitchyDev.GameInput.Controllers.PS4Controller;
+import com.GlitchyDev.GameInput.Controllers.XBox360Controller;
 
 import java.util.ArrayList;
 
