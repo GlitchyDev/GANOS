@@ -117,11 +117,6 @@ public class ServerNetworkManager {
         worldGameState.onPlayerLogout(belongingPlayerUUID, reason);
     }
 
-
-
-
-
-
     private class AcceptingClientThread extends Thread {
         private ServerSocket serverSocket;
         private final ServerNetworkManager serverNetworkManager;

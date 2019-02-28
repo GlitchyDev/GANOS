@@ -21,6 +21,7 @@ import java.util.*;
 public class RegionBase {
     public static final RegionFileVersion CURRENT_VERSION = RegionFileVersion.VERSION_0;
     public static final RegionFileVersion LEAST_SUPPORTED_VERSION = RegionFileVersion.VERSION_0;
+    private final WorldGameState worldGameState;
     private final UUID worldUUID;
 
     private final UUID regionUUID; // Identifies the region as UNIQUE
@@ -29,7 +30,8 @@ public class RegionBase {
     private Location location;     // Placement of the bottom upper right hand corner of the region
 
 
-    public RegionBase(WorldGameState worldGameState, UUID worldUUID, int width, int length, int height) {
+    public RegionBase(WorldGameState worldGameState, UUID worldUUID, int width, int height, int length) {
+        this.worldGameState = worldGameState;
         this.worldUUID = worldUUID;
 
         this.regionUUID = UUID.randomUUID();
@@ -37,14 +39,25 @@ public class RegionBase {
         this.blocks = new BlockBase[height][width][length];
         this.entities = new ArrayList<>();
 
-        populateRegions(worldGameState);
+        populateRegions();
+    }
+
+    public RegionBase createCopy() {
+        RegionBase copy = new RegionBase(worldGameState, worldUUID, getWidth(), getLength(), getHeight());
+        for(int y = 0; y < getHeight(); y++) {
+            for(int x = 0; x < getWidth(); x++) {
+                for(int z = 0; z < getLength(); z++) {
+                    copy.setBlockRelative(x,y,z, getBlockRelative(x,y,z));
+                }
+            }
+        }
+        return copy;
     }
 
     /**
      * Fills newly created regions so they literally can't be null
-     * @param worldGameState
      */
-    private void populateRegions(WorldGameState worldGameState) {
+    private void populateRegions() {
         for(int y = 0; y < getHeight(); y++) {
             for(int x = 0; x < getWidth(); x++) {
                 for(int z = 0; z < getLength(); z++) {
@@ -55,6 +68,7 @@ public class RegionBase {
     }
 
     public RegionBase(InputBitUtility inputBitUtility, WorldGameState worldGameState, UUID worldUUID) throws IOException {
+        this.worldGameState = worldGameState;
         this.worldUUID = worldUUID;
 
         RegionFileVersion version = RegionFileVersion.values()[inputBitUtility.getNextCorrectIntByte()];

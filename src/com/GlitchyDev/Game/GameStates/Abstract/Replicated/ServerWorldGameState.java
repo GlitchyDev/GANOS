@@ -16,6 +16,7 @@ import com.GlitchyDev.World.World;
 
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
 public abstract class ServerWorldGameState extends WorldGameState {
@@ -28,26 +29,18 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
     @Override
     public void logic() {
+        for(UUID playerUUID: serverNetworkManager.getConnectedUsers()) {
+            ArrayList<PacketBase> packetsFromUser = serverNetworkManager.getUsersGameSocket(playerUUID).getUnprocessedPackets();
+            for(PacketBase packet: packetsFromUser) {
+                processPacket(playerUUID, packet);
+            }
+        }
         for(UUID worldUUID: getWorlds()) {
             getWorld(worldUUID).tick();
         }
 
-        for(UUID playerUUID: serverNetworkManager.getConnectedUsers()) {
-            ArrayList<PacketBase> packetsFromUser = serverNetworkManager.getUsersGameSocket(playerUUID).getUnprocessedPackets();
-            for(PacketBase packet: packetsFromUser) {
-                switch(packet.getPacketType()) {
-                    case CLIENT_SEND_INPUT_PACKET:
 
-                        break;
-                }
-            }
-        }
-
-        for(UUID uuid: serverNetworkManager.getConnectedUsers()) {
-            for(PacketBase packet: serverNetworkManager.getUsersGameSocket(uuid).getUnprocessedPackets()) {
-                processPacket(uuid, packet);
-            }
-        }
+        // Replicate
 
 
     }
@@ -61,58 +54,54 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
 
     @Override
-    public synchronized void addWorld(World world) {
+    public void addWorld(World world) {
         super.addWorld(world);
         // No replication needed, players won't start initially in a newly made world, must be manually moved
     }
 
     @Override
-    public synchronized void removeWorld(UUID worldUUID) {
+    public void removeWorld(UUID worldUUID) {
         super.removeWorld(worldUUID);
         // No replication needed. Players won't be in a world that is removed
     }
 
 
     @Override
-    public synchronized void spawnRegion(RegionBase regionBase, UUID worldUUID) {
+    public void spawnRegion(RegionBase regionBase, UUID worldUUID) {
         super.spawnRegion(regionBase, worldUUID);
         // No replication needed, Players wouldn't be able to see it by default
     }
 
     @Override
-    public synchronized void despawnRegion(UUID regionUUID, UUID worldUUID) {
+    public void despawnRegion(UUID regionUUID, UUID worldUUID) {
         super.despawnRegion(regionUUID, worldUUID);
         // No replication needed, Regions should not be despawned during normal play
     }
 
 
     @Override
-    public synchronized void spawnEntity(EntityBase entity) {
+    public void spawnEntity(EntityBase entity) {
         // This is replicated, mark for Entities who can view its region
         super.spawnEntity(entity);
     }
 
     @Override
-    public synchronized void despawnEntity(UUID entityUUID, UUID worldUUID) {
+    public void despawnEntity(UUID entityUUID, UUID worldUUID) {
         // This is replicated, mark for entities who can view its region
         super.despawnEntity(entityUUID, worldUUID);
     }
 
-    @Override
-    public synchronized void moveEntity(UUID entityUUID, UUID worldUUID, Location oldLocation, Location newLocation) {
+    public void replicateMoveEntity(UUID entityUUID, UUID worldUUID, Location oldLocation, Location newLocation) {
         // This is replicated, mark for entities who can view its region
         // Also mark if it enters and or exits Regions, update viewing
-        super.moveEntity(entityUUID, worldUUID, oldLocation, newLocation);
     }
 
-    @Override
-    public synchronized void changeDirectionEntity(UUID entityUUID, UUID worldUUID, Direction direction) {
+    public void replicateChangeDirectionEntity(UUID entityUUID, Direction direction) {
         // This is replicated, mark for entities who can view its region
-        super.changeDirectionEntity(entityUUID, worldUUID, direction);
     }
 
     @Override
-    public synchronized void setBlock(BlockBase block) {
+    public void setBlock(BlockBase block) {
         // This is replicated, mark for entities who can view it
         super.setBlock(block);
     }

@@ -1,5 +1,6 @@
 package com.GlitchyDev.World.Entities.AbstractEntities;
 
+import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
@@ -95,10 +96,7 @@ public abstract class EntityBase {
                 return false;
             }
         }
-        // Can move
-        Location oldLocation = getLocation();
         move(newLocation, movementType);
-        worldGameState.moveEntity(uuid,getLocation().getWorldUUID(),oldLocation,newLocation);
         return true;
     }
 
@@ -117,6 +115,19 @@ public abstract class EntityBase {
             ((TriggerableBlock) newLocation).enterBlockSccessfully(movementType,this);
         }
 
+        Location oldLocation = getLocation();
+        setLocation(newLocation);
+
+        if(worldGameState instanceof ServerWorldGameState) {
+            ((ServerWorldGameState) worldGameState).replicateMoveEntity(uuid,getLocation().getWorldUUID(),oldLocation,newLocation);
+        }
+    }
+
+    public void setDirection(Direction newDirection) {
+        this.direction = newDirection;
+        if(worldGameState instanceof ServerWorldGameState) {
+            ((ServerWorldGameState) worldGameState).replicateChangeDirectionEntity(uuid,newDirection);
+        }
     }
 
     /**
@@ -165,10 +176,6 @@ public abstract class EntityBase {
         return direction;
     }
 
-    // Replicate!
-    public void setDirection(Direction direction) {
-        this.direction = direction;
-    }
 
     public EntityType getEntityType() {
         return entityType;
