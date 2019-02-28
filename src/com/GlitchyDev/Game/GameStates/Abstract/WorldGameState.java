@@ -4,7 +4,6 @@ import com.GlitchyDev.Game.GameStates.GameStateType;
 import com.GlitchyDev.Utility.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
-import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.RegionBase;
@@ -88,14 +87,14 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
 
-    public void spawnRegion(RegionBase regionBase, UUID worldUUID) {
-        getWorld(worldUUID).getRegions().put(regionBase.getRegionUUID(),regionBase);
+    public void spawnRegion(RegionBase regionBase) {
+        getWorld(regionBase.getWorldUUID()).getRegions().put(regionBase.getRegionUUID(),regionBase);
         for(EntityBase entity: regionBase.getEntities()) {
             spawnEntity(entity);
         }
         for(BlockBase block: regionBase.getBlocksArray()) {
             if(block instanceof TickableBlock) {
-                getWorld(worldUUID).getTickableBlocks().put(block.getLocation(), (TickableBlock) block);
+                getWorld(regionBase.getWorldUUID()).getTickableBlocks().put(block.getLocation(), (TickableBlock) block);
             }
         }
     }

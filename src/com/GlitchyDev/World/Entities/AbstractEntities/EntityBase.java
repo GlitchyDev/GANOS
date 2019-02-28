@@ -7,8 +7,10 @@ import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TriggerableBlock;
 import com.GlitchyDev.World.Direction;
+import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
+import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.RegionBase;
 
@@ -74,8 +76,11 @@ public abstract class EntityBase {
     }
 
 
+    public abstract void onSpawn(SpawnReason spawnReason);
 
     public abstract void tick();
+
+    public abstract void onDespawn(DespawnReason despawnReason);
 
     /**
      *
@@ -119,14 +124,14 @@ public abstract class EntityBase {
         setLocation(newLocation);
 
         if(worldGameState instanceof ServerWorldGameState) {
-            ((ServerWorldGameState) worldGameState).replicateMoveEntity(uuid,getLocation().getWorldUUID(),oldLocation,newLocation);
+            ((ServerWorldGameState) worldGameState).replicateMoveEntity(uuid,oldLocation,newLocation);
         }
     }
 
     public void setDirection(Direction newDirection) {
         this.direction = newDirection;
         if(worldGameState instanceof ServerWorldGameState) {
-            ((ServerWorldGameState) worldGameState).replicateChangeDirectionEntity(uuid,newDirection);
+            ((ServerWorldGameState) worldGameState).replicateChangeDirectionEntity(uuid,getLocation().getWorldUUID(),newDirection);
         }
     }
 

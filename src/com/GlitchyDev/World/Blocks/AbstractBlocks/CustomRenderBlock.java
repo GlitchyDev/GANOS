@@ -1,6 +1,8 @@
 package com.GlitchyDev.World.Blocks.AbstractBlocks;
 
+import com.GlitchyDev.Rendering.Renderer;
+
 public interface CustomRenderBlock {
-    public void render();
+    void render(Renderer renderer);
 
 }

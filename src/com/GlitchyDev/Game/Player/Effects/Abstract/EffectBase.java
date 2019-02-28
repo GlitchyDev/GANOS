@@ -1,5 +1,6 @@
-package com.GlitchyDev.Game.Player.Effects;
+package com.GlitchyDev.Game.Player.Effects.Abstract;
 
+import com.GlitchyDev.Game.Player.Effects.Enums.EffectType;
 import com.GlitchyDev.Game.Player.Player;
 
 public class EffectBase {

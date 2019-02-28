@@ -1,12 +1,10 @@
 package com.GlitchyDev.World.Views;
 
-import com.GlitchyDev.Game.Player.Player;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.AbstractEntities.PlayerEntity;
 import com.GlitchyDev.World.Region.RegionBase;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class PlayerView {
     private final PlayerEntity player;
@@ -19,5 +17,14 @@ public class PlayerView {
 
     public ArrayList<RegionBase> getViewableRegions() {
         return viewableRegions;
+    }
+
+    public boolean containsRegion(UUID regionUUID) {
+        for(RegionBase region: viewableRegions) {
+            if(region.getRegionUUID() == regionUUID) {
+                return true;
+            }
+        }
+        return false;
     }
 }

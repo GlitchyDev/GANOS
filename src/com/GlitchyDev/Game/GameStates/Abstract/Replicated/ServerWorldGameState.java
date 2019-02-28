@@ -4,7 +4,13 @@ import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Game.GameStates.GameStateType;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
-import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Block.ServerChangeBlockPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerChangeDirectionEntityPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerDespawnEntityPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerMoveEntityPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerSpawnEntityPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerDespawnRegionPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerSpawnRegionPacket;
 import com.GlitchyDev.Networking.ServerNetworkManager;
 import com.GlitchyDev.Utility.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
@@ -12,11 +18,9 @@ import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.RegionBase;
-import com.GlitchyDev.World.World;
 
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.UUID;
 
 public abstract class ServerWorldGameState extends WorldGameState {
@@ -53,57 +57,103 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
 
 
-    @Override
-    public void addWorld(World world) {
-        super.addWorld(world);
-        // No replication needed, players won't start initially in a newly made world, must be manually moved
-    }
+    private void replicateChanges() {
 
-    @Override
-    public void removeWorld(UUID worldUUID) {
-        super.removeWorld(worldUUID);
-        // No replication needed. Players won't be in a world that is removed
+
     }
 
 
+    private HashMap<UUID, ArrayList<ServerSpawnRegionPacket>> spawnedRegions = new HashMap<>();
     @Override
-    public void spawnRegion(RegionBase regionBase, UUID worldUUID) {
-        super.spawnRegion(regionBase, worldUUID);
-        // No replication needed, Players wouldn't be able to see it by default
+    public void spawnRegion(RegionBase regionBase) {
+        super.spawnRegion(regionBase);
+        if(!spawnedRegions.containsKey(regionBase.getRegionUUID())) {
+            spawnedRegions.put(regionBase.getRegionUUID(), new ArrayList<>());
+        }
+        spawnedRegions.get(regionBase.getRegionUUID()).add(new ServerSpawnRegionPacket(regionBase));
     }
 
+
+    private HashMap<UUID, ArrayList<ServerDespawnRegionPacket>> despawnedRegions = new HashMap<>();
     @Override
     public void despawnRegion(UUID regionUUID, UUID worldUUID) {
         super.despawnRegion(regionUUID, worldUUID);
         // No replication needed, Regions should not be despawned during normal play
+        if(!despawnedRegions.containsKey(regionUUID)) {
+            despawnedRegions.put(regionUUID, new ArrayList<>());
+        }
+        despawnedRegions.get(regionUUID).add(new ServerDespawnRegionPacket(regionUUID, worldUUID));
     }
 
 
+    private HashMap<UUID, ArrayList<ServerSpawnEntityPacket>> spawnedEntities = new HashMap<>();
     @Override
     public void spawnEntity(EntityBase entity) {
         // This is replicated, mark for Entities who can view its region
         super.spawnEntity(entity);
+        if(!spawnedEntities.containsKey(getRegionAtLocation(entity.getLocation()).getRegionUUID())) {
+            spawnedEntities.put(getRegionAtLocation(entity.getLocation()).getRegionUUID(), new ArrayList<>());
+        }
+        spawnedEntities.get(getRegionAtLocation(entity.getLocation()).getRegionUUID()).add(new ServerSpawnEntityPacket(entity));
     }
 
+
+    private HashMap<UUID, ArrayList<ServerDespawnEntityPacket>> despawnedEntities = new HashMap<>();
     @Override
     public void despawnEntity(UUID entityUUID, UUID worldUUID) {
         // This is replicated, mark for entities who can view its region
         super.despawnEntity(entityUUID, worldUUID);
+        UUID regionUUID = getRegionAtLocation(getEntity(entityUUID,worldUUID).getLocation()).getRegionUUID();
+        if(!despawnedEntities.containsKey(regionUUID)) {
+            despawnedEntities.put(regionUUID, new ArrayList<>());
+        }
+        despawnedEntities.get(regionUUID).add(new ServerDespawnEntityPacket(entityUUID, worldUUID));
     }
 
-    public void replicateMoveEntity(UUID entityUUID, UUID worldUUID, Location oldLocation, Location newLocation) {
+    private HashMap<UUID, ArrayList<ServerMoveEntityPacket>> movedEntitiesBoth = new HashMap<>();
+    private HashMap<UUID, ArrayList<ServerDespawnEntityPacket>> movedEntitiesOld = new HashMap<>();
+    private HashMap<UUID, ArrayList<ServerSpawnEntityPacket>> movedEntitiesNew = new HashMap<>();
+
+
+    public void replicateMoveEntity(UUID entityUUID, Location oldLocation, Location newLocation) {
         // This is replicated, mark for entities who can view its region
         // Also mark if it enters and or exits Regions, update viewing
+
+        UUID previousRegion = getRegionAtLocation(oldLocation).getRegionUUID();
+        UUID newRegion = getRegionAtLocation(newLocation).getRegionUUID();
+
+        if(!movedEntities.containsKey(newRegion)) {
+            movedEntities.put(previousRegion, new ArrayList<>());
+        }
+
+        movedEntities.get(newRegion).add(new ServerMoveEntityPacket(entityUUID, newLocation));
     }
 
-    public void replicateChangeDirectionEntity(UUID entityUUID, Direction direction) {
+
+    // A result if both areas are contained       move
+    // Area if the new location is only contained spawn
+    // Area if the old Location is only contained despawn
+    private HashMap<UUID, ArrayList<ServerChangeDirectionEntityPacket>> changedDirections = new HashMap<>();
+    public void replicateChangeDirectionEntity(UUID entityUUID, UUID worldUUID, Direction direction) {
         // This is replicated, mark for entities who can view its region
+        UUID regionUUID = getRegionAtLocation(getEntity(entityUUID, worldUUID).getLocation()).getRegionUUID();
+        if(!changedDirections.containsKey(regionUUID)) {
+            changedDirections.put(regionUUID,new ArrayList<>());
+        }
+        changedDirections.get(regionUUID).add(new ServerChangeDirectionEntityPacket(entityUUID, worldUUID, direction));
     }
+
+    private HashMap<UUID, ArrayList<ServerChangeBlockPacket>> changedBlocks = new HashMap<>();
 
     @Override
     public void setBlock(BlockBase block) {
-        // This is replicated, mark for entities who can view it
         super.setBlock(block);
+        // This is replicated, mark for entities who can view it
+        UUID regionUUID = getRegionAtLocation(block.getLocation()).getRegionUUID();
+        if(!changedBlocks.containsKey(regionUUID)) {
+            changedBlocks.put(regionUUID, new ArrayList<>());
+        }
+        changedBlocks.get(regionUUID).add(new ServerChangeBlockPacket(block));
     }
 
 

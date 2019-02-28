@@ -5,9 +5,10 @@ import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
+import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.RegionBase;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -23,7 +24,17 @@ public class DebugEntity extends EntityBase {
     }
 
     @Override
+    public void onSpawn(SpawnReason spawnReason) {
+
+    }
+
+    @Override
     public void tick() {
+
+    }
+
+    @Override
+    public void onDespawn(DespawnReason despawnReason) {
 
     }
 

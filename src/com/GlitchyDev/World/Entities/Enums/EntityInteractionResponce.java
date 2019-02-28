@@ -4,5 +4,5 @@ public enum EntityInteractionResponce {
     RESOLVED,
     VERIFY,
     UPDATE_EFFECTS,
-    DEBUG;
+    DEBUG,
 }

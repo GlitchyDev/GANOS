@@ -30,12 +30,12 @@ public class RegionBase {
     private Location location;     // Placement of the bottom upper right hand corner of the region
 
 
-    public RegionBase(WorldGameState worldGameState, UUID worldUUID, int width, int height, int length) {
+    public RegionBase(WorldGameState worldGameState, UUID worldUUID, int width, int height, int length, Location location) {
         this.worldGameState = worldGameState;
         this.worldUUID = worldUUID;
 
         this.regionUUID = UUID.randomUUID();
-        this.location = new Location(0,0,0);
+        this.location = location;
         this.blocks = new BlockBase[height][width][length];
         this.entities = new ArrayList<>();
 
@@ -43,7 +43,7 @@ public class RegionBase {
     }
 
     public RegionBase createCopy() {
-        RegionBase copy = new RegionBase(worldGameState, worldUUID, getWidth(), getLength(), getHeight());
+        RegionBase copy = new RegionBase(worldGameState, worldUUID, getWidth(), getLength(), getHeight(), location.clone());
         for(int y = 0; y < getHeight(); y++) {
             for(int x = 0; x < getWidth(); x++) {
                 for(int z = 0; z < getLength(); z++) {
@@ -67,9 +67,10 @@ public class RegionBase {
         }
     }
 
-    public RegionBase(InputBitUtility inputBitUtility, WorldGameState worldGameState, UUID worldUUID) throws IOException {
+    public RegionBase(InputBitUtility inputBitUtility, Location location, WorldGameState worldGameState) throws IOException {
         this.worldGameState = worldGameState;
-        this.worldUUID = worldUUID;
+        this.worldUUID = location.getWorldUUID();
+        this.location = location;
 
         RegionFileVersion version = RegionFileVersion.values()[inputBitUtility.getNextCorrectIntByte()];
         RegionFileType type = RegionFileType.values()[inputBitUtility.getNextCorrectIntByte()];
@@ -97,7 +98,7 @@ public class RegionBase {
                         currentCode += inputBitUtility.getNextBit() ? "1" : "0";
                     }
                     setBlockRelative(x,y,z,((BlockBase) huffmanMap.get(currentCode)).getCopy());
-                    getBlockRelative(x,y,z).setLocation(new Location(x,y,z));
+                    getBlockRelative(x,y,z).setLocation(location.getOffsetLocation(x,y,z));
                 }
             }
         }
