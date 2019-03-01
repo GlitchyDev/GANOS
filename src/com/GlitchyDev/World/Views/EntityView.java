@@ -1,7 +1,5 @@
 package com.GlitchyDev.World.Views;
 
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Entities.AbstractEntities.PlayerEntityBase;
 import com.GlitchyDev.World.Region.RegionBase;
 
 import java.util.ArrayList;
@@ -16,6 +14,10 @@ public class EntityView {
 
     public ArrayList<RegionBase> getViewableRegions() {
         return viewableRegions;
+    }
+
+    public void setViewableRegions(ArrayList<RegionBase> viewableRegions) {
+        this.viewableRegions = viewableRegions;
     }
 
     public boolean containsRegion(UUID regionUUID) {

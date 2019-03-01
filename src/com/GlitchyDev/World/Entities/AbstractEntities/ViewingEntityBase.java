@@ -1,6 +1,7 @@
 package com.GlitchyDev.World.Entities.AbstractEntities;
 
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.Effects.Abstract.EffectBase;
 import com.GlitchyDev.World.Entities.Effects.Abstract.RegionHidingEffect;
@@ -11,6 +12,7 @@ import com.GlitchyDev.World.Region.RegionBase;
 import com.GlitchyDev.World.Region.RegionConnectionType;
 import com.GlitchyDev.World.Views.EntityView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -24,50 +26,47 @@ public abstract class ViewingEntityBase extends EntityBase {
         this.entityView = new EntityView();
     }
 
-    public final void recalculateView() {
-        ArrayList<RegionBase> regions = entityView.getViewableRegions();
-        entityView.getViewableRegions().clear();
-        RegionBase currentRegion = worldGameState.getRegion(getCurrentRegionUUID(),getWorldUUID());
-        HashMap<UUID, HashMap<RegionConnectionType, ArrayList<UUID>>> connections = worldGameState.getRegionConnections(getWorldUUID());
+    public ViewingEntityBase(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+        super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, entityType);
+    }
 
-        for(RegionConnectionType regionConnectionType: connections.get(currentRegion).keySet()) {
-            // Check if it gets hidden
-            if(regionConnectionType.isVisibleByDefault()) {
-                boolean gotHidden = false;
+    public void recalculateView() {
+        ArrayList<RegionBase> connectedRegions = new ArrayList<>();
+        HashMap<UUID, HashMap<RegionConnectionType, ArrayList<UUID>>> connections = worldGameState.getRegionConnections(getWorldUUID());
+        ArrayList<RegionConnectionType> seeableConnectionTypes = new ArrayList<>();
+
+
+        for(RegionConnectionType regionConnection: connections.get(getCurrentRegionUUID()).keySet()) {
+            if(regionConnection.isVisibleByDefault()) {
                 for(EffectBase effect: getEffects()) {
                     if(effect instanceof RegionHidingEffect) {
-                        if(((RegionHidingEffect) effect).doHideRegionConnection(regionConnectionType)) {
-                            gotHidden = true;
+                        if(((RegionHidingEffect) effect).doHideRegionConnection(regionConnection)) {
+                            seeableConnectionTypes.add(regionConnection);
+                            break;
                         }
-                    }
-                }
-                if(!gotHidden) {
-                    for(UUID regionUUID: connections.get(currentRegion.getRegionUUID()).get(regionConnectionType)) {
-                        RegionBase region = worldGameState.getRegion(regionUUID,getWorldUUID());
-                        entityView.getViewableRegions().add(region);
                     }
                 }
             } else {
-                // Check if it gets revealed
-                boolean isRevealed = false;
                 for(EffectBase effect: getEffects()) {
                     if(effect instanceof RegionRevealingEffect) {
-                        if(((RegionRevealingEffect) effect).doShowRegionConnection(regionConnectionType)) {
-                            isRevealed = true;
+                        if(((RegionRevealingEffect) effect).doShowRegionConnection(regionConnection)) {
+                            seeableConnectionTypes.add(regionConnection);
+                            break;
                         }
                     }
                 }
-                if(!isRevealed) {
-                    for(UUID regionUUID: connections.get(currentRegion.getRegionUUID()).get(regionConnectionType)) {
-                        RegionBase region = worldGameState.getRegion(regionUUID,getWorldUUID());
-                        entityView.getViewableRegions().add(region);
-                    }
-                }
             }
-
-
         }
 
+        for(RegionConnectionType regionConnectionType: seeableConnectionTypes) {
+            for(UUID regionUUID: connections.get(getCurrentRegionUUID()).get(regionConnectionType)) {
+                RegionBase region = worldGameState.getRegion(regionUUID, getWorldUUID());
+                connectedRegions.add(region);
+            }
+        }
+    }
 
+    public EntityView getEntityView() {
+        return entityView;
     }
 }

@@ -22,6 +22,7 @@ import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.RegionBase;
 import com.GlitchyDev.World.World;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -83,6 +84,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
 
     private void replicateChanges() {
+        //
 
 
 
@@ -189,6 +191,14 @@ public abstract class ServerWorldGameState extends WorldGameState {
             changedBlocks.put(regionUUID, new ArrayList<>());
         }
         changedBlocks.get(regionUUID).add(new ServerChangeBlockPacket(block));
+    }
+
+    public void addRegion(UUID playerUUID, RegionBase region) throws IOException {
+        serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnRegionPacket(region));
+    }
+
+    public void removeRegion(UUID playerUUID, UUID regionUUID, UUID worldUUID) throws IOException {
+        serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerDespawnRegionPacket(regionUUID, worldUUID));
     }
 
 
