@@ -30,6 +30,8 @@ public class EffectBase {
         outputBitUtility.writeNextCorrectByteInt(effectType.ordinal());
     }
 
+
+
     public EffectType getEffectType() {
         return effectType;
     }

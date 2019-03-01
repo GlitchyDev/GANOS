@@ -11,7 +11,10 @@ import java.util.UUID;
 
 public enum EntityType {
     DEBUG_ENTITY,
-    DEBUG_PLAYER;
+    DEBUG_PLAYER,
+    DEBUG_HIDDEN_ENTITY,
+
+    ;
 
     public EntityBase getEntityFromInput(InputBitUtility inputBitUtility, WorldGameState worldGameState, UUID worldUUID, UUID regionUUID) throws IOException {
         switch (this) {
@@ -24,8 +27,5 @@ public enum EntityType {
         }
 
     }
-
-
-
 
 }

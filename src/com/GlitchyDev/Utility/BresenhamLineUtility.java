@@ -32,8 +32,8 @@ public class BresenhamLineUtility {
 
    public static void main(String[] args) {
        boolean[][] area = new boolean[20][20];
-       Location origin = new Location(0,0,0);
-       Location target = new Location(6,19,0);
+       Location origin = new Location(0,0,0,null);
+       Location target = new Location(6,19,0,null);
        ArrayList<Location> line = findLineNew(origin, target);
 
        for(Location location: line) {

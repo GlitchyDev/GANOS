@@ -17,15 +17,15 @@ import com.GlitchyDev.Utility.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.ViewingEntityBase;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.Region.RegionConnectionType;
 import com.GlitchyDev.World.World;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class ServerWorldGameState extends WorldGameState {
     protected final ServerNetworkManager serverNetworkManager;
@@ -68,6 +68,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
         Player player = new Player(this,playerUUID,playerEntity);
         currentPlayers.add(player);
         // Get the Player Entity
+        replicateChanges();
 
     }
 
@@ -84,36 +85,41 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
 
     private void replicateChanges() {
-        //
-
-
-
-    }
-
-
-    private HashMap<UUID, ArrayList<ServerSpawnRegionPacket>> spawnedRegions = new HashMap<>();
-    @Override
-    public void spawnRegion(RegionBase regionBase) {
-        super.spawnRegion(regionBase);
-        if(!spawnedRegions.containsKey(regionBase.getRegionUUID())) {
-            spawnedRegions.put(regionBase.getRegionUUID(), new ArrayList<>());
+        // Recalculate View List
+        // This fixes
+        for(RegionBase region: recalculateRegionEntityList) {
+            for(EntityBase entity: region.getEntities()) {
+                if(entity instanceof ViewingEntityBase) {
+                    ((ViewingEntityBase) entity).recalculateView();
+                }
+            }
         }
-        spawnedRegions.get(regionBase.getRegionUUID()).add(new ServerSpawnRegionPacket(regionBase));
+
+
+
+
+
+
     }
 
 
-    private HashMap<UUID, ArrayList<ServerDespawnRegionPacket>> despawnedRegions = new HashMap<>();
+    /*
+    Linking and unlinking regions shouldn't happen, Worlds should be relatively static
+    private HashSet<RegionBase> recalculateRegionEntityList = new HashSet<>();
     @Override
-    public void despawnRegion(UUID regionUUID, UUID worldUUID) {
-        super.despawnRegion(regionUUID, worldUUID);
-        // No replication needed, Regions should not be despawned during normal play
-        if(!despawnedRegions.containsKey(regionUUID)) {
-            despawnedRegions.put(regionUUID, new ArrayList<>());
-        }
-        despawnedRegions.get(regionUUID).add(new ServerDespawnRegionPacket(regionUUID, worldUUID));
+    public void linkRegions(UUID worldUUID, UUID hostRegion, UUID connectedRegion, RegionConnectionType connectionType) {
+        super.linkRegions(worldUUID, hostRegion, connectedRegion, connectionType);
+        recalculateRegionEntityList.add(getRegion(hostRegion,worldUUID));
     }
 
+    @Override
+    public void unlinkRegions(UUID worldUUID, UUID hostRegion, UUID connectedRegion, RegionConnectionType connectionType) {
+        super.unlinkRegions(worldUUID, hostRegion, connectedRegion, connectionType);
+        recalculateRegionEntityList.add(getRegion(hostRegion,worldUUID));
+    }
+    */
 
+    // Spawning entities triggers an viewcheck on EVERY Player in the world, the Server View should already show an update
     private HashMap<UUID, ArrayList<ServerSpawnEntityPacket>> spawnedEntities = new HashMap<>();
     @Override
     public void spawnEntity(EntityBase entity) {
@@ -126,6 +132,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
     }
 
 
+    // Despawning entities triggers an viewcheck on EVERY Player in the world, the Server View should already show an update
     private HashMap<UUID, ArrayList<ServerDespawnEntityPacket>> despawnedEntities = new HashMap<>();
     @Override
     public void despawnEntity(UUID entityUUID, UUID worldUUID) {
@@ -138,11 +145,11 @@ public abstract class ServerWorldGameState extends WorldGameState {
         despawnedEntities.get(regionUUID).add(new ServerDespawnEntityPacket(entityUUID, worldUUID));
     }
 
-    private HashMap<UUID, ArrayList<ServerMoveEntityPacket>> movedEntitiesBoth = new HashMap<>();
+    // Since they only need to test if their view contains both points!!!!
+    private ArrayList<ServerMoveEntityPacket> movedEntitiesBoth = new ArrayList<>();
     private HashMap<UUID, ArrayList<ServerDespawnEntityPacket>> movedEntitiesOld = new HashMap<>();
     private HashMap<UUID, ArrayList<ServerSpawnEntityPacket>> movedEntitiesNew = new HashMap<>();
-
-
+    // Every Player in the world will get checked if they personally have access to t
     public void replicateMoveEntity(UUID entityUUID, Location oldLocation, Location newLocation) {
         // This is replicated, mark for entities who can view its region
         // Also mark if it enters and or exits Regions, update viewing
@@ -151,7 +158,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
         UUID newRegion = getRegionAtLocation(newLocation).getRegionUUID();
 
         if(!movedEntitiesBoth.containsKey(newRegion)) {
-            movedEntitiesBoth.put(previousRegion, new ArrayList<>());
+            movedEntitiesBoth.put(newRegion, new ArrayList<>());
         }
         if(!movedEntitiesOld.containsKey(newRegion)) {
             movedEntitiesOld.put(previousRegion, new ArrayList<>());

@@ -88,10 +88,13 @@ public abstract class WorldGameState extends EnvironmentGameState {
         return getWorld(worldUUID).getRegionConnections();
     }
 
-    public void addRegionConnection(UUID worldUUID, UUID hostRegion, UUID connectedRegion, RegionConnectionType connectionType) {
+    public void linkRegions(UUID worldUUID, UUID hostRegion, UUID connectedRegion, RegionConnectionType connectionType) {
         getWorld(worldUUID).linkRegion(hostRegion, connectedRegion, connectionType);
     }
 
+    public void unlinkRegions(UUID worldUUID, UUID hostRegion, UUID connectedRegion, RegionConnectionType connectionType) {
+        getWorld(worldUUID).unlinkRegion(hostRegion, connectedRegion, connectionType);
+    }
 
     // Replicate functions
 

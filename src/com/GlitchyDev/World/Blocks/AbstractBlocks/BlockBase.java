@@ -20,7 +20,6 @@ public abstract class BlockBase {
 
     public BlockBase(WorldGameState worldGameState, BlockType blockType, Location location) {
         this.worldGameState = worldGameState;
-
         this.blockType = blockType;
         this.location = location;
     }
@@ -29,7 +28,7 @@ public abstract class BlockBase {
         this.worldGameState = worldGameState;
 
         this.blockType = blockType;
-        location = new Location(0,0,0);
+        location = new Location(0,0,0,null);
     }
 
     // Do not write Location, as that can be refereed engineered from the read protocol

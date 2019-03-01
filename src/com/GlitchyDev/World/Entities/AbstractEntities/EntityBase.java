@@ -68,7 +68,7 @@ public abstract class EntityBase {
         this.entityType = entityType;
         this.uuid = inputBitUtility.getNextUUID();
         Location regionLocation = worldGameState.getRegion(currentRegionUUID,worldUUID).getLocation();
-        Location relativeLocation = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte());
+        Location relativeLocation = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), worldUUID);
         this.location = regionLocation.getOffsetLocation(relativeLocation);
         this.direction = Direction.values()[inputBitUtility.getNextCorrectedIntBit(3)];
         int totalEffects = inputBitUtility.getNextCorrectIntByte();
@@ -127,12 +127,13 @@ public abstract class EntityBase {
             ((TriggerableBlock) newLocation).enterBlockSccessfully(movementType,this);
         }
 
-        Location oldLocation = getLocation();
-        setLocation(newLocation);
 
-        if(worldGameState instanceof ServerWorldGameState) {
-            ((ServerWorldGameState) worldGameState).replicateMoveEntity(uuid,oldLocation,newLocation);
-        }
+        worldGameState.getRegion(currentRegionUUID,getWorldUUID()).getEntities().remove(this);
+        setLocation(newLocation);
+        setCurrentRegionUUID(worldGameState.getRegionAtLocation(getLocation()).getRegionUUID());
+        worldGameState.getRegion(currentRegionUUID,getWorldUUID()).getEntities().add(this);
+
+
     }
 
     public void setDirection(Direction newDirection) {

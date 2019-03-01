@@ -99,6 +99,10 @@ public class World {
         regionConnections.get(regionUUID).get(regionConnectionType).add(linkedRegion);
     }
 
+    public void unlinkRegion(UUID regionUUID, UUID linkedRegion, RegionConnectionType regionConnectionType) {
+
+        regionConnections.get(regionUUID).get(regionConnectionType).remove(linkedRegion);
+    }
 
     // Getters
 

@@ -10,7 +10,10 @@ import java.io.IOException;
 
 public enum BlockType {
     DEBUG,
-    AIR;
+    AIR,
+
+    ;
+
 
 
 

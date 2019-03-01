@@ -250,7 +250,7 @@ public abstract class GameController {
         int southWestDirectionId = getDirectionPad() == ControllerDirectionPad.SOUTH_WEST ? (getToggleDirectionPad() == ControllerDirectionPad.SOUTH_WEST ? 1 : 2) : 0;
         items.add(buttonSprites.get("SouthWest" + southWestDirectionId));
 
-        renderer.renderSprites(gameWindow,shader,items);
+        renderer.render2DSprites(gameWindow,shader,items);
     }
 
     public boolean getToggleSouthButton() {
