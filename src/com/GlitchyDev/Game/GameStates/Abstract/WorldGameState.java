@@ -7,8 +7,10 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.Region.RegionConnectionType;
 import com.GlitchyDev.World.World;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
@@ -39,8 +41,16 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
 
-    public boolean isRegionAtLocation(Location location) {
-        return getWorld(location.getWorldUUID()).isRegionAtLocation(location);
+    public boolean isARegionAtLocation(Location location) {
+        return getWorld(location.getWorldUUID()).isARegionAtLocation(location);
+    }
+
+    public int countRegionsAtLocation(Location location) {
+        return getWorld(location.getWorldUUID()).countRegionsAtLocation(location);
+    }
+
+    public ArrayList<RegionBase> getRegionsAtLocation(Location location) {
+        return getWorld(location.getWorldUUID()).getRegionsAtLocation(location);
     }
 
     public RegionBase getRegionAtLocation(Location location) {
@@ -66,7 +76,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
     public boolean isBlockAtLocation(Location location) {
-        return getWorld(location.getWorldUUID()).isRegionAtLocation(location);
+        return getWorld(location.getWorldUUID()).isARegionAtLocation(location);
     }
 
     public BlockBase getBlockAtLocation(Location location) {
@@ -74,6 +84,13 @@ public abstract class WorldGameState extends EnvironmentGameState {
         return getWorld(location.getWorldUUID()).getRegionAtLocation(location).getBlockRelative(offset);
     }
 
+    public HashMap<UUID, HashMap<RegionConnectionType, ArrayList<UUID>>> getRegionConnections(UUID worldUUID) {
+        return getWorld(worldUUID).getRegionConnections();
+    }
+
+    public void addRegionConnection(UUID worldUUID, UUID hostRegion, UUID connectedRegion, RegionConnectionType connectionType) {
+        getWorld(worldUUID).linkRegion(hostRegion, connectedRegion, connectionType);
+    }
 
 
     // Replicate functions

@@ -1,32 +1,33 @@
 package com.GlitchyDev.Game.Player;
 
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
-import com.GlitchyDev.Game.Player.Effects.Abstract.EffectBase;
+import com.GlitchyDev.World.Entities.Effects.Abstract.EffectBase;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Entities.AbstractEntities.PlayerEntity;
+import com.GlitchyDev.World.Entities.AbstractEntities.PlayerEntityBase;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
-import com.GlitchyDev.World.Views.PlayerView;
+import com.GlitchyDev.World.Views.EntityView;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public abstract class Player {
+public class Player {
     private final WorldGameState worldGameState;
     private final UUID playerUUID;
-    private PlayerEntity playerEntity;
+    private PlayerEntityBase playerEntity;
     private final ArrayList<EntityBase> controlledEntities;
-    private final PlayerView playerView;
+    private final EntityView entityView;
     private final ArrayList<EffectBase> effects;
 
-    public Player(WorldGameState worldGameState, UUID playerUUID, PlayerEntity playerEntity) {
+    public Player(WorldGameState worldGameState, UUID playerUUID, PlayerEntityBase playerEntity) {
         this.worldGameState = worldGameState;
         this.playerUUID = playerUUID;
         this.playerEntity = playerEntity;
+        this.playerEntity.setPlayer(this);
         this.controlledEntities = new ArrayList<>();
-        this.playerView = new PlayerView(playerEntity);
+        this.entityView = new EntityView(playerEntity);
         this.effects = new ArrayList<>();
     }
 
@@ -37,7 +38,8 @@ public abstract class Player {
         UUID worldUUID = inputBitUtility.getNextUUID();
         UUID regionUUID = inputBitUtility.getNextUUID();
         EntityType playerEntityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
-        this.playerEntity = (PlayerEntity) playerEntityType.getEntityFromInput(inputBitUtility,worldGameState, worldUUID, regionUUID);
+        this.playerEntity = (PlayerEntityBase) playerEntityType.getEntityFromInput(inputBitUtility,worldGameState, worldUUID, regionUUID);
+        this.playerEntity.setPlayer(this);
         // Place into world as loaded
         worldGameState.spawnEntity(playerEntity);
 
@@ -48,7 +50,7 @@ public abstract class Player {
             // Controllable entites can be living or non living
             // Spawn Entity4summon 
         }
-        this.playerView = new PlayerView(playerEntity);
+        this.entityView = new EntityView(playerEntity);
         int totalEffects = inputBitUtility.getNextCorrectIntByte();
         this.effects = new ArrayList<>(totalEffects);
         for(int i = 0; i < totalEffects; i++) {
@@ -78,11 +80,11 @@ public abstract class Player {
 
 
 
-    public void setPlayerEntity(PlayerEntity playerEntity) {
+    public void setPlayerEntity(PlayerEntityBase playerEntity) {
         this.playerEntity = playerEntity;
     }
 
-    public PlayerEntity getPlayerEntity() {
+    public PlayerEntityBase getPlayerEntity() {
         return playerEntity;
     }
 
@@ -90,8 +92,8 @@ public abstract class Player {
         return controlledEntities;
     }
 
-    public PlayerView getPlayerView() {
-        return playerView;
+    public EntityView getEntityView() {
+        return entityView;
     }
 
     public UUID getPlayerUUID() {

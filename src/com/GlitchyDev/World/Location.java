@@ -10,11 +10,6 @@ public class Location {
     private final UUID worldUUID;
 
 
-    public Location() {
-        position = new Vector3i();
-        worldUUID = null;
-    }
-
     public Location(UUID worldUUID) {
         position = new Vector3i();
         this.worldUUID = worldUUID;
@@ -25,20 +20,11 @@ public class Location {
         this.worldUUID = worldUUID;
     }
 
-    public Location(int x, int y, int z) {
-        position = new Vector3i(x, y, z);
-        this.worldUUID = null;
-    }
-
     public Location(Location location) {
         position = new Vector3i(location.getPosition());
         this.worldUUID = location.getWorldUUID();
     }
 
-    public Location(Location location, UUID worldUUID) {
-        position = new Vector3i(location.getPosition());
-        this.worldUUID = worldUUID;
-    }
 
     /**
      *

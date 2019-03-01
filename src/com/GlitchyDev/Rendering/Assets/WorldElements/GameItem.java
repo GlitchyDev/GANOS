@@ -1,6 +1,7 @@
 package com.GlitchyDev.Rendering.Assets.WorldElements;
 
 import org.joml.Vector3f;
+import org.joml.Vector3i;
 
 /**
  * A object that can be represented in game in 3D or 2D ( See SpriteItem or HudItem )
@@ -34,6 +35,10 @@ public class GameItem {
         this.position.x = x;
         this.position.y = y;
         this.position.z = z;
+    }
+
+    public void setPosition(Vector3i newPosition) {
+        this.position.set(newPosition);
     }
 
     public float getScale() {

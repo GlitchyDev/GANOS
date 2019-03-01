@@ -9,7 +9,7 @@ import com.GlitchyDev.Utility.GameWindow;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.PlayerEntityBase;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
@@ -18,29 +18,28 @@ import com.GlitchyDev.World.Location;
 import java.io.IOException;
 import java.util.UUID;
 
-public class DebugEntity extends EntityBase {
+public class DebugPlayerEntityBase extends PlayerEntityBase {
     private final SpriteItem spriteItem;
 
-
-    public DebugEntity(WorldGameState worldGameState, UUID currentRegionUUID, Location location, Direction direction) {
-        super(worldGameState, currentRegionUUID, EntityType.DEBUG_ENTITY, location, direction);
-        spriteItem = new SpriteItem(AssetLoader.loadTexture("Icon32x32"),true);
+    public DebugPlayerEntityBase(WorldGameState worldGameState, UUID currentRegionUUID, Location location, Direction direction) {
+        super(worldGameState, currentRegionUUID, EntityType.DEBUG_PLAYER, location, direction);
+        spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Tomo"),true);
     }
 
-
-    public DebugEntity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, EntityType.DEBUG_ENTITY);
-        spriteItem = new SpriteItem(AssetLoader.loadTexture("Icon32x32"),true);
+    public DebugPlayerEntityBase(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility) throws IOException {
+        super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, EntityType.DEBUG_PLAYER);
+        spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Tomo"),true);
+        //
     }
 
     @Override
     public void onSpawn(SpawnReason spawnReason) {
-
+        spriteItem.setPosition(getLocation().getPosition());
     }
 
     @Override
     public void tick() {
-
+        spriteItem.setPosition(getLocation().getPosition());
     }
 
     @Override
@@ -57,10 +56,4 @@ public class DebugEntity extends EntityBase {
     public void writeData(OutputBitUtility outputBitUtility) throws IOException {
         super.writeData(outputBitUtility);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        return false;
-    }
-
 }

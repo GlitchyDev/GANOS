@@ -42,7 +42,7 @@ public class World {
         }
     }
 
-    public boolean isRegionAtLocation(Location location) {
+    public boolean isARegionAtLocation(Location location) {
         for(RegionBase region: regions.values()) {
             if(region.isLocationInRegion(location)) {
                 return true;
@@ -50,6 +50,17 @@ public class World {
         }
         return false;
     }
+
+    public int countRegionsAtLocation(Location location) {
+        int count = 0;
+        for(RegionBase region: regions.values()) {
+            if(region.isLocationInRegion(location)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
 
     public RegionBase getRegionAtLocation(Location location) {
         for(RegionBase region: regions.values()) {
@@ -59,6 +70,20 @@ public class World {
         }
         return null;
     }
+
+
+
+    public ArrayList<RegionBase> getRegionsAtLocation(Location location) {
+        ArrayList<RegionBase> presentRegions = new ArrayList<>();
+        for(RegionBase region: regions.values()) {
+            if(region.isLocationInRegion(location)) {
+                presentRegions.add(region);
+            }
+        }
+        return presentRegions;
+    }
+
+
 
     public Location getOriginLocation() {
         return new Location(0,0,0,getWorldID());

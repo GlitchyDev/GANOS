@@ -90,6 +90,28 @@ public class Renderer {
         //shader.unbind();
     }
 
+    public void render3DElement(GameWindow window, String shaderName, Camera camera, GameItem gameItem) {
+        ShaderProgram shader = loadedShaders.get(shaderName);
+        if(!previousShader.equals(shaderName)) {
+            shader.bind();
+        }
+
+        // Update projection Matrix
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+        shader.setUniform("projectionMatrix", projectionMatrix);
+
+        // Update view Matrix
+        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+
+        shader.setUniform("texture_sampler", 0);
+        // Render each gameItem
+        Matrix4f modelViewMatrix = transformation.getModelViewMatrix(gameItem, viewMatrix);
+        shader.setUniform("modelViewMatrix", modelViewMatrix);
+        gameItem.getMesh().render();
+
+
+        //shader.unbind();
+    }
     /*
     public void renderInstanced3DElements(GameWindow window, String shaderName, Camera camera, InstancedMesh instancedMesh, List<GameItem> gameItems) {
         ShaderProgram shader = loadedShaders.get(shaderName);
@@ -186,7 +208,26 @@ public class Renderer {
 
 
 
-    public void renderSprites(GameWindow window, String shaderName, List<SpriteItem> spriteItems)
+    public void render2DSprites(GameWindow window, String shaderName, List<SpriteItem> spriteItems) {
+        ShaderProgram shader = loadedShaders.get(shaderName);
+        if(!previousShader.equals(shaderName)) {
+            shader.bind();
+        }
+
+        Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, window.getWidth(), window.getHeight(), 0);
+
+        shader.setUniform("texture_sampler", 0);
+        for (GameItem gameItem : spriteItems) {
+            // Set ortohtaphic and model matrix for this HUD item
+            Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(gameItem, ortho);
+            shader.setUniform("projModelMatrix", projModelMatrix);
+            gameItem.getMesh().render();
+        }
+
+        shader.unbind();
+    }
+
+    public void render2DSprite(GameWindow window, String shaderName, SpriteItem spriteItem)
     {
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
@@ -198,13 +239,10 @@ public class Renderer {
         shader.setUniform("texture_sampler", 0);
 
 
-        for (GameItem gameItem : spriteItems) {
-            // Set ortohtaphic and model matrix for this HUD item
-            Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(gameItem, ortho);
-            shader.setUniform("projModelMatrix", projModelMatrix);
-            gameItem.getMesh().render();
-        }
-
+        // Set ortohtaphic and model matrix for this HUD item
+        Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(spriteItem, ortho);
+        shader.setUniform("projModelMatrix", projModelMatrix);
+        spriteItem.getMesh().render();
 
         shader.unbind();
     }

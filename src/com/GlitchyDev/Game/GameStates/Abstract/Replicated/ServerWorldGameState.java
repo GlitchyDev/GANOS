@@ -2,6 +2,7 @@ package com.GlitchyDev.Game.GameStates.Abstract.Replicated;
 
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Game.GameStates.GameStateType;
+import com.GlitchyDev.Game.Player.Player;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Packets.Server.World.Block.ServerChangeBlockPacket;
@@ -16,8 +17,10 @@ import com.GlitchyDev.Utility.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.World;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,10 +28,12 @@ import java.util.UUID;
 
 public abstract class ServerWorldGameState extends WorldGameState {
     protected final ServerNetworkManager serverNetworkManager;
+    protected final ArrayList<Player> currentPlayers;
 
-    public ServerWorldGameState(GlobalGameData globalGameDataBase, GameStateType gameStateType) {
+    public ServerWorldGameState(GlobalGameData globalGameDataBase, GameStateType gameStateType, int assignedPort) {
         super(globalGameDataBase, gameStateType);
-        serverNetworkManager = new ServerNetworkManager(this, 5000);
+        serverNetworkManager = new ServerNetworkManager(this, assignedPort);
+        currentPlayers = new ArrayList<>();
     }
 
     @Override
@@ -51,13 +56,34 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
     public abstract void processPacket(UUID uuid, PacketBase packet);
 
-    public abstract void onPlayerLogin(UUID playerUUID);
+    public void onPlayerLogin(UUID playerUUID) {
+        World world = null;
+        for(UUID worldUUID: getWorlds()) {
+            world = getWorld(worldUUID);
+        }
+        Location spawnLocation = world.getOriginLocation();
+        UUID regionUUID = getRegionAtLocation(spawnLocation).getRegionUUID();
+        DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,regionUUID,spawnLocation,Direction.NORTH);
+        Player player = new Player(this,playerUUID,playerEntity);
+        currentPlayers.add(player);
+        // Get the Player Entity
 
-    public abstract void onPlayerLogout(UUID playerUUID, NetworkDisconnectType reason);
+    }
+
+    public void onPlayerLogout(UUID playerUUID, NetworkDisconnectType reason) {
+        Player removedPlayer = null;
+        for(Player player: currentPlayers) {
+            if(player.getPlayerUUID() == playerUUID) {
+                removedPlayer = player;
+            }
+        }
+        currentPlayers.remove(removedPlayer);
+    }
 
 
 
     private void replicateChanges() {
+
 
 
     }
@@ -122,11 +148,20 @@ public abstract class ServerWorldGameState extends WorldGameState {
         UUID previousRegion = getRegionAtLocation(oldLocation).getRegionUUID();
         UUID newRegion = getRegionAtLocation(newLocation).getRegionUUID();
 
-        if(!movedEntities.containsKey(newRegion)) {
-            movedEntities.put(previousRegion, new ArrayList<>());
+        if(!movedEntitiesBoth.containsKey(newRegion)) {
+            movedEntitiesBoth.put(previousRegion, new ArrayList<>());
+        }
+        if(!movedEntitiesOld.containsKey(newRegion)) {
+            movedEntitiesOld.put(previousRegion, new ArrayList<>());
+        }
+        if(!movedEntitiesNew.containsKey(newRegion)) {
+            movedEntitiesNew.put(previousRegion, new ArrayList<>());
         }
 
-        movedEntities.get(newRegion).add(new ServerMoveEntityPacket(entityUUID, newLocation));
+        movedEntitiesBoth.get(newRegion).add(new ServerMoveEntityPacket(entityUUID, newLocation));
+        movedEntitiesOld.get(newRegion).add(new ServerDespawnEntityPacket(entityUUID, oldLocation.getWorldUUID()));
+        EntityBase entity = getEntity(entityUUID, newLocation.getWorldUUID());
+        movedEntitiesNew.get(newRegion).add(new ServerSpawnEntityPacket(entity));
     }
 
 

@@ -21,7 +21,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
     public DebugServerGameState(GlobalGameData globalGameDataBase) {
-        super(globalGameDataBase, GameStateType.DEBUG_SERVER);
+        super(globalGameDataBase, GameStateType.DEBUG_SERVER, 5000);
 
         CustomFontTexture customTexture = new CustomFontTexture("DebugFont");
         textItems = new ArrayList<>();
