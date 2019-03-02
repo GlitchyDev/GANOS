@@ -29,12 +29,12 @@ import java.util.*;
 
 public abstract class ServerWorldGameState extends WorldGameState {
     protected final ServerNetworkManager serverNetworkManager;
-    protected final ArrayList<Player> currentPlayers;
+    protected final HashMap<UUID,Player> currentPlayers;
 
     public ServerWorldGameState(GlobalGameData globalGameDataBase, GameStateType gameStateType, int assignedPort) {
         super(globalGameDataBase, gameStateType);
         serverNetworkManager = new ServerNetworkManager(this, assignedPort);
-        currentPlayers = new ArrayList<>();
+        currentPlayers = new HashMap<>();
     }
 
     @Override
@@ -73,13 +73,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
     }
 
     public void onPlayerLogout(UUID playerUUID, NetworkDisconnectType reason) {
-        Player removedPlayer = null;
-        for(Player player: currentPlayers) {
-            if(player.getPlayerUUID() == playerUUID) {
-                removedPlayer = player;
-            }
-        }
-        currentPlayers.remove(removedPlayer);
+        currentPlayers.remove(playerUUID);
     }
 
 
@@ -145,8 +139,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
         despawnedEntities.get(regionUUID).add(new ServerDespawnEntityPacket(entityUUID, worldUUID));
     }
 
-    // Since they only need to test if their view contains both points!!!!
-    private ArrayList<ServerMoveEntityPacket> movedEntitiesBoth = new ArrayList<>();
+    private HashMap<UUID, ArrayList<ServerMoveEntityPacket>> movedEntitiesBoth = new HashMap<>();
     private HashMap<UUID, ArrayList<ServerDespawnEntityPacket>> movedEntitiesOld = new HashMap<>();
     private HashMap<UUID, ArrayList<ServerSpawnEntityPacket>> movedEntitiesNew = new HashMap<>();
     // Every Player in the world will get checked if they personally have access to t
@@ -160,23 +153,21 @@ public abstract class ServerWorldGameState extends WorldGameState {
         if(!movedEntitiesBoth.containsKey(newRegion)) {
             movedEntitiesBoth.put(newRegion, new ArrayList<>());
         }
-        if(!movedEntitiesOld.containsKey(newRegion)) {
+        if(!movedEntitiesOld.containsKey(previousRegion)) {
             movedEntitiesOld.put(previousRegion, new ArrayList<>());
         }
         if(!movedEntitiesNew.containsKey(newRegion)) {
-            movedEntitiesNew.put(previousRegion, new ArrayList<>());
+            movedEntitiesNew.put(newRegion, new ArrayList<>());
         }
 
         movedEntitiesBoth.get(newRegion).add(new ServerMoveEntityPacket(entityUUID, newLocation));
-        movedEntitiesOld.get(newRegion).add(new ServerDespawnEntityPacket(entityUUID, oldLocation.getWorldUUID()));
+        movedEntitiesOld.get(oldLocation).add(new ServerDespawnEntityPacket(entityUUID, oldLocation.getWorldUUID()));
         EntityBase entity = getEntity(entityUUID, newLocation.getWorldUUID());
         movedEntitiesNew.get(newRegion).add(new ServerSpawnEntityPacket(entity));
     }
 
 
-    // A result if both areas are contained       move
-    // Area if the new location is only contained spawn
-    // Area if the old Location is only contained despawn
+    // Replicate to players with this in its view
     private HashMap<UUID, ArrayList<ServerChangeDirectionEntityPacket>> changedDirections = new HashMap<>();
     public void replicateChangeDirectionEntity(UUID entityUUID, UUID worldUUID, Direction direction) {
         // This is replicated, mark for entities who can view its region
@@ -187,8 +178,8 @@ public abstract class ServerWorldGameState extends WorldGameState {
         changedDirections.get(regionUUID).add(new ServerChangeDirectionEntityPacket(entityUUID, worldUUID, direction));
     }
 
+    // Replicate to players with visible region
     private HashMap<UUID, ArrayList<ServerChangeBlockPacket>> changedBlocks = new HashMap<>();
-
     @Override
     public void setBlock(BlockBase block) {
         super.setBlock(block);
@@ -201,6 +192,11 @@ public abstract class ServerWorldGameState extends WorldGameState {
     }
 
     public void addRegion(UUID playerUUID, RegionBase region) throws IOException {
+        
+        for(BlockBase blockBase)
+
+
+        if(currentPlayers.get(playerUUID).getPlayerEntity().getEffects())
         serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnRegionPacket(region));
     }
 

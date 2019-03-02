@@ -108,6 +108,9 @@ public abstract class ViewingEntityBase extends EntityBase {
                 connectedRegions.add(region);
             }
         }
+
+        // Call Server World Add region for Client
+        // Call Server world remove Region for Client
     }
 
     public EntityView getEntityView() {
