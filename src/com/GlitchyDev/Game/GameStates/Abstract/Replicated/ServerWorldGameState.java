@@ -15,6 +15,7 @@ import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerSpawnRegionPa
 import com.GlitchyDev.Networking.ServerNetworkManager;
 import com.GlitchyDev.Utility.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisableBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.AbstractEntities.ViewingEntityBase;
@@ -192,12 +193,15 @@ public abstract class ServerWorldGameState extends WorldGameState {
     }
 
     public void addRegion(UUID playerUUID, RegionBase region) throws IOException {
-        
-        for(BlockBase blockBase)
+        RegionBase regionCopy = region.createCopy();
+        for(BlockBase blockBase: region.getBlocksArray()) {
+            if(blockBase instanceof CustomVisableBlock) {
+                Location relativeLocation = region.getLocation().getLocationDifference(blockBase.getLocation());
+                regionCopy.setBlockRelative(relativeLocation,((CustomVisableBlock) blockBase).getVisibleBlock(currentPlayers.get(playerUUID)));
+            }
 
-
-        if(currentPlayers.get(playerUUID).getPlayerEntity().getEffects())
-        serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnRegionPacket(region));
+        }
+        serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnRegionPacket(regionCopy));
     }
 
     public void removeRegion(UUID playerUUID, UUID regionUUID, UUID worldUUID) throws IOException {
