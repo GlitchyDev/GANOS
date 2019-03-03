@@ -1,26 +1,64 @@
 package com.GlitchyDev.World.Blocks;
 
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.Game.Player.Player;
+import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
+import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
+import com.GlitchyDev.Rendering.Renderer;
+import com.GlitchyDev.Utility.AssetLoader;
+import com.GlitchyDev.Utility.GameWindow;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
 import java.util.Objects;
 
-public class DebugBlock extends BlockBase {
+public class DebugBlock extends BlockBase implements CustomRenderBlock {
     private final int testValue;
+    private final GameItem mesh;
 
     public DebugBlock(WorldGameState worldGameState, Location location, int testValue) {
         super(worldGameState, BlockType.DEBUG, location);
         this.testValue = testValue;
+        this.mesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
+        switch(testValue) {
+            case 0:
+                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon16x16"));
+                break;
+            case 1:
+                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon24x24"));
+                break;
+            case 2:
+                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon32x32"));
+                break;
+            default:
+                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Test_Floor_" + testValue));
+        }
+        mesh.setPosition(location.getNormalizedPosition());
     }
 
     public DebugBlock(WorldGameState worldGameState, InputBitUtility inputBitUtility) throws IOException {
         super(worldGameState, BlockType.DEBUG, inputBitUtility);
         testValue = inputBitUtility.getNextCorrectIntByte();
+        this.mesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
+        switch(testValue) {
+            case 0:
+                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon16x16"));
+                break;
+            case 1:
+                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon24x24"));
+                break;
+            case 2:
+                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon32x32"));
+                break;
+            default:
+                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Test_Floor_" + testValue));
+        }
+        mesh.setPosition(getLocation().getNormalizedPosition());
     }
 
 
@@ -51,5 +89,16 @@ public class DebugBlock extends BlockBase {
 
     public int getTestValue() {
         return testValue;
+    }
+
+    @Override
+    public void render(Renderer renderer, GameWindow gameWindow, Camera camera, Player player) {
+        renderer.render3DElement(gameWindow,"Default3D", camera, mesh);
+    }
+
+    @Override
+    public void setLocation(Location location) {
+        super.setLocation(location);
+        mesh.setPosition(location.getNormalizedPosition());
     }
 }

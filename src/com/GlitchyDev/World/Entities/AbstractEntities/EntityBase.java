@@ -119,19 +119,23 @@ public abstract class EntityBase {
      */
     public void move(Location newLocation, EntityMovementType movementType) {
         BlockBase currentBlock = worldGameState.getBlockAtLocation(getLocation());
-        if(currentBlock instanceof TriggerableBlock) {
-            ((TriggerableBlock) currentBlock).exitBlockSuccessfully(movementType,this);
-        }
-        BlockBase nextBlock = worldGameState.getBlockAtLocation(newLocation);
-        if(nextBlock instanceof TriggerableBlock) {
-            ((TriggerableBlock) newLocation).enterBlockSccessfully(movementType,this);
-        }
+        if(worldGameState.isARegionAtLocation(newLocation)) {
+            if (currentBlock instanceof TriggerableBlock) {
+                ((TriggerableBlock) currentBlock).exitBlockSuccessfully(movementType, this);
+            }
+            BlockBase nextBlock = worldGameState.getBlockAtLocation(newLocation);
+            if (nextBlock instanceof TriggerableBlock) {
+                ((TriggerableBlock) newLocation).enterBlockSccessfully(movementType, this);
+            }
 
 
-        worldGameState.getRegion(currentRegionUUID,getWorldUUID()).getEntities().remove(this);
-        setLocation(newLocation);
-        setCurrentRegionUUID(worldGameState.getRegionAtLocation(getLocation()).getRegionUUID());
-        worldGameState.getRegion(currentRegionUUID,getWorldUUID()).getEntities().add(this);
+            worldGameState.getRegion(currentRegionUUID, getWorldUUID()).getEntities().remove(this);
+            setLocation(newLocation);
+            setCurrentRegionUUID(worldGameState.getRegionAtLocation(getLocation()).getRegionUUID());
+            worldGameState.getRegion(currentRegionUUID, getWorldUUID()).getEntities().add(this);
+        } else {
+            System.out.println("EntityBase: No Valid region at " + newLocation);
+        }
 
 
     }

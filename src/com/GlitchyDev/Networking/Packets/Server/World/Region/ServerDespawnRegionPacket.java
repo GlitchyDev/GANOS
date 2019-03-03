@@ -27,7 +27,7 @@ public class ServerDespawnRegionPacket extends WorldStateModifyingPackets {
 
     @Override
     public void executeModification(WorldGameState worldGameState) {
-        worldGameState.despawnRegion(regionUUID,worldUUID);
+        worldGameState.removeRegionFromGame(regionUUID,worldUUID);
     }
 
     @Override

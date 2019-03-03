@@ -59,7 +59,7 @@ public class MapBuilderGameState extends EnvironmentGameState {
 
     // Init'd controller 1
     private GameController controller;
-    // Mesh for PartialCubicBlocks
+    // MeshItem for PartialCubicBlocks
     private PartialCubicInstanceMesh instancedMesh;
     private InstancedGridTexture instancedGridTexture;
     private PartialCubicInstanceMesh cursorInstancedMesh;
@@ -511,7 +511,7 @@ public class MapBuilderGameState extends EnvironmentGameState {
 
     public enum EditState {
         MOVE_CURSOR, // Move Cursor, Delete whole Tiles, Change model
-        EDIT_TEXTURE, // Select Texture Sheet, Bind Textures, edit Mesh
+        EDIT_TEXTURE, // Select Texture Sheet, Bind Textures, edit MeshItem
         ;
         public EditState toggleState() {
             switch(this) {

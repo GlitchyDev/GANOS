@@ -61,7 +61,9 @@ public class RegionBase {
         for(int y = 0; y < getHeight(); y++) {
             for(int x = 0; x < getWidth(); x++) {
                 for(int z = 0; z < getLength(); z++) {
-                    setBlockRelative(x,y,z, new AirBlock(worldGameState, new Location(x,y,z, worldUUID)));
+                    System.out.println("DE " + x + " " + y + " " + z);
+                    setBlockRelative(x,y,z, new AirBlock(worldGameState, getLocation().getOffsetLocation(x, y, z)));
+                    System.out.println("DA " + getBlockRelative(x,y,z).getLocation());
                 }
             }
         }
@@ -278,6 +280,7 @@ public class RegionBase {
             for (int x = 0; x < getWidth(); x++) {
                 for (int z = 0; z < getLength(); z++) {
                     blockArray[i] = blocks[y][x][z];
+                    i++;
                 }
             }
         }

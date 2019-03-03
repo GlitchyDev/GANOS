@@ -28,7 +28,7 @@ public abstract class BlockBase {
         this.worldGameState = worldGameState;
 
         this.blockType = blockType;
-        location = new Location(0,0,0,null);
+        this.location = new Location(0,0,0,null);
     }
 
     // Do not write Location, as that can be refereed engineered from the read protocol

@@ -197,12 +197,12 @@ public class DebugGameState1 extends EnvironmentGameState {
         /*
         if(gameItem1 != null)
         {
-            gameItem1.setMesh(activeMeshes.get("Wall"));
+            gameItem1.setMeshItem(activeMeshes.get("Wall"));
             gameItem1.setRotation(0,90 * (int)(Math.random() * 4),0);
         }
         if(gameItem2 != null)
         {
-            gameItem2.setMesh(activeMeshes.get("Cube"));
+            gameItem2.setMeshItem(activeMeshes.get("Cube"));
         }
         */
 

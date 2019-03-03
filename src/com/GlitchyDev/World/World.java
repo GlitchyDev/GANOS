@@ -1,12 +1,9 @@
 package com.GlitchyDev.World;
 
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
-import com.GlitchyDev.World.Blocks.AirBlock;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Region.RegionBase;
 import com.GlitchyDev.World.Region.RegionConnectionType;
-import org.lwjgl.system.CallbackI;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,7 +90,7 @@ public class World {
         if(!regionConnections.containsKey(regionUUID)) {
             regionConnections.put(regionUUID,new HashMap<>());
         }
-        if(regionConnections.get(regionUUID).containsKey(regionConnectionType)) {
+        if(!regionConnections.get(regionUUID).containsKey(regionConnectionType)) {
             regionConnections.get(regionUUID).put(regionConnectionType,new ArrayList<>());
         }
         regionConnections.get(regionUUID).get(regionConnectionType).add(linkedRegion);

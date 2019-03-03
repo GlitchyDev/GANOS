@@ -39,6 +39,7 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
 
     @Override
     public void recalculateView() {
+        System.out.println("RECALCULATE");
         if(worldGameState instanceof ServerWorldGameState) {
             ArrayList<RegionBase> previousRegions = getEntityView().getViewableRegions();
 
@@ -48,27 +49,37 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
 
             HashMap<UUID, HashMap<RegionConnectionType, ArrayList<UUID>>> connections = worldGameState.getRegionConnections(getWorldUUID());
 
+
+
             ArrayList<RegionConnectionType> seeableConnectionTypes = new ArrayList<>();
 
-
+            newlyConnected.add(worldGameState.getRegion(getCurrentRegionUUID(),getWorldUUID()));
             for(RegionConnectionType regionConnection: connections.get(getCurrentRegionUUID()).keySet()) {
                 if(regionConnection.isVisibleByDefault()) {
+                    boolean hideRegion = false;
                     for(EffectBase effect: getEffects()) {
                         if(effect instanceof RegionHidingEffect) {
                             if(((RegionHidingEffect) effect).doHideRegionConnection(regionConnection)) {
-                                seeableConnectionTypes.add(regionConnection);
+                               hideRegion = true;
+                            }
+                        }
+                    }
+                    if(!hideRegion) {
+                        seeableConnectionTypes.add(regionConnection);
+                    }
+
+                } else {
+                    boolean showRegion = false;
+                    for(EffectBase effect: getEffects()) {
+                        if(effect instanceof RegionRevealingEffect) {
+                            if(((RegionRevealingEffect) effect).doShowRegionConnection(regionConnection)) {
+                                showRegion = true;
                                 break;
                             }
                         }
                     }
-                } else {
-                    for(EffectBase effect: getEffects()) {
-                        if(effect instanceof RegionRevealingEffect) {
-                            if(((RegionRevealingEffect) effect).doShowRegionConnection(regionConnection)) {
-                                seeableConnectionTypes.add(regionConnection);
-                                break;
-                            }
-                        }
+                    if(showRegion) {
+                        seeableConnectionTypes.add(regionConnection);
                     }
                 }
             }
@@ -89,17 +100,21 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
                 }
             }
 
+            getEntityView().getViewableRegions().removeAll(newlyRemoved);
+            getEntityView().getViewableRegions().addAll(newlyConnected);
+
+
 
             for(RegionBase region: newlyConnected) {
                 try {
-                    ((ServerWorldGameState) worldGameState).addRegion(getPlayer().getPlayerUUID(),region);
+                    ((ServerWorldGameState) worldGameState).playerAddRegionToView(getPlayer().getPlayerUUID(),region);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             for(RegionBase region: newlyRemoved) {
                 try {
-                    ((ServerWorldGameState) worldGameState).removeRegion(getPlayer().getPlayerUUID(),region.getRegionUUID(),region.getWorldUUID());
+                    ((ServerWorldGameState) worldGameState).playerRemoveRegionFromView(getPlayer().getPlayerUUID(),region.getRegionUUID(),region.getWorldUUID());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

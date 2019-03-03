@@ -29,7 +29,7 @@ public class ServerSpawnRegionPacket extends WorldStateModifyingPackets {
 
     @Override
     public void executeModification(WorldGameState worldGameState) {
-        worldGameState.spawnRegion(region);
+        worldGameState.addRegionToGame(region);
     }
 
     @Override

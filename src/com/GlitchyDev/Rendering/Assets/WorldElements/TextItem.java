@@ -1,6 +1,7 @@
 package com.GlitchyDev.Rendering.Assets.WorldElements;
 
 import com.GlitchyDev.Rendering.Assets.Fonts.HudTexture;
+import com.GlitchyDev.Rendering.Assets.Mesh;
 import com.GlitchyDev.Rendering.Assets.Utils;
 
 import java.util.ArrayList;

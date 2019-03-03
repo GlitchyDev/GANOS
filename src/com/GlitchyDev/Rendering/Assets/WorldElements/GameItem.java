@@ -1,5 +1,6 @@
 package com.GlitchyDev.Rendering.Assets.WorldElements;
 
+import com.GlitchyDev.Rendering.Assets.Mesh;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 
@@ -7,7 +8,6 @@ import org.joml.Vector3i;
  * A object that can be represented in game in 3D or 2D ( See SpriteItem or HudItem )
  */
 public class GameItem {
-
     private Mesh mesh;
 
     // True Rotation

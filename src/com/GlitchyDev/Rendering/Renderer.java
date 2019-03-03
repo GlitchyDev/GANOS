@@ -112,6 +112,8 @@ public class Renderer {
 
         //shader.unbind();
     }
+
+
     /*
     public void renderInstanced3DElements(GameWindow window, String shaderName, Camera camera, InstancedMesh instancedMesh, List<GameItem> gameItems) {
         ShaderProgram shader = loadedShaders.get(shaderName);

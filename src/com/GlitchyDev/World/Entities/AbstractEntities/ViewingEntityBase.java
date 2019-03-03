@@ -40,36 +40,43 @@ public abstract class ViewingEntityBase extends EntityBase {
 
     @Override
     public void move(Location newLocation, EntityMovementType movementType) {
-        BlockBase currentBlock = worldGameState.getBlockAtLocation(getLocation());
-        if(currentBlock instanceof TriggerableBlock) {
-            ((TriggerableBlock) currentBlock).exitBlockSuccessfully(movementType,this);
-        }
-        BlockBase nextBlock = worldGameState.getBlockAtLocation(newLocation);
-        if(nextBlock instanceof TriggerableBlock) {
-            ((TriggerableBlock) newLocation).enterBlockSccessfully(movementType,this);
-        }
+        if(worldGameState.isARegionAtLocation(newLocation)) {
+            BlockBase currentBlock = worldGameState.getBlockAtLocation(getLocation());
+            if (currentBlock instanceof TriggerableBlock) {
+                ((TriggerableBlock) currentBlock).exitBlockSuccessfully(movementType, this);
+            }
+            BlockBase nextBlock = worldGameState.getBlockAtLocation(newLocation);
+            if (nextBlock instanceof TriggerableBlock) {
+                ((TriggerableBlock) newLocation).enterBlockSccessfully(movementType, this);
+            }
 
-        Location oldLocation = getLocation();
-        setLocation(newLocation);
+            Location oldLocation = getLocation();
+            setLocation(newLocation);
 
-        RegionBase selectedRegion = null;
-        if(worldGameState.countRegionsAtLocation(oldLocation) > 1) {
-            ArrayList<RegionBase> overlappingRegion = worldGameState.getRegionsAtLocation(getLocation());
-            for(RegionBase viewableRegion: getEntityView().getViewableRegions()) {
-                if(overlappingRegion.contains(viewableRegion)) {
-                    selectedRegion = viewableRegion;
+            RegionBase selectedRegion = null;
+            if (worldGameState.countRegionsAtLocation(oldLocation) > 1) {
+                ArrayList<RegionBase> overlappingRegion = worldGameState.getRegionsAtLocation(getLocation());
+                for (RegionBase viewableRegion : getEntityView().getViewableRegions()) {
+                    if (overlappingRegion.contains(viewableRegion)) {
+                        selectedRegion = viewableRegion;
+                    }
                 }
+            } else {
+                selectedRegion = worldGameState.getRegionAtLocation(getLocation());
+            }
+
+            if (getCurrentRegionUUID() != selectedRegion.getRegionUUID()) {
+                worldGameState.getRegion(getCurrentRegionUUID(), getWorldUUID()).getEntities().remove(this);
+                setCurrentRegionUUID(selectedRegion.getRegionUUID());
+                worldGameState.getRegion(getCurrentRegionUUID(), getWorldUUID()).getEntities().add(this);
+                recalculateView();
+            }
+
+            if (worldGameState instanceof ServerWorldGameState) {
+                ((ServerWorldGameState) worldGameState).replicateMoveEntity(getUUID(), oldLocation, newLocation);
             }
         } else {
-            selectedRegion = worldGameState.getRegionAtLocation(getLocation());
-        }
-
-        worldGameState.getRegion(getCurrentRegionUUID(),getWorldUUID()).getEntities().remove(this);
-        setCurrentRegionUUID(selectedRegion.getRegionUUID());
-        worldGameState.getRegion(getCurrentRegionUUID(),getWorldUUID()).getEntities().add(this);
-
-        if(worldGameState instanceof ServerWorldGameState) {
-            ((ServerWorldGameState) worldGameState).replicateMoveEntity(getUUID(),oldLocation,newLocation);
+            System.out.println("ViewingEntityBase: No Valid region at " + newLocation);
         }
     }
 

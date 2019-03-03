@@ -18,15 +18,15 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisableBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Entities.AbstractEntities.ViewingEntityBase;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.RegionBase;
-import com.GlitchyDev.World.Region.RegionConnectionType;
 import com.GlitchyDev.World.World;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 public abstract class ServerWorldGameState extends WorldGameState {
     protected final ServerNetworkManager serverNetworkManager;
@@ -66,11 +66,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
         Location spawnLocation = world.getOriginLocation();
         UUID regionUUID = getRegionAtLocation(spawnLocation).getRegionUUID();
         DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,regionUUID,spawnLocation,Direction.NORTH);
+        playerEntity.recalculateView();
         Player player = new Player(this,playerUUID,playerEntity);
-        currentPlayers.add(player);
-        // Get the Player Entity
-        replicateChanges();
-
+        currentPlayers.put(playerUUID,player);
     }
 
     public void onPlayerLogout(UUID playerUUID, NetworkDisconnectType reason) {
@@ -80,15 +78,14 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
 
     private void replicateChanges() {
-        // Recalculate View List
-        // This fixes
-        for(RegionBase region: recalculateRegionEntityList) {
-            for(EntityBase entity: region.getEntities()) {
-                if(entity instanceof ViewingEntityBase) {
-                    ((ViewingEntityBase) entity).recalculateView();
-                }
-            }
-        }
+        // Set blocks
+        // Chance Directions
+
+        // Spawn Entities global removal
+        // Despawn Entities global Removal
+        // Move entities, spawn respawn and move
+
+
 
 
 
@@ -98,7 +95,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
     }
 
 
-    /*
+    /**
     Linking and unlinking regions shouldn't happen, Worlds should be relatively static
     private HashSet<RegionBase> recalculateRegionEntityList = new HashSet<>();
     @Override
@@ -140,6 +137,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
         despawnedEntities.get(regionUUID).add(new ServerDespawnEntityPacket(entityUUID, worldUUID));
     }
 
+
+
+    // Entities who move between regions
     private HashMap<UUID, ArrayList<ServerMoveEntityPacket>> movedEntitiesBoth = new HashMap<>();
     private HashMap<UUID, ArrayList<ServerDespawnEntityPacket>> movedEntitiesOld = new HashMap<>();
     private HashMap<UUID, ArrayList<ServerSpawnEntityPacket>> movedEntitiesNew = new HashMap<>();
@@ -162,7 +162,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
         }
 
         movedEntitiesBoth.get(newRegion).add(new ServerMoveEntityPacket(entityUUID, newLocation));
-        movedEntitiesOld.get(oldLocation).add(new ServerDespawnEntityPacket(entityUUID, oldLocation.getWorldUUID()));
+        movedEntitiesOld.get(previousRegion).add(new ServerDespawnEntityPacket(entityUUID, oldLocation.getWorldUUID()));
         EntityBase entity = getEntity(entityUUID, newLocation.getWorldUUID());
         movedEntitiesNew.get(newRegion).add(new ServerSpawnEntityPacket(entity));
     }
@@ -179,7 +179,10 @@ public abstract class ServerWorldGameState extends WorldGameState {
         changedDirections.get(regionUUID).add(new ServerChangeDirectionEntityPacket(entityUUID, worldUUID, direction));
     }
 
-    // Replicate to players with visible region
+
+
+
+    // Replicate to players with visible region, and check to make sure its not a custom visibility block
     private HashMap<UUID, ArrayList<ServerChangeBlockPacket>> changedBlocks = new HashMap<>();
     @Override
     public void setBlock(BlockBase block) {
@@ -192,20 +195,25 @@ public abstract class ServerWorldGameState extends WorldGameState {
         changedBlocks.get(regionUUID).add(new ServerChangeBlockPacket(block));
     }
 
-    public void addRegion(UUID playerUUID, RegionBase region) throws IOException {
-        RegionBase regionCopy = region.createCopy();
-        for(BlockBase blockBase: region.getBlocksArray()) {
-            if(blockBase instanceof CustomVisableBlock) {
-                Location relativeLocation = region.getLocation().getLocationDifference(blockBase.getLocation());
-                regionCopy.setBlockRelative(relativeLocation,((CustomVisableBlock) blockBase).getVisibleBlock(currentPlayers.get(playerUUID)));
-            }
+    // Check to make sure the correct "Region" is sent, visibility and all
+    public void playerAddRegionToView(UUID playerUUID, RegionBase region) throws IOException {
+        if(currentPlayers.containsKey(playerUUID)) {
+            RegionBase regionCopy = region.createCopy();
+            for (BlockBase blockBase : region.getBlocksArray()) {
+                if (blockBase instanceof CustomVisableBlock) {
+                    Location relativeLocation = region.getLocation().getLocationDifference(blockBase.getLocation());
+                    regionCopy.setBlockRelative(relativeLocation, ((CustomVisableBlock) blockBase).getVisibleBlock(currentPlayers.get(playerUUID)));
+                }
 
+            }
+            serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnRegionPacket(regionCopy));
         }
-        serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnRegionPacket(regionCopy));
     }
 
-    public void removeRegion(UUID playerUUID, UUID regionUUID, UUID worldUUID) throws IOException {
-        serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerDespawnRegionPacket(regionUUID, worldUUID));
+    public void playerRemoveRegionFromView(UUID playerUUID, UUID regionUUID, UUID worldUUID) throws IOException {
+        if(currentPlayers.containsKey(playerUUID)) {
+            serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerDespawnRegionPacket(regionUUID, worldUUID));
+        }
     }
 
 
