@@ -3,6 +3,7 @@ package com.GlitchyDev.Networking.Packets.AbstractPackets;
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
+import com.GlitchyDev.Utility.OutputBitUtility;
 
 import java.io.IOException;
 
@@ -17,6 +18,8 @@ public abstract class WorldStateModifyingPackets extends PacketBase {
     public WorldStateModifyingPackets(PacketType packetType, InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
         super(packetType, inputBitUtility);
     }
+
+
 
     public abstract void executeModification(WorldGameState worldGameState);
 }

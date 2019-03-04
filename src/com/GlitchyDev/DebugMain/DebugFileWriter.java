@@ -23,6 +23,17 @@ public class DebugFileWriter {
 
     public static void main(String[] args) throws IOException {
 
+        File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
+        OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
+        fileOutputBitUtility.writeNextInteger(138);
+        fileOutputBitUtility.close();
+        InputBitUtility inputBitUtility = new InputBitUtility(file);
+        System.out.println(inputBitUtility.getNextInteger());
+
+
+
+
+
 
     }
 

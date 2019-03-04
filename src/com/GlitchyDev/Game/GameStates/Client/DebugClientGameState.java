@@ -16,7 +16,9 @@ import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
 import com.GlitchyDev.Utility.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
+import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Region.RegionBase;
 import com.GlitchyDev.World.World;
 
@@ -28,7 +30,8 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_C;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT;
 
 public class DebugClientGameState extends ClientWorldGameState {
     private final ArrayList<TextItem> textItems;
@@ -79,7 +82,7 @@ public class DebugClientGameState extends ClientWorldGameState {
         } else {
             textItems.get(4).setText("Not Connected");
             textItems.get(5).setText("" + gameInput.getKeyValue(GLFW_KEY_C) + "." + gameInputTimings.getActiveMouseButton1Time());
-            if(controller.getToggleLeftBumperButton()) {
+            if(controller.getToggleLeftBumperButton() || gameInput.getKeyValue(GLFW_KEY_S) >= 1) {
                 try {
                     System.out.println("Attempt connection to server");
                     connectToServer(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562"), this, InetAddress.getLocalHost(), 813);
@@ -97,44 +100,58 @@ public class DebugClientGameState extends ClientWorldGameState {
         final float CAMERA_ROTATION_AMOUNT = 3.0f;
         final float JOYSTICK_THRESHOLD = 0.2f;
 
-        if(controller != null && controller.isCurrentlyActive()) {
-            if (!controller.getLeftJoyStickButton()) {
-                if (controller.getLeftJoyStickY() < -JOYSTICK_THRESHOLD) {
-                    camera.moveForward(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+        try {
+            if (controller != null && controller.isCurrentlyActive()) {
+                if (!controller.getLeftJoyStickButton()) {
+                    if (controller.getLeftJoyStickY() < -JOYSTICK_THRESHOLD) {
+                        camera.moveForward(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                    }
+                    if (controller.getLeftJoyStickY() > JOYSTICK_THRESHOLD) {
+                        camera.moveBackwards(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                    }
+                    if (controller.getLeftJoyStickX() > JOYSTICK_THRESHOLD) {
+                        camera.moveRight(controller.getLeftJoyStickX() * CAMERA_MOVEMENT_AMOUNT);
+                    }
+                    if (controller.getLeftJoyStickX() < -JOYSTICK_THRESHOLD) {
+                        camera.moveLeft(controller.getLeftJoyStickX() * CAMERA_MOVEMENT_AMOUNT);
+                    }
+                } else {
+                    if (controller.getLeftJoyStickY() > JOYSTICK_THRESHOLD) {
+                        camera.moveDown(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                    }
+                    if (controller.getLeftJoyStickY() < -JOYSTICK_THRESHOLD) {
+                        camera.moveUp(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                    }
+
                 }
-                if (controller.getLeftJoyStickY() > JOYSTICK_THRESHOLD) {
-                    camera.moveBackwards(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+
+                if (controller.getRightJoyStickX() > JOYSTICK_THRESHOLD || controller.getRightJoyStickX() < -JOYSTICK_THRESHOLD) {
+                    camera.moveRotation(0, controller.getRightJoyStickX() * CAMERA_ROTATION_AMOUNT, 0);
                 }
-                if (controller.getLeftJoyStickX() > JOYSTICK_THRESHOLD) {
-                    camera.moveRight(controller.getLeftJoyStickX() * CAMERA_MOVEMENT_AMOUNT);
+                if (controller.getRightJoyStickY() > JOYSTICK_THRESHOLD || controller.getRightJoyStickY() < -JOYSTICK_THRESHOLD) {
+                    camera.moveRotation(controller.getRightJoyStickY() * CAMERA_ROTATION_AMOUNT, 0, 0);
                 }
-                if (controller.getLeftJoyStickX() < -JOYSTICK_THRESHOLD) {
-                    camera.moveLeft(controller.getLeftJoyStickX() * CAMERA_MOVEMENT_AMOUNT);
+
+                if (controller.getToggleDirectionPad() != ControllerDirectionPad.NONE) {
+                    getGameSocket().sendPacket(new ClientSendInputPacket(ClientInputType.getInputDirection(controller.getDirectionPad().getDirection())));
                 }
             } else {
-                if (controller.getLeftJoyStickY() > JOYSTICK_THRESHOLD) {
-                    camera.moveDown(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                if (gameInput.getKeyValue(GLFW_KEY_UP) >= 1 && isConnected) {
+                    getGameSocket().sendPacket(new ClientSendInputPacket(ClientInputType.getInputDirection(Direction.NORTH)));
                 }
-                if (controller.getLeftJoyStickY() < -JOYSTICK_THRESHOLD) {
-                    camera.moveUp(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                if (gameInput.getKeyValue(GLFW_KEY_LEFT) >= 1 && isConnected) {
+                    getGameSocket().sendPacket(new ClientSendInputPacket(ClientInputType.getInputDirection(Direction.EAST)));
                 }
-
+                if (gameInput.getKeyValue(GLFW_KEY_DOWN) >= 1 && isConnected) {
+                    getGameSocket().sendPacket(new ClientSendInputPacket(ClientInputType.getInputDirection(Direction.SOUTH)));
+                }
+                if (gameInput.getKeyValue(GLFW_KEY_RIGHT) >= 1 && isConnected) {
+                    getGameSocket().sendPacket(new ClientSendInputPacket(ClientInputType.getInputDirection(Direction.WEST)));
+                }
             }
 
-            if (controller.getRightJoyStickX() > JOYSTICK_THRESHOLD || controller.getRightJoyStickX() < -JOYSTICK_THRESHOLD) {
-                camera.moveRotation(0, controller.getRightJoyStickX() * CAMERA_ROTATION_AMOUNT, 0);
-            }
-            if (controller.getRightJoyStickY() > JOYSTICK_THRESHOLD || controller.getRightJoyStickY() < -JOYSTICK_THRESHOLD) {
-                camera.moveRotation(controller.getRightJoyStickY() * CAMERA_ROTATION_AMOUNT, 0, 0);
-            }
-        }
-
-        if(isConnected && controller.getToggleDirectionPad() != ControllerDirectionPad.NONE) {
-            try {
-                getGameSocket().sendPacket(new ClientSendInputPacket(ClientInputType.getInputDirection(controller.getDirectionPad().getDirection())));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
@@ -147,7 +164,10 @@ public class DebugClientGameState extends ClientWorldGameState {
         renderer.renderHUD(globalGameData.getGameWindow(),"Default2D",textItems);
 
         if(getWorlds().size() == 1) {
-            World world = (World) getWorlds().toArray()[0];
+            World world = null;
+            for(UUID worldUUID: getWorlds()) {
+                world = getWorld(worldUUID);
+            }
             for(RegionBase region: world.getRegions().values()) {
                 for (BlockBase block : region.getBlocksArray()) {
                     if (block instanceof CustomRenderBlock) {

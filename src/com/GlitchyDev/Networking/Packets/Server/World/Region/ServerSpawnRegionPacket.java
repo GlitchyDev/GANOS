@@ -34,6 +34,7 @@ public class ServerSpawnRegionPacket extends WorldStateModifyingPackets {
 
     @Override
     protected void transmitPacketBody(OutputBitUtility outputBitUtility) throws IOException {
+        System.out.println("Spawn Region " + location);
         outputBitUtility.writeNextInteger(location.getX());
         outputBitUtility.writeNextInteger(location.getY());
         outputBitUtility.writeNextInteger(location.getZ());

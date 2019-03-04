@@ -114,6 +114,7 @@ public abstract class GameSocketBase {
                 while(keepThreadAlive.get()) {
                     PacketType packetType = PacketType.values()[input.getNextCorrectIntByte()];
                     PacketBase packet = packetType.getPacketFromInput(input, worldGameState);
+                    System.out.println("Recieved Packet " + packet);
                     if (packet instanceof GeneralAuthDisconnectPacket) {
                         keepThreadAlive.set(false);
                         socket.close();
@@ -124,6 +125,7 @@ public abstract class GameSocketBase {
             } catch (IOException e) {
                 // Eventually add an way to notify GameState if disconnected for other reasons like PING
                 e.printStackTrace();
+
             }
         }
     }

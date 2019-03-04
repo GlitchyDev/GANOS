@@ -14,8 +14,11 @@ import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
 import com.GlitchyDev.Utility.GlobalGameData;
+import com.GlitchyDev.Utility.InputBitUtility;
+import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
+import com.GlitchyDev.World.Blocks.AirBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
@@ -26,11 +29,14 @@ import com.GlitchyDev.World.Region.RegionBase;
 import com.GlitchyDev.World.Region.RegionConnectionType;
 import com.GlitchyDev.World.World;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.UUID;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 public class DebugServerGameState extends ServerWorldGameState {
     private final ArrayList<TextItem> textItems;
@@ -57,9 +63,9 @@ public class DebugServerGameState extends ServerWorldGameState {
         spawnWorld = UUID.fromString("0bca5dea-3e45-11e9-b210-d663bd873d93");
         World world = new World(spawnWorld);
         addWorld(world);
-        RegionBase region1 = new RegionBase(this,spawnWorld,10,10,10,new Location(0,0,0,spawnWorld));
+        RegionBase region1 = new RegionBase(this,spawnWorld,5,5,5,new Location(0,0,0,spawnWorld));
         RegionBase region2 = new RegionBase(this,spawnWorld,10,10,10,new Location(10,0,0,spawnWorld));
-        RegionBase region3 = new RegionBase(this,spawnWorld,10,10,10,new Location(10,0,10,spawnWorld));
+        RegionBase region3 = new RegionBase(this,spawnWorld,10,10,10,new Location(10, 0,10,spawnWorld));
 
 
         System.out.println("-------------------");
@@ -67,9 +73,31 @@ public class DebugServerGameState extends ServerWorldGameState {
             for(int z = 0; z < region1.getLength(); z++) {
                 BlockBase block = region1.getBlockRelative(x,0,z);
                 Location relativeLocation = region1.getLocation().getLocationDifference(block.getLocation());
-                region1.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),1));
+                region1.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),5));
             }
         }
+
+        try {
+            System.out.println("Load and read Regions");
+            File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
+            OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
+            region1.writeData(fileOutputBitUtility);
+            fileOutputBitUtility.close();
+            InputBitUtility inputBitUtility = new InputBitUtility(file);
+            region1 = new RegionBase(inputBitUtility, new Location(spawnWorld),this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(int y = 0; y < region1.getHeight(); y++) {
+            for(int z = 0; z < region1.getLength(); z++) {
+                for(int x = 0; x < region1.getWidth(); x++) {
+                    System.out.print(!(region1.getBlockRelative(x,y,z) instanceof AirBlock) ? "1" : "0");
+                }
+                System.out.println();
+            }
+        }
+
         for(int x = 0; x < region2.getWidth(); x++) {
             for(int z = 0; z < region2.getLength(); z++) {
                 BlockBase block = region2.getBlockRelative(x,0,z);
@@ -101,7 +129,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         playerEntity.recalculateView();
 
         camera = new Camera();
-        camera.setPosition(-8.5f, 7f, -6f);
+        camera.setPosition(-8.5f, 10f, -6f);
         camera.setRotation(5f, 122f, -0f);
         controller = new XBox360Controller(0);
 
@@ -121,7 +149,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         textItems.get(0).setText("FPS: " + getCurrentFPS() + " Logic Util: " + formatter.format(getLogicUtilization()) + " Render Util: " + formatter.format(getRenderUtilization()));
         textItems.get(1).setText("Camera Pos: " + formatter.format(camera.getPosition().x) + "," + formatter.format(camera.getPosition().y) + "," + formatter.format(camera.getPosition().z));
         textItems.get(2).setText("Camera Rot: " + formatter.format(camera.getRotation().x) + "," + formatter.format(camera.getRotation().y) + "," + formatter.format(camera.getRotation().z));
-        textItems.get(3).setText("P: " + testPlayer.getPlayerEntity().getEntityView().getViewableRegions().size());
+        textItems.get(3).setText("P: " + countRegionsAtLocation(testPlayer.getPlayerEntity().getLocation()));
 
         int startServerInfo = 5;
         if(isRunning) {
@@ -136,7 +164,7 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
         } else {
             textItems.get(startServerInfo).setText("Not Online");
-            if(controller.getToggleLeftHomeButton()) {
+            if(controller.isCurrentlyActive() && controller.getToggleLeftHomeButton() || gameInput.getKeyValue(GLFW_KEY_C) >= 1) {
                 System.out.println("Starting up Server");
                 serverNetworkManager.enableAcceptingClients(813);
                 serverNetworkManager.getApprovedUsers().add(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562"));
@@ -154,7 +182,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         final float JOYSTICK_THRESHOLD = 0.2f;
 
         if(controller != null && controller.isCurrentlyActive()) {
-            if (!controller.getLeftJoyStickButton()) {
+            if (!controller.getLeftJoyStickButton() ) {
                 if (controller.getLeftJoyStickY() < -JOYSTICK_THRESHOLD) {
                     camera.moveForward(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
                 }
@@ -183,11 +211,33 @@ public class DebugServerGameState extends ServerWorldGameState {
             if (controller.getRightJoyStickY() > JOYSTICK_THRESHOLD || controller.getRightJoyStickY() < -JOYSTICK_THRESHOLD) {
                 camera.moveRotation(controller.getRightJoyStickY() * CAMERA_ROTATION_AMOUNT, 0, 0);
             }
+
+            if(controller.getToggleDirectionPad() != ControllerDirectionPad.NONE) {
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(controller.getDirectionPad().getDirection()), EntityMovementType.WALKING);
+            }
+        } else {
+            if(gameInput.getKeyValue(GLFW_KEY_UP) >= 1) {
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.NORTH),EntityMovementType.WALKING);
+            }
+            if(gameInput.getKeyValue(GLFW_KEY_LEFT) >= 1) {
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.EAST),EntityMovementType.WALKING);
+            }
+            if(gameInput.getKeyValue(GLFW_KEY_DOWN) >= 1) {
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.SOUTH),EntityMovementType.WALKING);
+            }
+            if(gameInput.getKeyValue(GLFW_KEY_RIGHT) >= 1) {
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.WEST),EntityMovementType.WALKING);
+            }
+
+            if(gameInput.getKeyValue(GLFW_KEY_SPACE) >= 1) {
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.ABOVE),EntityMovementType.WALKING);
+            }
+            if(gameInput.getKeyValue(GLFW_KEY_RIGHT_SHIFT) >= 1) {
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.BELOW),EntityMovementType.WALKING);
+            }
         }
 
-        if(controller.getToggleDirectionPad() != ControllerDirectionPad.NONE) {
-            testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(controller.getDirectionPad().getDirection()), EntityMovementType.WALKING);
-        }
+
 
     }
 
@@ -213,12 +263,12 @@ public class DebugServerGameState extends ServerWorldGameState {
 
     @Override
     public void processPacket(UUID playerUUID, PacketBase packet) {
-        System.out.println(packet);
+        //System.out.println(packet);
         if(packet instanceof ClientSendInputPacket) {
             Direction direction = ((ClientSendInputPacket) packet).getClientInputType().getDirection();
             Player movingPlayer = currentPlayers.get(playerUUID);
             movingPlayer.getPlayerEntity().move(movingPlayer.getPlayerEntity().getLocation().getDirectionLocation(direction), EntityMovementType.WALKING);
-            System.out.println("Client moved " + direction);
+            //System.out.println("Client moved " + direction);
         }
     }
 

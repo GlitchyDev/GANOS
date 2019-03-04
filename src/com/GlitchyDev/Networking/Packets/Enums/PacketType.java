@@ -13,6 +13,8 @@ import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerMoveEntityPac
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerSpawnEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerDespawnRegionPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerSpawnRegionPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.ServerDespawnWorldPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Utility.InputBitUtility;
 
 import java.io.IOException;
@@ -60,6 +62,10 @@ public enum PacketType {
                 return new ClientSendInputPacket(inputBitUtility);
             case SERVER_AUTH_ACCEPT_CLIENT:
                 return new ServerAuthAcceptClient(inputBitUtility);
+            case SERVER_SPAWN_WORLD:
+                return new ServerSpawnWorldPacket(inputBitUtility, worldGameState);
+            case SERVER_DESPAWN_WORLD:
+                return new ServerDespawnWorldPacket(inputBitUtility, worldGameState);
             case SERVER_SPAWN_REGION:
                 return new ServerSpawnRegionPacket(inputBitUtility, worldGameState);
             case SERVER_DESPAWN_REGION:
@@ -75,6 +81,7 @@ public enum PacketType {
             case SERVER_CHANGE_BLOCK:
                 return new ServerChangeBlockPacket(inputBitUtility, worldGameState);
             default:
+                System.out.println("PacketType: ERROR NO VALID PACKTYPE REGISTERED");
         }
         return null;
     }

@@ -97,8 +97,9 @@ public class RegionBase {
                     while(!huffmanMap.containsKey(currentCode)) {
                         currentCode += inputBitUtility.getNextBit() ? "1" : "0";
                     }
-                    setBlockRelative(x,y,z,((BlockBase) huffmanMap.get(currentCode)).getCopy());
-                    getBlockRelative(x,y,z).setLocation(location.getOffsetLocation(x,y,z));
+                    BlockBase clone = ((BlockBase) huffmanMap.get(currentCode)).getCopy();
+                    clone.setLocation(getLocation().getOffsetLocation(x,y,z));
+                    setBlockRelative(x,y,z,clone);
                 }
             }
         }
@@ -240,16 +241,17 @@ public class RegionBase {
     }
 
 
-    public void setLocation(Location location) {
+    public void setLocation(Location newLocation) {
         Location oldLocation = getLocation();
-        Location offset = oldLocation.getLocationDifference(location);
         for(EntityBase entity: entities) {
-            entity.setLocation(entity.getLocation().getOffsetLocation(offset));
+            Location difference = oldLocation.getLocationDifference(entity.getLocation());
+            entity.setLocation(newLocation.getOffsetLocation(difference));
         }
         for(BlockBase block: getBlocksArray()) {
-            block.setLocation(block.getLocation().getOffsetLocation(offset));
+            Location difference = oldLocation.getLocationDifference(block.getLocation());
+            block.setLocation(newLocation.getOffsetLocation(difference));
         }
-        this.location = location;
+        this.location = newLocation;
     }
 
 

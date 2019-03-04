@@ -99,6 +99,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
     // Replicate functions
 
     public void addWorld(World world) {
+        System.out.println("Added World " + world);
         currentWorlds.put(world.getWorldUUID(),world);
     }
 
@@ -109,7 +110,14 @@ public abstract class WorldGameState extends EnvironmentGameState {
 
     public void addRegionToGame(RegionBase regionBase) {
         System.out.println(currentWorlds.size());
-        getWorld(regionBase.getWorldUUID()).getRegions().put(regionBase.getRegionUUID(),regionBase);
+        if(regionBase == null) {
+            System.out.println("R Oopsie!");
+        }
+        World world = getWorld(regionBase.getWorldUUID());
+        if(world == null) {
+            System.out.println("W Oopsie! " + regionBase.getWorldUUID() + " " + getWorlds().size());
+        }
+        world.getRegions().put(regionBase.getRegionUUID(),regionBase);
         for(EntityBase entity: regionBase.getEntities()) {
             spawnEntity(entity);
         }

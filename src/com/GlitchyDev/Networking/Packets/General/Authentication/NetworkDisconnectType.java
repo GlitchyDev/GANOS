@@ -10,4 +10,8 @@ public enum NetworkDisconnectType {
 
     CLIENT_LOGOUT,
     CLIENT_WINDOW_CLOSED,
+    CLIENT_CRASH,
+
+    GENERAL_SOCKET_CRASH,
+
 }
