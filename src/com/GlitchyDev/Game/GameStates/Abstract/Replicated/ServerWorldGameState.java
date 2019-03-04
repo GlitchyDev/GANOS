@@ -12,6 +12,7 @@ import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerMoveEntityPac
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerSpawnEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerDespawnRegionPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerSpawnRegionPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Networking.ServerNetworkManager;
 import com.GlitchyDev.Utility.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
@@ -66,9 +67,14 @@ public abstract class ServerWorldGameState extends WorldGameState {
         Location spawnLocation = world.getOriginLocation();
         UUID regionUUID = getRegionAtLocation(spawnLocation).getRegionUUID();
         DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,regionUUID,spawnLocation,Direction.NORTH);
-        playerEntity.recalculateView();
         Player player = new Player(this,playerUUID,playerEntity);
+        try {
+            serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnWorldPacket(world.getWorldUUID()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         currentPlayers.put(playerUUID,player);
+        playerEntity.recalculateView();
     }
 
     public void onPlayerLogout(UUID playerUUID, NetworkDisconnectType reason) {

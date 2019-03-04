@@ -83,7 +83,7 @@ public class World {
 
 
     public Location getOriginLocation() {
-        return new Location(0,0,0,getWorldID());
+        return new Location(0,0,0, getWorldUUID());
     }
 
     public void linkRegion(UUID regionUUID, UUID linkedRegion, RegionConnectionType regionConnectionType) {
@@ -125,10 +125,10 @@ public class World {
 
     @Override
     public String toString() {
-        return "w@" + getWorldID();
+        return "w@" + getWorldUUID();
     }
 
-    public UUID getWorldID() {
+    public UUID getWorldUUID() {
         return worldUUID;
     }
 }

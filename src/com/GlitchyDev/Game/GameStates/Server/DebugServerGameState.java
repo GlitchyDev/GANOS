@@ -7,6 +7,7 @@ import com.GlitchyDev.GameInput.Controllers.ControllerDirectionPad;
 import com.GlitchyDev.GameInput.Controllers.GameController;
 import com.GlitchyDev.GameInput.Controllers.XBox360Controller;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
+import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
@@ -16,6 +17,7 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Direction;
+import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Location;
@@ -35,6 +37,8 @@ public class DebugServerGameState extends ServerWorldGameState {
     private final Camera camera;
     private GameController controller;
 
+    private final UUID spawnWorld;
+
     public DebugServerGameState(GlobalGameData globalGameDataBase) {
         super(globalGameDataBase, GameStateType.DEBUG_SERVER, 5000);
 
@@ -49,12 +53,12 @@ public class DebugServerGameState extends ServerWorldGameState {
             textItems.add(item);
         }
 
-        UUID worldUUID = UUID.randomUUID();
-        World world = new World(worldUUID);
+        spawnWorld = UUID.randomUUID();
+        World world = new World(spawnWorld);
         addWorld(world);
-        RegionBase region1 = new RegionBase(this,worldUUID,10,10,10,new Location(0,0,0,worldUUID));
-        RegionBase region2 = new RegionBase(this,worldUUID,10,10,10,new Location(10,0,0,worldUUID));
-        RegionBase region3 = new RegionBase(this,worldUUID,10,10,10,new Location(10,0,10,worldUUID));
+        RegionBase region1 = new RegionBase(this,spawnWorld,10,10,10,new Location(0,0,0,spawnWorld));
+        RegionBase region2 = new RegionBase(this,spawnWorld,10,10,10,new Location(10,0,0,spawnWorld));
+        RegionBase region3 = new RegionBase(this,spawnWorld,10,10,10,new Location(10,0,10,spawnWorld));
 
 
         System.out.println("-------------------");
@@ -90,13 +94,14 @@ public class DebugServerGameState extends ServerWorldGameState {
         world.linkRegion(region3.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
         world.linkRegion(region3.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
 
-        DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,region1.getRegionUUID(), new Location(0,1,0,worldUUID), Direction.NORTH);
+        DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,region1.getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
         this.testPlayer = new Player(this,UUID.randomUUID(),playerEntity);
+        spawnEntity(playerEntity);
         playerEntity.recalculateView();
 
         camera = new Camera();
         camera.setPosition(-8.5f, 7f, -6f);
-        camera.setRotation(5f, 122f, 0f);
+        camera.setRotation(5f, 122f, -0f);
         controller = new XBox360Controller(0);
 
 
@@ -195,8 +200,10 @@ public class DebugServerGameState extends ServerWorldGameState {
                     ((CustomRenderBlock) block).render(renderer,globalGameData.getGameWindow(),camera,testPlayer);
                 }
             }
+            for(EntityBase entity: region.getEntities()) {
+                entity.render(renderer,globalGameData.getGameWindow(),camera);
+            }
         }
-        testPlayer.getPlayerEntity().render(renderer,globalGameData.getGameWindow(),camera);
         renderer.renderHUD(globalGameData.getGameWindow(),"Default2D",textItems);
 
 
@@ -204,13 +211,24 @@ public class DebugServerGameState extends ServerWorldGameState {
     }
 
     @Override
-    public void processPacket(UUID uuid, PacketBase packet) {
-
+    public void processPacket(UUID playerUUID, PacketBase packet) {
+        System.out.println(packet);
+        if(packet instanceof ClientSendInputPacket) {
+            Direction direction = ((ClientSendInputPacket) packet).getClientInputType().getDirection();
+            Player movingPlayer = currentPlayers.get(playerUUID);
+            movingPlayer.getPlayerEntity().move(movingPlayer.getPlayerEntity().getLocation().getDirectionLocation(direction), EntityMovementType.WALKING);
+            System.out.println("Client moved " + direction);
+        }
     }
 
     @Override
     public void onPlayerLogin(UUID playerUUID) {
-
+        RegionBase spawnRegion = getRegionAtLocation(getWorld(spawnWorld).getOriginLocation());
+        DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,spawnRegion.getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
+        Player loginPlayer = new Player(this,playerUUID,playerEntity);
+        currentPlayers.put(playerUUID,loginPlayer);
+        spawnEntity(playerEntity);
+        //playerEntity.recalculateView();
     }
 
     @Override

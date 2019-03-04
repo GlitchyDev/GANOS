@@ -12,7 +12,7 @@ public enum ClientInputType {
 
 
 
-    public ClientInputType getInputDirection(Direction direction) {
+    public static ClientInputType getInputDirection(Direction direction) {
         switch(direction) {
             case NORTH:
                 return MOVE_PLAYER_NORTH;
@@ -28,6 +28,25 @@ public enum ClientInputType {
                 return MOVE_PLAYER_DOWN;
             default:
                 return MOVE_PLAYER_NORTH;
+        }
+    }
+
+    public Direction getDirection() {
+        switch(this) {
+            case MOVE_PLAYER_NORTH:
+                return Direction.NORTH;
+            case MOVE_PLAYER_EAST:
+                return Direction.EAST;
+            case MOVE_PLAYER_SOUTH:
+                return Direction.SOUTH;
+            case MOVE_PLAYER_WEST:
+                return Direction.WEST;
+            case MOVE_PLAYER_UP:
+                return Direction.ABOVE;
+            case MOVE_PLAYER_DOWN:
+                return Direction.BELOW;
+            default:
+                return Direction.NORTH;
         }
     }
 }

@@ -99,7 +99,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
     // Replicate functions
 
     public void addWorld(World world) {
-        currentWorlds.put(world.getWorldID(),world);
+        currentWorlds.put(world.getWorldUUID(),world);
     }
 
     public void removeWorld(UUID worldUUID) {

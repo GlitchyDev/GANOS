@@ -40,6 +40,7 @@ public abstract class ClientWorldGameState extends WorldGameState {
         }
     }
 
+
     protected void disconnectFromServer(NetworkDisconnectType reason) {
         try {
             gameSocket.disconnect(reason);
@@ -53,6 +54,10 @@ public abstract class ClientWorldGameState extends WorldGameState {
     public abstract void onConnectedToServer();
 
     public abstract void onDisconnectFromServer();
+
+    protected ClientGameSocket getGameSocket() {
+        return gameSocket;
+    }
 
     // Send input to server
 }
