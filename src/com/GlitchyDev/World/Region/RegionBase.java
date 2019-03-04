@@ -126,7 +126,7 @@ public class RegionBase {
     }
 
     public void writeData(OutputBitUtility outputBitUtility) throws IOException {
-        outputBitUtility.writeNextCorrectByteInt(CURRENT_VERSION.ordinal());
+        //outputBitUtility.writeNextCorrectByteInt(CURRENT_VERSION.ordinal());
         outputBitUtility.writeNextCorrectByteInt(RegionFileType.NORMAL.ordinal());
         outputBitUtility.writeNextUUID(regionUUID);
 
@@ -151,7 +151,6 @@ public class RegionBase {
             }
         }
 
-        SortUtility.sortByValue(countMap);
 
         ArrayList<BlockBase> uniqueBlocks = new ArrayList<>();
         ArrayList<Integer> frequencies = new ArrayList<>();
@@ -161,8 +160,10 @@ public class RegionBase {
             frequencies.add(countMap.get(block));
         }
 
+        SortUtility.sort(uniqueBlocks, frequencies);
 
 
+        System.out.println("Sort");
         for(int i = 0; i < uniqueBlocks.size(); i++) {
             System.out.println(i + ": " + uniqueBlocks.get(i) + " | " + frequencies.get(i));
         }

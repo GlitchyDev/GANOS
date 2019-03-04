@@ -9,6 +9,7 @@ import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.RegionBase;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class ServerSpawnRegionPacket extends WorldStateModifyingPackets {
     private final Location location;
@@ -23,7 +24,11 @@ public class ServerSpawnRegionPacket extends WorldStateModifyingPackets {
 
     public ServerSpawnRegionPacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
         super(PacketType.SERVER_SPAWN_REGION, inputBitUtility, worldGameState);
-        this.location = new Location(inputBitUtility.getNextInteger(), inputBitUtility.getNextInteger(), inputBitUtility.getNextInteger(), inputBitUtility.getNextUUID());
+        int x = inputBitUtility.getNextInteger();
+        int y = inputBitUtility.getNextInteger();
+        int z = inputBitUtility.getNextInteger();
+        UUID worldUUID = inputBitUtility.getNextUUID();
+        this.location = new Location(x,y,z,worldUUID);
         region = new RegionBase(inputBitUtility, location, worldGameState);
     }
 

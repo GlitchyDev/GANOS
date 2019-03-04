@@ -18,6 +18,7 @@ import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
+import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
@@ -61,16 +62,13 @@ public class DebugServerGameState extends ServerWorldGameState {
         }
 
 
-
         spawnWorld = UUID.fromString("0bca5dea-3e45-11e9-b210-d663bd873d93");
 
-        World world = null;
-        try {
-            world = loadWorld(new File(System.getProperty("user.home") + "/Desktop/Test.crp"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        addWorld(world);
+
+
+
+
+
 
         /*
         World world = new World(spawnWorld);
@@ -112,8 +110,15 @@ public class DebugServerGameState extends ServerWorldGameState {
         world.linkRegion(region2.getRegionUUID(),region3.getRegionUUID(), RegionConnectionType.NORMAL);
         world.linkRegion(region3.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
         world.linkRegion(region3.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
-
         */
+
+
+        try {
+            loadWorld(new File(System.getProperty("user.home") + "/Desktop/Test.crp"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,getRegionAtLocation(new Location(0,1,0,spawnWorld)).getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
         this.testPlayer = new Player(this,UUID.randomUUID(),playerEntity);
@@ -124,6 +129,8 @@ public class DebugServerGameState extends ServerWorldGameState {
         camera.setPosition(-8.5f, 10f, -6f);
         camera.setRotation(5f, 122f, -0f);
         controller = new XBox360Controller(0);
+
+
 
 
 
@@ -319,7 +326,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         System.exit(0);
     }
 
-    private final World loadWorld(File file) throws IOException {
+    private void loadWorld(File file) throws IOException {
         InputBitUtility inputBitUtility = new InputBitUtility(file);
 
 
@@ -327,6 +334,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         UUID worldUUID = inputBitUtility.getNextUUID();
         World world = new World(worldUUID);
+        addWorld(world);
 
         int numRegions = inputBitUtility.getNextCorrectIntByte();
         UUID[] regionUUIDs = new UUID[numRegions];
@@ -337,19 +345,20 @@ public class DebugServerGameState extends ServerWorldGameState {
             addRegionToGame(region);
         }
 
-        for(int i = 0; i < numRegions; i++) {
-            int connectionTypeCount = inputBitUtility.getNextCorrectIntByte();
+
+        for(int i = 0; i < numRegions; i++) { // For Each Region
+            System.out.println("P " + i);
+            int connectionTypeCount = inputBitUtility.getNextCorrectIntByte(); // Num Connection Types
             for(int c = 0; c < connectionTypeCount; c++) {
-                RegionConnectionType regionConnectionType = RegionConnectionType.values()[inputBitUtility.getNextCorrectIntByte()];
-                int regions = inputBitUtility.getNextCorrectIntByte();
-                for(int r = 0; r < regions; r++) {
-                    UUID region = inputBitUtility.getNextUUID();
+                RegionConnectionType regionConnectionType = RegionConnectionType.values()[inputBitUtility.getNextCorrectIntByte()]; // Type
+                int regionsConnected = inputBitUtility.getNextCorrectIntByte(); // Regions Held
+                for(int r = 0; r < regionsConnected; r++) {
+                    UUID region = inputBitUtility.getNextUUID(); // UUID of Region
                     world.linkRegion(regionUUIDs[i],region, regionConnectionType);
                 }
 
             }
         }
-        return world;
     }
 
     private void writeWorld(File file, World world) throws IOException {
@@ -368,25 +377,26 @@ public class DebugServerGameState extends ServerWorldGameState {
             outputBitUtility.writeNextInteger(location.getX());
             outputBitUtility.writeNextInteger(location.getY());
             outputBitUtility.writeNextInteger(location.getZ());
-
             region.writeData(outputBitUtility);
         }
 
 
-        for(int i = 0; i < numRegions; i++) {
-            for(UUID regionUUID: world.getRegionConnections().keySet()) {
-                HashMap<RegionConnectionType,ArrayList<UUID>> connections = world.getRegionConnections().get(regionUUID);
-                outputBitUtility.writeNextCorrectByteInt(connections.size());
-                for(RegionConnectionType regionConnectionType: connections.keySet()) {
-                    ArrayList<UUID> regionsConnections = connections.get(regionConnectionType);
-                    outputBitUtility.writeNextCorrectByteInt(regionsConnections.size());
-                    for(UUID uuid: regionsConnections) {
-                        outputBitUtility.writeNextUUID(uuid);
-                    }
-                }
 
+        for(UUID regionUUID: world.getRegionConnections().keySet()) { // For each Region
+            HashMap<RegionConnectionType,ArrayList<UUID>> regionConnections = world.getRegionConnections().get(regionUUID);
+            outputBitUtility.writeNextCorrectByteInt(regionConnections.size()); // Write num connection types
+
+            for(RegionConnectionType regionConnectionType: regionConnections.keySet()) {
+                outputBitUtility.writeNextCorrectByteInt(regionConnectionType.ordinal()); // Write Type
+                ArrayList<UUID> regionsConnections = regionConnections.get(regionConnectionType);
+                outputBitUtility.writeNextCorrectByteInt(regionsConnections.size()); // Write Size
+                for(UUID uuid: regionsConnections) { // Write UUIDs
+                    outputBitUtility.writeNextUUID(uuid);
+                }
             }
+
         }
+
 
         outputBitUtility.close();
     }

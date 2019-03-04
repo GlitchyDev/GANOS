@@ -7,20 +7,50 @@ import java.util.*;
 public class SortUtility {
 
 
-    public static HashMap<BlockBase, Integer> sortByValue(HashMap<BlockBase, Integer> hm)
-    {
-        // Create a list from elements of HashMap
-        List<Map.Entry<BlockBase, Integer> > list =
-                new LinkedList<>(hm.entrySet());
-
-        // Sort the list
-        Collections.sort(list, Comparator.comparing(Map.Entry::getValue));
-
-        // put data from sorted list to hashmap
-        HashMap<BlockBase, Integer> temp = new LinkedHashMap<>();
-        for (Map.Entry<BlockBase, Integer> aa : list) {
-            temp.put(aa.getKey(), aa.getValue());
+    public static void sort(ArrayList<BlockBase> blocks, ArrayList<Integer> frequencies) {
+        ArrayList<BlockValue> blockValues = new ArrayList<>(blocks.size());
+        for(int i = 0; i < blocks.size(); i++) {
+            blockValues.add(new BlockValue(blocks.get(i),frequencies.get(i)));
         }
-        return temp;
+
+
+        Collections.sort(blockValues, (o1, o2) -> {
+            if(o1.getFrequency() > o2.getFrequency()) {
+                return 1;
+            }
+            if(o1.getFrequency() < o2.getFrequency()) {
+                return -1;
+            }
+            return 0;
+        });
+
+        Collections.reverse(blockValues);
+
+        blocks.clear();
+        frequencies.clear();
+
+        for(int i = 0; i < blockValues.size(); i++) {
+            blocks.add(blockValues.get(i).getBlock());
+            frequencies.add(blockValues.get(i).getFrequency());
+        }
     }
+
+    private static class BlockValue {
+        private final BlockBase block;
+        private final int frequency;
+
+        public BlockValue(BlockBase block, int frequency) {
+            this.block = block;
+            this.frequency = frequency;
+        }
+
+        public BlockBase getBlock() {
+            return block;
+        }
+
+        public int getFrequency() {
+            return frequency;
+        }
+    }
+
 }
