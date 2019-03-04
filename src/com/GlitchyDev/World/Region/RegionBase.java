@@ -4,6 +4,7 @@ import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.HuffmanTreeUtility;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
+import com.GlitchyDev.Utility.SortUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AirBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
@@ -21,6 +22,8 @@ import java.util.*;
 public class RegionBase {
     public static final RegionFileVersion CURRENT_VERSION = RegionFileVersion.VERSION_0;
     public static final RegionFileVersion LEAST_SUPPORTED_VERSION = RegionFileVersion.VERSION_0;
+    public static final String FILETYPE = "region";
+
     private final WorldGameState worldGameState;
     private final UUID worldUUID;
 
@@ -72,7 +75,7 @@ public class RegionBase {
         this.worldUUID = location.getWorldUUID();
         this.location = location;
 
-        RegionFileVersion version = RegionFileVersion.values()[inputBitUtility.getNextCorrectIntByte()];
+        //RegionFileVersion version = RegionFileVersion.values()[inputBitUtility.getNextCorrectIntByte()];
         RegionFileType type = RegionFileType.values()[inputBitUtility.getNextCorrectIntByte()];
 
         this.regionUUID = inputBitUtility.getNextUUID();
@@ -89,6 +92,12 @@ public class RegionBase {
             palette[i] = blockType.getBlockFromInput(worldGameState, inputBitUtility);
         }
         HashMap<String,Object> huffmanMap = HuffmanTreeUtility.loadHuffmanTreeValues(inputBitUtility,palette);
+
+        for(String str: huffmanMap.keySet()) {
+            BlockBase block = (BlockBase) huffmanMap.get(str);
+            System.out.println(block + " | " + str);
+        }
+
 
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < width; x++) {
@@ -136,11 +145,13 @@ public class RegionBase {
                         countMap.put(blockAtSpot,1);
                         uniques++;
                     } else {
-                        countMap.put(blockAtSpot,countMap.get(blockAtSpot));
+                        countMap.put(blockAtSpot,countMap.get(blockAtSpot) + 1);
                     }
                 }
             }
         }
+
+        SortUtility.sortByValue(countMap);
 
         ArrayList<BlockBase> uniqueBlocks = new ArrayList<>();
         ArrayList<Integer> frequencies = new ArrayList<>();
@@ -150,10 +161,12 @@ public class RegionBase {
             frequencies.add(countMap.get(block));
         }
 
-        Collections.sort(uniqueBlocks, Comparator.comparingInt(frequencies::indexOf));
-        Collections.sort(frequencies);
-        Collections.reverse(uniqueBlocks);
-        Collections.reverse(frequencies);
+
+
+        for(int i = 0; i < uniqueBlocks.size(); i++) {
+            System.out.println(i + ": " + uniqueBlocks.get(i) + " | " + frequencies.get(i));
+        }
+
 
 
         // Attempts to sort both these from most frequent to least frequent

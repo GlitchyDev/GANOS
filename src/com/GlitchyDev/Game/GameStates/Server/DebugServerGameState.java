@@ -18,8 +18,6 @@ import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
-import com.GlitchyDev.World.Blocks.AirBlock;
-import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
@@ -28,12 +26,14 @@ import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.RegionBase;
 import com.GlitchyDev.World.Region.RegionConnectionType;
 import com.GlitchyDev.World.World;
+import com.GlitchyDev.World.WorldFileType;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -60,10 +60,22 @@ public class DebugServerGameState extends ServerWorldGameState {
             textItems.add(item);
         }
 
+
+
         spawnWorld = UUID.fromString("0bca5dea-3e45-11e9-b210-d663bd873d93");
+
+        World world = null;
+        try {
+            world = loadWorld(new File(System.getProperty("user.home") + "/Desktop/Test.crp"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        addWorld(world);
+
+        /*
         World world = new World(spawnWorld);
         addWorld(world);
-        RegionBase region1 = new RegionBase(this,spawnWorld,5,5,5,new Location(0,0,0,spawnWorld));
+        RegionBase region1 = new RegionBase(this,spawnWorld,10,10,10,new Location(0,0,0,spawnWorld));
         RegionBase region2 = new RegionBase(this,spawnWorld,10,10,10,new Location(10,0,0,spawnWorld));
         RegionBase region3 = new RegionBase(this,spawnWorld,10,10,10,new Location(10, 0,10,spawnWorld));
 
@@ -73,43 +85,21 @@ public class DebugServerGameState extends ServerWorldGameState {
             for(int z = 0; z < region1.getLength(); z++) {
                 BlockBase block = region1.getBlockRelative(x,0,z);
                 Location relativeLocation = region1.getLocation().getLocationDifference(block.getLocation());
-                region1.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),5));
+                region1.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
             }
         }
-
-        try {
-            System.out.println("Load and read Regions");
-            File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
-            OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
-            region1.writeData(fileOutputBitUtility);
-            fileOutputBitUtility.close();
-            InputBitUtility inputBitUtility = new InputBitUtility(file);
-            region1 = new RegionBase(inputBitUtility, new Location(spawnWorld),this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        for(int y = 0; y < region1.getHeight(); y++) {
-            for(int z = 0; z < region1.getLength(); z++) {
-                for(int x = 0; x < region1.getWidth(); x++) {
-                    System.out.print(!(region1.getBlockRelative(x,y,z) instanceof AirBlock) ? "1" : "0");
-                }
-                System.out.println();
-            }
-        }
-
         for(int x = 0; x < region2.getWidth(); x++) {
             for(int z = 0; z < region2.getLength(); z++) {
                 BlockBase block = region2.getBlockRelative(x,0,z);
                 Location relativeLocation = region2.getLocation().getLocationDifference(block.getLocation());
-                region2.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),2));
+                region2.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
             }
         }
         for(int x = 0; x < region3.getWidth(); x++) {
             for(int z = 0; z < region3.getLength(); z++) {
                 BlockBase block = region3.getBlockRelative(x,0,z);
                 Location relativeLocation = region3.getLocation().getLocationDifference(block.getLocation());
-                region3.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),3));
+                region3.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
             }
         }
 
@@ -123,7 +113,9 @@ public class DebugServerGameState extends ServerWorldGameState {
         world.linkRegion(region3.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
         world.linkRegion(region3.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
 
-        DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,region1.getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
+        */
+
+        DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,getRegionAtLocation(new Location(0,1,0,spawnWorld)).getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
         this.testPlayer = new Player(this,UUID.randomUUID(),playerEntity);
         spawnEntity(playerEntity);
         playerEntity.recalculateView();
@@ -132,6 +124,8 @@ public class DebugServerGameState extends ServerWorldGameState {
         camera.setPosition(-8.5f, 10f, -6f);
         camera.setRotation(5f, 122f, -0f);
         controller = new XBox360Controller(0);
+
+
 
 
     }
@@ -214,6 +208,12 @@ public class DebugServerGameState extends ServerWorldGameState {
 
             if(controller.getToggleDirectionPad() != ControllerDirectionPad.NONE) {
                 testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(controller.getDirectionPad().getDirection()), EntityMovementType.WALKING);
+            }
+            if(controller.getToggleNorthButton()) {
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.ABOVE),EntityMovementType.WALKING);
+            }
+            if(controller.getToggleSouthButton()) {
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.BELOW),EntityMovementType.WALKING);
             }
         } else {
             if(gameInput.getKeyValue(GLFW_KEY_UP) >= 1) {
@@ -317,5 +317,77 @@ public class DebugServerGameState extends ServerWorldGameState {
             e.printStackTrace();
         }
         System.exit(0);
+    }
+
+    private final World loadWorld(File file) throws IOException {
+        InputBitUtility inputBitUtility = new InputBitUtility(file);
+
+
+        WorldFileType worldFileType = WorldFileType.values()[inputBitUtility.getNextCorrectIntByte()];
+
+        UUID worldUUID = inputBitUtility.getNextUUID();
+        World world = new World(worldUUID);
+
+        int numRegions = inputBitUtility.getNextCorrectIntByte();
+        UUID[] regionUUIDs = new UUID[numRegions];
+        for(int i = 0; i < numRegions; i++) {
+            Location location = new Location(inputBitUtility.getNextInteger(), inputBitUtility.getNextInteger(), inputBitUtility.getNextInteger(), worldUUID);
+            RegionBase region = new RegionBase(inputBitUtility, location, this);
+            regionUUIDs[i] = region.getRegionUUID();
+            addRegionToGame(region);
+        }
+
+        for(int i = 0; i < numRegions; i++) {
+            int connectionTypeCount = inputBitUtility.getNextCorrectIntByte();
+            for(int c = 0; c < connectionTypeCount; c++) {
+                RegionConnectionType regionConnectionType = RegionConnectionType.values()[inputBitUtility.getNextCorrectIntByte()];
+                int regions = inputBitUtility.getNextCorrectIntByte();
+                for(int r = 0; r < regions; r++) {
+                    UUID region = inputBitUtility.getNextUUID();
+                    world.linkRegion(regionUUIDs[i],region, regionConnectionType);
+                }
+
+            }
+        }
+        return world;
+    }
+
+    private void writeWorld(File file, World world) throws IOException {
+        OutputBitUtility outputBitUtility = new OutputBitUtility(file);
+
+        outputBitUtility.writeNextCorrectByteInt(WorldFileType.NORMAL.ordinal());
+
+        outputBitUtility.writeNextUUID(world.getWorldUUID());
+
+        int numRegions = world.getRegions().size();
+        outputBitUtility.writeNextCorrectByteInt(numRegions);
+        for(UUID regionUUID: world.getRegions().keySet()) {
+            RegionBase region = world.getRegions().get(regionUUID);
+            Location location = region.getLocation();
+
+            outputBitUtility.writeNextInteger(location.getX());
+            outputBitUtility.writeNextInteger(location.getY());
+            outputBitUtility.writeNextInteger(location.getZ());
+
+            region.writeData(outputBitUtility);
+        }
+
+
+        for(int i = 0; i < numRegions; i++) {
+            for(UUID regionUUID: world.getRegionConnections().keySet()) {
+                HashMap<RegionConnectionType,ArrayList<UUID>> connections = world.getRegionConnections().get(regionUUID);
+                outputBitUtility.writeNextCorrectByteInt(connections.size());
+                for(RegionConnectionType regionConnectionType: connections.keySet()) {
+                    ArrayList<UUID> regionsConnections = connections.get(regionConnectionType);
+                    outputBitUtility.writeNextCorrectByteInt(regionsConnections.size());
+                    for(UUID uuid: regionsConnections) {
+                        outputBitUtility.writeNextUUID(uuid);
+                    }
+                }
+
+            }
+        }
+
+        outputBitUtility.close();
     }
 }

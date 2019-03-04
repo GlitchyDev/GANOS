@@ -17,7 +17,8 @@ public class World {
     // A File loaded with the world that would contain the connections between regions
     private HashMap<UUID, HashMap<RegionConnectionType, ArrayList<UUID>>> regionConnections;
     // A File loaded with the world with the configuration of the regions connections
-    private HashMap<UUID, Location> regionLocations;
+
+    public static final String FILETYPE = "worldInfo";
     private final UUID worldUUID;
 
     public World(UUID worldUUID) {
@@ -27,8 +28,8 @@ public class World {
         this.tickableBlocks = new HashMap<>();
 
         this.regionConnections = new HashMap<>();
-        this.regionLocations = new HashMap<>();
     }
+
 
     public void tick() {
         for(TickableBlock tickableBlock: tickableBlocks.values()) {
@@ -117,10 +118,6 @@ public class World {
 
     public HashMap<UUID, HashMap<RegionConnectionType, ArrayList<UUID>>> getRegionConnections() {
         return regionConnections;
-    }
-
-    public HashMap<UUID, Location> getRegionLocations() {
-        return regionLocations;
     }
 
     @Override
