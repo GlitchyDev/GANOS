@@ -108,6 +108,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
 
 
     public void addRegionToGame(RegionBase regionBase) {
+        System.out.println(currentWorlds.size());
         getWorld(regionBase.getWorldUUID()).getRegions().put(regionBase.getRegionUUID(),regionBase);
         for(EntityBase entity: regionBase.getEntities()) {
             spawnEntity(entity);
@@ -143,6 +144,8 @@ public abstract class WorldGameState extends EnvironmentGameState {
 
     public void despawnEntity(UUID entityUUID, UUID worldUUID) {
         EntityBase entity = getWorld(worldUUID).getEntities().get(entityUUID);
+        RegionBase hostRegion = getRegion(entity.getCurrentRegionUUID(), worldUUID);
+        hostRegion.getEntities().remove(entity);
         getWorld(worldUUID).getRegionAtLocation(entity.getLocation()).getEntities().remove(entityUUID);
         getWorld(worldUUID).getEntities().remove(entityUUID);
 

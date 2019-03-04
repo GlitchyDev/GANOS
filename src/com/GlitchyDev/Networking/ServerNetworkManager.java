@@ -173,10 +173,10 @@ public class ServerNetworkManager {
                             gameSocket.disconnect(NetworkDisconnectType.SERVER_DUPLICATE_CONNECTION);
                         } else {
                             gameSocket.sendPacket(new ServerAuthAcceptClient());
+                            System.out.println("ServerNetwork: User " + playerUUID + " Authenticated");
                             connectedClients.put(playerUUID, gameSocket);
                             connectedUsers.add(playerUUID);
                             notifyConnectedPlayer(playerUUID,gameSocket);
-                            System.out.println("ServerNetwork: User " + playerUUID + " Authenticated");
                         }
                     } else {
                         gameSocket.disconnect(NetworkDisconnectType.SERVER_INCORRECT_ID);

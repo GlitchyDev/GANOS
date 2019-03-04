@@ -9,6 +9,7 @@ import com.GlitchyDev.GameInput.Controllers.XBox360Controller;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
+import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
@@ -53,7 +54,7 @@ public class DebugServerGameState extends ServerWorldGameState {
             textItems.add(item);
         }
 
-        spawnWorld = UUID.randomUUID();
+        spawnWorld = UUID.fromString("0bca5dea-3e45-11e9-b210-d663bd873d93");
         World world = new World(spawnWorld);
         addWorld(world);
         RegionBase region1 = new RegionBase(this,spawnWorld,10,10,10,new Location(0,0,0,spawnWorld));
@@ -226,14 +227,21 @@ public class DebugServerGameState extends ServerWorldGameState {
         RegionBase spawnRegion = getRegionAtLocation(getWorld(spawnWorld).getOriginLocation());
         DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,spawnRegion.getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
         Player loginPlayer = new Player(this,playerUUID,playerEntity);
+        try {
+            serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnWorldPacket(spawnWorld));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         currentPlayers.put(playerUUID,loginPlayer);
         spawnEntity(playerEntity);
-        //playerEntity.recalculateView();
+        playerEntity.recalculateView();
     }
 
     @Override
     public void onPlayerLogout(UUID playerUUID, NetworkDisconnectType reason) {
         System.out.println("DebugServer: User " + playerUUID + " disconnected for " + reason);
+        despawnEntity(currentPlayers.get(playerUUID).getPlayerEntity().getUUID(), currentPlayers.get(playerUUID).getPlayerEntity().getWorldUUID());
+        currentPlayers.remove(playerUUID);
     }
 
     @Override

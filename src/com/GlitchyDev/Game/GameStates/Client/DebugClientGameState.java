@@ -129,7 +129,7 @@ public class DebugClientGameState extends ClientWorldGameState {
             }
         }
 
-        if(controller.getToggleDirectionPad() != ControllerDirectionPad.NONE) {
+        if(isConnected && controller.getToggleDirectionPad() != ControllerDirectionPad.NONE) {
             try {
                 getGameSocket().sendPacket(new ClientSendInputPacket(ClientInputType.getInputDirection(controller.getDirectionPad().getDirection())));
             } catch (IOException e) {
@@ -168,12 +168,10 @@ public class DebugClientGameState extends ClientWorldGameState {
     @Override
     public void processPacket(PacketBase packet) {
         if(packet instanceof WorldStateModifyingPackets) {
+            System.out.println(packet);
             ((WorldStateModifyingPackets) packet).executeModification(this);
         } else {
-            switch(packet.getPacketType()) {
-                default:
-                    System.out.println(packet);
-            }
+            System.out.println(packet);
         }
     }
 

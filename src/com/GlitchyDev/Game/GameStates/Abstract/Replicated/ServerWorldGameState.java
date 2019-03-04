@@ -134,9 +134,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
     private HashMap<UUID, ArrayList<ServerDespawnEntityPacket>> despawnedEntities = new HashMap<>();
     @Override
     public void despawnEntity(UUID entityUUID, UUID worldUUID) {
-        // This is replicated, mark for entities who can view its region
+        EntityBase entity = getEntity(entityUUID,worldUUID);
         super.despawnEntity(entityUUID, worldUUID);
-        UUID regionUUID = getRegionAtLocation(getEntity(entityUUID,worldUUID).getLocation()).getRegionUUID();
+        UUID regionUUID = getRegionAtLocation(entity.getLocation()).getRegionUUID();
         if(!despawnedEntities.containsKey(regionUUID)) {
             despawnedEntities.put(regionUUID, new ArrayList<>());
         }

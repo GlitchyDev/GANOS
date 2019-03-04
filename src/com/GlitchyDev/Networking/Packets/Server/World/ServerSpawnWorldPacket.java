@@ -33,6 +33,6 @@ public class ServerSpawnWorldPacket extends WorldStateModifyingPackets {
     }
 
     public String toString() {
-        return super.toString() + "," + worldUUID + "," + worldUUID;
+        return super.toString() + "," + worldUUID;
     }
 }

@@ -1,6 +1,7 @@
 package com.GlitchyDev.Networking.Sockets;
 
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.ServerNetworkManager;
 
@@ -21,5 +22,9 @@ public class ServerGameSocket extends GameSocketBase {
         serverNetworkManager.notifyDisconnectedPlayer(this,networkDisconnectType);
     }
 
-
+    @Override
+    public void sendPacket(PacketBase packet) throws IOException {
+        super.sendPacket(packet);
+        System.out.println("Sending Packet " + packet);
+    }
 }
