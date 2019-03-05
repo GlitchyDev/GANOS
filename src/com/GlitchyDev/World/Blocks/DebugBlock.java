@@ -101,4 +101,9 @@ public class DebugBlock extends BlockBase implements CustomRenderBlock {
         super.setLocation(location);
         mesh.setPosition(location.getNormalizedPosition());
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + "," + testValue;
+    }
 }

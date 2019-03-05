@@ -18,7 +18,6 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Region.RegionBase;
 import com.GlitchyDev.World.World;
 
@@ -31,7 +30,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT;
 
 public class DebugClientGameState extends ClientWorldGameState {
     private final ArrayList<TextItem> textItems;
@@ -132,7 +130,7 @@ public class DebugClientGameState extends ClientWorldGameState {
                     camera.moveRotation(controller.getRightJoyStickY() * CAMERA_ROTATION_AMOUNT, 0, 0);
                 }
 
-                if (controller.getToggleDirectionPad() != ControllerDirectionPad.NONE) {
+                if (controller.getToggleDirectionPad() != ControllerDirectionPad.NONE && isConnected) {
                     getGameSocket().sendPacket(new ClientSendInputPacket(ClientInputType.getInputDirection(controller.getDirectionPad().getDirection())));
                 }
             } else {

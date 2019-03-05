@@ -69,55 +69,62 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
 
+        File file = new File(System.getProperty("user.home") + "/Desktop/WorldData.crp");
 
-        /*
-        World world = new World(spawnWorld);
-        addWorld(world);
-        RegionBase region1 = new RegionBase(this,spawnWorld,10,10,10,new Location(0,0,0,spawnWorld));
-        RegionBase region2 = new RegionBase(this,spawnWorld,10,10,10,new Location(10,0,0,spawnWorld));
-        RegionBase region3 = new RegionBase(this,spawnWorld,10,10,10,new Location(10, 0,10,spawnWorld));
+        if(!file.exists()) {
+            World world = new World(spawnWorld);
+            addWorld(world);
+            RegionBase region1 = new RegionBase(this,spawnWorld,10,10,10,new Location(0,0,0,spawnWorld));
+            RegionBase region2 = new RegionBase(this,spawnWorld,10,10,10,new Location(10,0,0,spawnWorld));
+            RegionBase region3 = new RegionBase(this,spawnWorld,10,10,10,new Location(10, 0,10,spawnWorld));
 
 
-        System.out.println("-------------------");
-        for(int x = 0; x < region1.getWidth(); x++) {
-            for(int z = 0; z < region1.getLength(); z++) {
-                BlockBase block = region1.getBlockRelative(x,0,z);
-                Location relativeLocation = region1.getLocation().getLocationDifference(block.getLocation());
-                region1.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
+            System.out.println("-------------------");
+            for(int x = 0; x < region1.getWidth(); x++) {
+                for(int z = 0; z < region1.getLength(); z++) {
+                    BlockBase block = region1.getBlockRelative(x,0,z);
+                    Location relativeLocation = region1.getLocation().getLocationDifference(block.getLocation());
+                    region1.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
+                }
             }
-        }
-        for(int x = 0; x < region2.getWidth(); x++) {
-            for(int z = 0; z < region2.getLength(); z++) {
-                BlockBase block = region2.getBlockRelative(x,0,z);
-                Location relativeLocation = region2.getLocation().getLocationDifference(block.getLocation());
-                region2.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
+            for(int x = 0; x < region2.getWidth(); x++) {
+                for(int z = 0; z < region2.getLength(); z++) {
+                    BlockBase block = region2.getBlockRelative(x,0,z);
+                    Location relativeLocation = region2.getLocation().getLocationDifference(block.getLocation());
+                    region2.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
+                }
             }
-        }
-        for(int x = 0; x < region3.getWidth(); x++) {
-            for(int z = 0; z < region3.getLength(); z++) {
-                BlockBase block = region3.getBlockRelative(x,0,z);
-                Location relativeLocation = region3.getLocation().getLocationDifference(block.getLocation());
-                region3.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
+            for(int x = 0; x < region3.getWidth(); x++) {
+                for(int z = 0; z < region3.getLength(); z++) {
+                    BlockBase block = region3.getBlockRelative(x,0,z);
+                    Location relativeLocation = region3.getLocation().getLocationDifference(block.getLocation());
+                    region3.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
+                }
             }
+
+
+            addRegionToGame(region1);
+            addRegionToGame(region2);
+            addRegionToGame(region3);
+            world.linkRegion(region1.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
+            world.linkRegion(region2.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
+            world.linkRegion(region2.getRegionUUID(),region3.getRegionUUID(), RegionConnectionType.NORMAL);
+            world.linkRegion(region3.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
+            world.linkRegion(region3.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
+            try {
+                saveWorld(file, world);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                loadWorld(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            file.deleteOnExit();
         }
 
-
-        addRegionToGame(region1);
-        addRegionToGame(region2);
-        addRegionToGame(region3);
-        world.linkRegion(region1.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
-        world.linkRegion(region2.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
-        world.linkRegion(region2.getRegionUUID(),region3.getRegionUUID(), RegionConnectionType.NORMAL);
-        world.linkRegion(region3.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
-        world.linkRegion(region3.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
-        */
-
-
-        try {
-            loadWorld(new File(System.getProperty("user.home") + "/Desktop/Test.crp"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
 
         DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,getRegionAtLocation(new Location(0,1,0,spawnWorld)).getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
@@ -361,7 +368,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         }
     }
 
-    private void writeWorld(File file, World world) throws IOException {
+    private void saveWorld(File file, World world) throws IOException {
         OutputBitUtility outputBitUtility = new OutputBitUtility(file);
 
         outputBitUtility.writeNextCorrectByteInt(WorldFileType.NORMAL.ordinal());

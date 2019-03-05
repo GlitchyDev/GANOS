@@ -1,22 +1,13 @@
 package com.GlitchyDev.DebugMain;
 
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
-import com.GlitchyDev.Game.GameStates.GameStateType;
+import com.GlitchyDev.Utility.HuffmanTreeUtility;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
-import com.GlitchyDev.World.Blocks.AirBlock;
-import com.GlitchyDev.World.Blocks.DebugBlock;
-import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Entities.DebugEntity;
-import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.RegionBase;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.UUID;
+import java.util.HashMap;
 
 public class DebugFileWriter {
 
@@ -24,12 +15,35 @@ public class DebugFileWriter {
     public static void main(String[] args) throws IOException {
 
         File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
-        OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
-        fileOutputBitUtility.writeNextInteger(138);
-        fileOutputBitUtility.close();
-        InputBitUtility inputBitUtility = new InputBitUtility(file);
-        System.out.println(inputBitUtility.getNextInteger());
 
+
+        String[] items = new String[]{"A","B","C","D","E"};
+        int[] frequency = new int[]{(int)(100 * Math.random()),(int)(100 * Math.random()),(int)(100 * Math.random()),(int)(100 * Math.random()),(int)(100 * Math.random())};
+
+        HashMap<String,Object> values = HuffmanTreeUtility.generateDecodeHuffmanValues(items,frequency);
+        for(String s: values.keySet()) {
+            System.out.println(values.get(s) + ": " + s);
+        }
+        System.out.println("-------");
+        OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
+        fileOutputBitUtility.writeNextCorrectByteInt(items.length);
+        for(int i = 0; i < items.length; i++) {
+            fileOutputBitUtility.writeNextString(items[i] + "A");
+        }
+        HuffmanTreeUtility.saveHuffmanTreeValues(fileOutputBitUtility,items,frequency);
+        int totalBytes = fileOutputBitUtility.close();
+
+        InputBitUtility inputBitUtility = new InputBitUtility(file);
+        int size = inputBitUtility.getNextCorrectIntByte();
+        String[] loadedItems = new String[size];
+        for(int i = 0; i < size; i++) {
+            loadedItems[i] = inputBitUtility.getNextString();
+        }
+        HashMap<String,Object> values2 = HuffmanTreeUtility.loadHuffmanTreeValues(inputBitUtility,loadedItems);
+        for(String s: values2.keySet()) {
+            System.out.println(values.get(s) + ": " + s);
+        }
+        System.out.println("------- " + totalBytes);
 
 
 
@@ -37,6 +51,25 @@ public class DebugFileWriter {
 
     }
 
+    public static double[] slightVariaion(ArrayList<Integer> list) {
+        double[] varied = new double[list.size()];
+        int index = 0;
+        for(int i: list) {
+            varied[index] = (i + Math.random());
+            index++;
+        }
+        return varied;
+    }
+
+    public static double[] slightVariaion(int[] list) {
+        double[] varied = new double[list.length];
+        int index = 0;
+        for(int i: list) {
+            varied[index] = (i + Math.random());
+            index++;
+        }
+        return varied;
+    }
         /*
         while(true) {
             File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
