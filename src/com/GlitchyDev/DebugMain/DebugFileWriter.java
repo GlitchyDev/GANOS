@@ -10,7 +10,7 @@ public class DebugFileWriter {
 
     public static void main(String[] args) throws IOException {
 
-        File file = new File(System.getProperty("user.home") + "/Desktop/WorldData.crp");
+        File file = new File(System.getProperty("user.home") + "/Desktop/" + "3c7a38f5-c757-4b52-b174-25d00dd6262b" +  ".reg");
         InputBitUtility inputBitUtility = new InputBitUtility(file);
 
         while(inputBitUtility.ready()) {

@@ -26,6 +26,7 @@ public class InputBitUtility {
     public boolean getNextBit() throws IOException {
         if(position >= 8) {
             currentByte = objectInputStream.readByte();
+            currentByte = objectInputStream.readByte();
             position = 0;
         }
         return getByteValue(currentByte,position++);
