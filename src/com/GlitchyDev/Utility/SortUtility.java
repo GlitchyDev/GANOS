@@ -7,10 +7,10 @@ import java.util.*;
 public class SortUtility {
 
 
-    public static void sort(ArrayList<BlockBase> blocks, ArrayList<Integer> frequencies) {
-        ArrayList<BlockValue> blockValues = new ArrayList<>(blocks.size());
-        for(int i = 0; i < blocks.size(); i++) {
-            blockValues.add(new BlockValue(blocks.get(i),frequencies.get(i)));
+    public static void sort(BlockBase[] blocks, int[] frequencies) {
+        ArrayList<BlockValue> blockValues = new ArrayList<>(blocks.length);
+        for(int i = 0; i < blocks.length; i++) {
+            blockValues.add(new BlockValue(blocks[i],frequencies[i]));
         }
 
 
@@ -26,12 +26,11 @@ public class SortUtility {
 
         Collections.reverse(blockValues);
 
-        blocks.clear();
-        frequencies.clear();
+
 
         for(int i = 0; i < blockValues.size(); i++) {
-            blocks.add(blockValues.get(i).getBlock());
-            frequencies.add(blockValues.get(i).getFrequency());
+            blocks[i] = (blockValues.get(i).getBlock());
+            frequencies[i] = (blockValues.get(i).getFrequency());
         }
     }
 

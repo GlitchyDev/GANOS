@@ -127,6 +127,8 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
 
+
+
         DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,getRegionAtLocation(new Location(0,1,0,spawnWorld)).getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
         this.testPlayer = new Player(this,UUID.randomUUID(),playerEntity);
         spawnEntity(playerEntity);

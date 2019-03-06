@@ -4,7 +4,6 @@ import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.HuffmanTreeUtility;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.Utility.SortUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AirBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
@@ -91,12 +90,19 @@ public class RegionBase {
             BlockType blockType = BlockType.values()[inputBitUtility.getNextCorrectIntByte()];
             palette[i] = blockType.getBlockFromInput(worldGameState, inputBitUtility);
         }
+
+
+
         HashMap<String,Object> huffmanMap = HuffmanTreeUtility.loadHuffmanTreeValues(inputBitUtility,palette);
 
+
+        int index = 0;
         for(String str: huffmanMap.keySet()) {
             BlockBase block = (BlockBase) huffmanMap.get(str);
-            System.out.println(block + " | " + str);
+            System.out.println(palette[index] + " " + block + " | " + str);
+            index++;
         }
+
 
 
         for(int y = 0; y < height; y++) {
@@ -150,47 +156,33 @@ public class RegionBase {
                 }
             }
         }
-
-
-        ArrayList<BlockBase> uniqueBlocks = new ArrayList<>();
-        ArrayList<Integer> frequencies = new ArrayList<>();
-
-        for(BlockBase block: countMap.keySet()) {
-            uniqueBlocks.add(block);
-            frequencies.add(countMap.get(block));
-        }
-
-        SortUtility.sort(uniqueBlocks, frequencies);
-
-
-        System.out.println("Sort");
-        for(int i = 0; i < uniqueBlocks.size(); i++) {
-            System.out.println(i + ": " + uniqueBlocks.get(i) + " | " + frequencies.get(i));
-        }
-
-
-
-        // Attempts to sort both these from most frequent to least frequent
-        int[] frequency = new int[uniques];
         BlockBase[] palette = new BlockBase[uniques];
+        int[] frequency = new int[uniques];
 
-        int count = 0;
-        for(int i: frequencies) {
-            frequency[count] = i;
-            count++;
+
+        System.out.println("Entity Write File");
+        int index = 0;
+        for(BlockBase block: countMap.keySet()) {
+            palette[index] = block;
+            frequency[index] = countMap.get(block);
+            System.out.println("Block " + palette[index] + " " + frequency[index]);
+            index++;
         }
 
-        count = 0;
-        for(BlockBase b: uniqueBlocks) {
-            palette[count] = b;
-            count++;
+
+        //SortUtility.sort(palette,frequency);
+
+        HashMap<String,Object> huffmanMap = HuffmanTreeUtility.generateDecodeHuffmanValues(palette,frequency);
+        for(String str: huffmanMap.keySet()) {
+            BlockBase block = (BlockBase) huffmanMap.get(str);
+            System.out.println(block + " | " + str);
         }
-        // Finshed
 
 
         // Write Palette Length
         outputBitUtility.writeNextCorrectByteInt(palette.length);
         // Write Palette
+
         for(BlockBase block: palette) {
             block.writeData(outputBitUtility);
         }

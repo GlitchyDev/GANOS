@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 public class DebugFileWriter {
 
 
@@ -17,8 +16,14 @@ public class DebugFileWriter {
         File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
 
 
-        String[] items = new String[]{"A","B","C","D","E"};
-        int[] frequency = new int[]{(int)(100 * Math.random()),(int)(100 * Math.random()),(int)(100 * Math.random()),(int)(100 * Math.random()),(int)(100 * Math.random())};
+        int itemCount = (int) (Math.random() * 100 + 1);
+        Integer[] items = new Integer[itemCount];
+        int[] frequency = new int[itemCount];
+        for(int i = 0; i < items.length; i++) {
+            items[i] = (int)(Math.random() * 10 + 1);
+            frequency[i] = (int)(100 * Math.random());
+        }
+
 
         HashMap<String,Object> values = HuffmanTreeUtility.generateDecodeHuffmanValues(items,frequency);
         for(String s: values.keySet()) {
@@ -33,6 +38,8 @@ public class DebugFileWriter {
         HuffmanTreeUtility.saveHuffmanTreeValues(fileOutputBitUtility,items,frequency);
         int totalBytes = fileOutputBitUtility.close();
 
+
+
         InputBitUtility inputBitUtility = new InputBitUtility(file);
         int size = inputBitUtility.getNextCorrectIntByte();
         String[] loadedItems = new String[size];
@@ -41,7 +48,7 @@ public class DebugFileWriter {
         }
         HashMap<String,Object> values2 = HuffmanTreeUtility.loadHuffmanTreeValues(inputBitUtility,loadedItems);
         for(String s: values2.keySet()) {
-            System.out.println(values.get(s) + ": " + s);
+            System.out.println(values28.get(s) + ": " + s);
         }
         System.out.println("------- " + totalBytes);
 

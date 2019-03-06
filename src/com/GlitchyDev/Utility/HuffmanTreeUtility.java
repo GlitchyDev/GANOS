@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class HuffmanTreeUtility {
 
     /**
-     * Generates a Huffman Value Table from input, requires at least 2 items to function
+     * Output valid Huffman values from the Objects and their Frequency
      * @param objects
      * @param frequency
      * @return
@@ -50,6 +50,12 @@ public class HuffmanTreeUtility {
         return values;
     }
 
+    /**
+     * Generate a rervered Encoded Huffman value table from objects and frequency
+     * @param objects
+     * @param frequency
+     * @return
+     */
     public static HashMap<Object,String> generateEncodeHuffmanValues(Object[] objects, int[] frequency) {
         HashMap<Object,String> values = new HashMap<>(objects.length);
         ArrayList<HuffmanNode> unmatchedNodes = new ArrayList<>(objects.length);
@@ -57,7 +63,7 @@ public class HuffmanTreeUtility {
             unmatchedNodes.add(new ValueHuffmanNode(frequency[i],objects[i]));
         }
 
-        ConnectingHuffmanNode lastConnectedNode = null;
+        ConnectingHuffmanNode topNode = null;
         while(unmatchedNodes.size() != 1) {
             HuffmanNode lowestNodeOne = null;
             for(HuffmanNode node: unmatchedNodes) {
@@ -75,22 +81,27 @@ public class HuffmanTreeUtility {
             }
             unmatchedNodes.remove(lowestNodeTwo);
 
-            lastConnectedNode = new ConnectingHuffmanNode(lowestNodeOne,lowestNodeTwo);
-            unmatchedNodes.add(lastConnectedNode);
+            topNode = new ConnectingHuffmanNode(lowestNodeOne,lowestNodeTwo);
+            unmatchedNodes.add(topNode);
 
 
         }
 
-        HuffmanTreeUtility.processNodeEncode("",values,lastConnectedNode);
+        HuffmanTreeUtility.processNodeEncode("",values,topNode);
 
 
         return values;
     }
 
 
-
+    /**
+     * Load a Huffman Values from file
+     * @param inputBitUtility
+     * @param objects
+     * @return
+     * @throws IOException
+     */
     public static HashMap<String,Object> loadHuffmanTreeValues(InputBitUtility inputBitUtility, Object[] objects) throws IOException {
-        // Only supports 8 Layers
         HashMap<String,Object> values = new HashMap<>(objects.length);
 
         ArrayList<Object> objectList = new ArrayList<>();
@@ -103,6 +114,18 @@ public class HuffmanTreeUtility {
         return values;
     }
 
+    private static HuffmanNode decodeNode(InputBitUtility inputBitUtility, ArrayList<Object> objectList) throws IOException {
+        if(inputBitUtility.getNextBit()) {
+            return new ConnectingHuffmanNode(decodeNode(inputBitUtility,objectList), decodeNode(inputBitUtility,objectList));
+        } else {
+
+            Object select = objectList.get(objectList.size() - 1);
+            objectList.remove(select);
+            return new ValueHuffmanNode(0,select);
+        }
+
+    }
+
     private static void processNodeDecode(String currentPath, HashMap<String,Object> values, HuffmanNode huffmanNode) {
         if(huffmanNode instanceof ValueHuffmanNode) {
             values.put(currentPath,((ValueHuffmanNode) huffmanNode).getObject());
@@ -110,6 +133,10 @@ public class HuffmanTreeUtility {
             HuffmanTreeUtility.processNodeDecode(currentPath + "0" , values, ((ConnectingHuffmanNode)huffmanNode).getNode1());
             HuffmanTreeUtility.processNodeDecode( currentPath + "1", values, ((ConnectingHuffmanNode)huffmanNode).getNode2());
         }
+    }
+
+    public static getHeadNodeFromHuffmanTree(Object[] objects, int[] frequency) {
+        return createConnectingBranch("",generateDecodeHuffmanValues(objects, frequency))
     }
 
 
@@ -125,17 +152,7 @@ public class HuffmanTreeUtility {
 
 
 
-    private static HuffmanNode decodeNode(InputBitUtility inputBitUtility, ArrayList<Object> objectList) throws IOException {
-        if(inputBitUtility.getNextBit()) {
-            return new ConnectingHuffmanNode(decodeNode(inputBitUtility,objectList), decodeNode(inputBitUtility,objectList));
-        } else {
 
-            Object select = objectList.get(objectList.size() - 1);
-            objectList.remove(select);
-            return new ValueHuffmanNode(0,select);
-        }
-
-    }
 
 
     private static ConnectingHuffmanNode createConnectingBranch(String currentModifier, HashMap<String,Object> values) {
