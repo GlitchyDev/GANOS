@@ -336,6 +336,7 @@ public class DebugServerGameState extends ServerWorldGameState {
     }
 
     private void loadWorld(File file) throws IOException {
+        System.out.println("DebugServerGameState: Loading world file " + file.getName());
         InputBitUtility inputBitUtility = new InputBitUtility(file);
 
 
@@ -356,7 +357,6 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
         for(int i = 0; i < numRegions; i++) { // For Each Region
-            System.out.println("P " + i);
             int connectionTypeCount = inputBitUtility.getNextCorrectIntByte(); // Num Connection Types
             for(int c = 0; c < connectionTypeCount; c++) {
                 RegionConnectionType regionConnectionType = RegionConnectionType.values()[inputBitUtility.getNextCorrectIntByte()]; // Type
@@ -371,6 +371,7 @@ public class DebugServerGameState extends ServerWorldGameState {
     }
 
     private void saveWorld(File file, World world) throws IOException {
+        System.out.println("DebugServerGameState: Saving world " + world.getWorldUUID() + " to file " + file.getName());
         OutputBitUtility outputBitUtility = new OutputBitUtility(file);
 
         outputBitUtility.writeNextCorrectByteInt(WorldFileType.NORMAL.ordinal());

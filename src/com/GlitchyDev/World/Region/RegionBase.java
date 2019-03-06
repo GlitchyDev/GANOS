@@ -96,14 +96,6 @@ public class RegionBase {
         HashMap<String,Object> huffmanMap = HuffmanTreeUtility.loadHuffmanTreeValues(inputBitUtility,palette);
 
 
-        int index = 0;
-        for(String str: huffmanMap.keySet()) {
-            BlockBase block = (BlockBase) huffmanMap.get(str);
-            System.out.println(palette[index] + " " + block + " | " + str);
-            index++;
-        }
-
-
 
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < width; x++) {
@@ -160,36 +152,29 @@ public class RegionBase {
         int[] frequency = new int[uniques];
 
 
-        System.out.println("Entity Write File");
         int index = 0;
         for(BlockBase block: countMap.keySet()) {
             palette[index] = block;
             frequency[index] = countMap.get(block);
-            System.out.println("Block " + palette[index] + " " + frequency[index]);
             index++;
         }
 
 
-        //SortUtility.sort(palette,frequency);
-
-        HashMap<String,Object> huffmanMap = HuffmanTreeUtility.generateDecodeHuffmanValues(palette,frequency);
-        for(String str: huffmanMap.keySet()) {
-            BlockBase block = (BlockBase) huffmanMap.get(str);
-            System.out.println(block + " | " + str);
-        }
+        //Create Tree
+        HuffmanTreeUtility.ConnectingHuffmanNode headTreeNode = HuffmanTreeUtility.createHuffmanTree(palette,frequency);
 
 
         // Write Palette Length
         outputBitUtility.writeNextCorrectByteInt(palette.length);
         // Write Palette
 
-        for(Object block: HuffmanTreeUtility.encodeObjectList(palette, frequency)) {
+        for(Object block: HuffmanTreeUtility.encodeObjectList(headTreeNode)) {
             ((BlockBase)block).writeData(outputBitUtility);
         }
         // Write Huffman Tree Values
-        HuffmanTreeUtility.saveHuffmanTreeValues(outputBitUtility, palette, frequency);
+        HuffmanTreeUtility.saveHuffmanTreeValues(outputBitUtility, headTreeNode);
         // Create Keyset
-        HashMap<Object,String> keyset = HuffmanTreeUtility.generateEncodeHuffmanValues(palette,frequency);
+        HashMap<Object,String> keyset = HuffmanTreeUtility.generateEncodeHuffmanValues(headTreeNode);
 
         for(int y = 0; y < getHeight(); y++) {
             for(int x = 0; x < getWidth(); x++) {
@@ -204,6 +189,7 @@ public class RegionBase {
 
         outputBitUtility.writeNextCorrectByteInt(getEntities().size());
         for(EntityBase entityBase: getEntities()) {
+            System.out.println("Writing entity " + entityBase);
             entityBase.writeData(outputBitUtility);
         }
 

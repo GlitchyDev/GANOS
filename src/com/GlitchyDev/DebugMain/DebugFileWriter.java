@@ -24,8 +24,8 @@ public class DebugFileWriter {
             frequency[i] = (int)(100 * Math.random());
         }
 
-
-        HashMap<String,Object> values = HuffmanTreeUtility.generateDecodeHuffmanValues(items,frequency);
+        HuffmanTreeUtility.ConnectingHuffmanNode headTreeNode = HuffmanTreeUtility.createHuffmanTree(items,frequency);
+        HashMap<String,Object> values = HuffmanTreeUtility.generateDecodeHuffmanValues(headTreeNode);
         for(String s: values.keySet()) {
             System.out.println(values.get(s) + ": " + s);
         }
@@ -33,11 +33,11 @@ public class DebugFileWriter {
         OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
         fileOutputBitUtility.writeNextCorrectByteInt(items.length);
 
-        ArrayList<Object> reorderedObjects = HuffmanTreeUtility.encodeObjectList(items, frequency);
+        ArrayList<Object> reorderedObjects = HuffmanTreeUtility.encodeObjectList(headTreeNode);
         for(int i = 0; i < reorderedObjects.size(); i++) {
             fileOutputBitUtility.writeNextString("" + reorderedObjects.get(i));
         }
-        HuffmanTreeUtility.saveHuffmanTreeValues(fileOutputBitUtility,items,frequency);
+        HuffmanTreeUtility.saveHuffmanTreeValues(fileOutputBitUtility,headTreeNode);
         int totalBytes = fileOutputBitUtility.close();
 
 

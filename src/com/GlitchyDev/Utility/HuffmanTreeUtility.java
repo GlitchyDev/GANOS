@@ -5,21 +5,62 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**
+ * First easy optimization if this ever becomes an issue is to make the tree not have to constantly be generated, save trees and save fucking lives
+ */
 public class HuffmanTreeUtility {
 
     /**
      * Output valid Huffman values from the Objects and their Frequency
-     * @param objects
-     * @param frequency
      * @return
      */
-    public static HashMap<String,Object> generateDecodeHuffmanValues(Object[] objects, int[] frequency) {
+    public static HashMap<String,Object> generateDecodeHuffmanValues(ConnectingHuffmanNode headTreeNode) {
+        HashMap<String,Object> values = new HashMap<>();
+        HuffmanTreeUtility.processNodeDecode("",values,headTreeNode);
+        return values;
+    }
+
+    /**
+     * Generate a rervered Encoded Huffman value table from objects and frequency
+
+     * @return
+     */
+    public static HashMap<Object,String> generateEncodeHuffmanValues(ConnectingHuffmanNode headTreeNode) {
+        HashMap<Object,String> values = new HashMap<>();
+        HuffmanTreeUtility.processNodeEncode("",values,headTreeNode);
+        return values;
+    }
+
+    public static ArrayList<Object> encodeObjectList(ConnectingHuffmanNode headTreeNode) {
+        ArrayList<Object> reorderedArray = new ArrayList<>();
+        encodeObjectListNode(reorderedArray, headTreeNode);
+        return reorderedArray;
+    }
+
+    public static void saveHuffmanTreeValues(OutputBitUtility outputBitUtility, ConnectingHuffmanNode headTreeNode) throws IOException {
+        encodeNode(outputBitUtility,headTreeNode);
+    }
+
+    public static HashMap<String,Object> loadHuffmanTreeValues(InputBitUtility inputBitUtility, Object[] objects) throws IOException {
         HashMap<String,Object> values = new HashMap<>(objects.length);
+
+        ArrayList<Object> objectList = new ArrayList<>();
+        objectList.addAll(Arrays.asList(objects));
+
+        HuffmanNode topNode = decodeNode(inputBitUtility,objectList);
+
+        HuffmanTreeUtility.processNodeDecode("", values, topNode);
+
+        return values;
+    }
+
+
+
+    public static ConnectingHuffmanNode createHuffmanTree(Object[] objects, int[] frequency) {
         ArrayList<HuffmanNode> unmatchedNodes = new ArrayList<>(objects.length);
         for(int i = 0; i < objects.length; i++) {
             unmatchedNodes.add(new ValueHuffmanNode(frequency[i],objects[i]));
         }
-
         ConnectingHuffmanNode lastConnectedNode = null;
         while(unmatchedNodes.size() != 1) {
             HuffmanNode lowestNodeOne = null;
@@ -43,76 +84,12 @@ public class HuffmanTreeUtility {
 
 
         }
-
-        HuffmanTreeUtility.processNodeDecode("",values,lastConnectedNode);
-
-
-        return values;
-    }
-
-    /**
-     * Generate a rervered Encoded Huffman value table from objects and frequency
-     * @param objects
-     * @param frequency
-     * @return
-     */
-    public static HashMap<Object,String> generateEncodeHuffmanValues(Object[] objects, int[] frequency) {
-        HashMap<Object,String> values = new HashMap<>(objects.length);
-        ArrayList<HuffmanNode> unmatchedNodes = new ArrayList<>(objects.length);
-        for(int i = 0; i < objects.length; i++) {
-            unmatchedNodes.add(new ValueHuffmanNode(frequency[i],objects[i]));
-        }
-
-        ConnectingHuffmanNode topNode = null;
-        while(unmatchedNodes.size() != 1) {
-            HuffmanNode lowestNodeOne = null;
-            for(HuffmanNode node: unmatchedNodes) {
-                if(lowestNodeOne == null || node.getValue() < lowestNodeOne.getValue()) {
-                    lowestNodeOne = node;
-                }
-            }
-            unmatchedNodes.remove(lowestNodeOne);
-
-            HuffmanNode lowestNodeTwo = null;
-            for(HuffmanNode node: unmatchedNodes) {
-                if(lowestNodeTwo == null || node.getValue() < lowestNodeTwo.getValue()) {
-                    lowestNodeTwo = node;
-                }
-            }
-            unmatchedNodes.remove(lowestNodeTwo);
-
-            topNode = new ConnectingHuffmanNode(lowestNodeOne,lowestNodeTwo);
-            unmatchedNodes.add(topNode);
-
-
-        }
-
-        HuffmanTreeUtility.processNodeEncode("",values,topNode);
-
-
-        return values;
+        return lastConnectedNode;
     }
 
 
-    /**
-     * Load a Huffman Values from file
-     * @param inputBitUtility
-     * @param objects
-     * @return
-     * @throws IOException
-     */
-    public static HashMap<String,Object> loadHuffmanTreeValues(InputBitUtility inputBitUtility, Object[] objects) throws IOException {
-        HashMap<String,Object> values = new HashMap<>(objects.length);
 
-        ArrayList<Object> objectList = new ArrayList<>();
-        objectList.addAll(Arrays.asList(objects));
 
-        HuffmanNode topNode = decodeNode(inputBitUtility,objectList);
-
-        HuffmanTreeUtility.processNodeDecode("", values, topNode);
-
-        return values;
-    }
 
     private static HuffmanNode decodeNode(InputBitUtility inputBitUtility, ArrayList<Object> objectList) throws IOException {
         if(inputBitUtility.getNextBit()) {
@@ -135,42 +112,6 @@ public class HuffmanTreeUtility {
         }
     }
 
-    public static ArrayList<Object> encodeObjectList(Object[] objects, int[] frequency) {
-        ArrayList<Object> reorderedArray = new ArrayList<>(objects.length);
-
-
-        ArrayList<HuffmanNode> unmatchedNodes = new ArrayList<>(objects.length);
-        for(int i = 0; i < objects.length; i++) {
-            unmatchedNodes.add(new ValueHuffmanNode(frequency[i],objects[i]));
-        }
-
-        ConnectingHuffmanNode lastConnectedNode = null;
-        while(unmatchedNodes.size() != 1) {
-            HuffmanNode lowestNodeOne = null;
-            for(HuffmanNode node: unmatchedNodes) {
-                if(lowestNodeOne == null || node.getValue() < lowestNodeOne.getValue()) {
-                    lowestNodeOne = node;
-                }
-            }
-            unmatchedNodes.remove(lowestNodeOne);
-
-            HuffmanNode lowestNodeTwo = null;
-            for(HuffmanNode node: unmatchedNodes) {
-                if(lowestNodeTwo == null || node.getValue() < lowestNodeTwo.getValue()) {
-                    lowestNodeTwo = node;
-                }
-            }
-            unmatchedNodes.remove(lowestNodeTwo);
-
-            lastConnectedNode = new ConnectingHuffmanNode(lowestNodeOne,lowestNodeTwo);
-            unmatchedNodes.add(lastConnectedNode);
-        }
-
-
-        encodeObjectListNode(reorderedArray, lastConnectedNode);
-        return reorderedArray;
-    }
-
     private static void encodeObjectListNode(ArrayList<Object> reorderedArray, ConnectingHuffmanNode connectNode) {
         if(connectNode.getNode1() instanceof ValueHuffmanNode) {
             reorderedArray.add(((ValueHuffmanNode) connectNode.getNode1()).getObject());
@@ -188,11 +129,6 @@ public class HuffmanTreeUtility {
 
 
 
-    public static void saveHuffmanTreeValues(OutputBitUtility outputBitUtility, Object[] objects, int[] frequency) throws IOException {
-        // Make Tree
-        ConnectingHuffmanNode headNode = createConnectingBranch("", generateDecodeHuffmanValues(objects, frequency));
-        encodeNode(outputBitUtility,headNode);
-    }
 
 
 
