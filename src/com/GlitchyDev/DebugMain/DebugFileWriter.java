@@ -32,8 +32,10 @@ public class DebugFileWriter {
         System.out.println("-------");
         OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
         fileOutputBitUtility.writeNextCorrectByteInt(items.length);
-        for(int i = 0; i < items.length; i++) {
-            fileOutputBitUtility.writeNextString(items[i] + "A");
+
+        ArrayList<Object> reorderedObjects = HuffmanTreeUtility.encodeObjectList(items, frequency);
+        for(int i = 0; i < reorderedObjects.size(); i++) {
+            fileOutputBitUtility.writeNextString("" + reorderedObjects.get(i));
         }
         HuffmanTreeUtility.saveHuffmanTreeValues(fileOutputBitUtility,items,frequency);
         int totalBytes = fileOutputBitUtility.close();
@@ -48,7 +50,7 @@ public class DebugFileWriter {
         }
         HashMap<String,Object> values2 = HuffmanTreeUtility.loadHuffmanTreeValues(inputBitUtility,loadedItems);
         for(String s: values2.keySet()) {
-            System.out.println(values28.get(s) + ": " + s);
+            System.out.println(values2.get(s) + ": " + s);
         }
         System.out.println("------- " + totalBytes);
 

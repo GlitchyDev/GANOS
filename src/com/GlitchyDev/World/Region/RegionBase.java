@@ -183,8 +183,8 @@ public class RegionBase {
         outputBitUtility.writeNextCorrectByteInt(palette.length);
         // Write Palette
 
-        for(BlockBase block: palette) {
-            block.writeData(outputBitUtility);
+        for(Object block: HuffmanTreeUtility.encodeObjectList(palette, frequency)) {
+            ((BlockBase)block).writeData(outputBitUtility);
         }
         // Write Huffman Tree Values
         HuffmanTreeUtility.saveHuffmanTreeValues(outputBitUtility, palette, frequency);

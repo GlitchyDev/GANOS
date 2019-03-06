@@ -119,7 +119,7 @@ public class HuffmanTreeUtility {
             return new ConnectingHuffmanNode(decodeNode(inputBitUtility,objectList), decodeNode(inputBitUtility,objectList));
         } else {
 
-            Object select = objectList.get(objectList.size() - 1);
+            Object select = objectList.get(0);
             objectList.remove(select);
             return new ValueHuffmanNode(0,select);
         }
@@ -135,8 +135,54 @@ public class HuffmanTreeUtility {
         }
     }
 
-    public static getHeadNodeFromHuffmanTree(Object[] objects, int[] frequency) {
-        return createConnectingBranch("",generateDecodeHuffmanValues(objects, frequency))
+    public static ArrayList<Object> encodeObjectList(Object[] objects, int[] frequency) {
+        ArrayList<Object> reorderedArray = new ArrayList<>(objects.length);
+
+
+        ArrayList<HuffmanNode> unmatchedNodes = new ArrayList<>(objects.length);
+        for(int i = 0; i < objects.length; i++) {
+            unmatchedNodes.add(new ValueHuffmanNode(frequency[i],objects[i]));
+        }
+
+        ConnectingHuffmanNode lastConnectedNode = null;
+        while(unmatchedNodes.size() != 1) {
+            HuffmanNode lowestNodeOne = null;
+            for(HuffmanNode node: unmatchedNodes) {
+                if(lowestNodeOne == null || node.getValue() < lowestNodeOne.getValue()) {
+                    lowestNodeOne = node;
+                }
+            }
+            unmatchedNodes.remove(lowestNodeOne);
+
+            HuffmanNode lowestNodeTwo = null;
+            for(HuffmanNode node: unmatchedNodes) {
+                if(lowestNodeTwo == null || node.getValue() < lowestNodeTwo.getValue()) {
+                    lowestNodeTwo = node;
+                }
+            }
+            unmatchedNodes.remove(lowestNodeTwo);
+
+            lastConnectedNode = new ConnectingHuffmanNode(lowestNodeOne,lowestNodeTwo);
+            unmatchedNodes.add(lastConnectedNode);
+        }
+
+
+        encodeObjectListNode(reorderedArray, lastConnectedNode);
+        return reorderedArray;
+    }
+
+    private static void encodeObjectListNode(ArrayList<Object> reorderedArray, ConnectingHuffmanNode connectNode) {
+        if(connectNode.getNode1() instanceof ValueHuffmanNode) {
+            reorderedArray.add(((ValueHuffmanNode) connectNode.getNode1()).getObject());
+        } else {
+            encodeObjectListNode(reorderedArray, (ConnectingHuffmanNode) connectNode.getNode1());
+        }
+
+        if(connectNode.getNode2() instanceof ValueHuffmanNode) {
+            reorderedArray.add(((ValueHuffmanNode) connectNode.getNode2()).getObject());
+        } else {
+            encodeObjectListNode(reorderedArray, (ConnectingHuffmanNode) connectNode.getNode2());
+        }
     }
 
 
@@ -199,10 +245,10 @@ public class HuffmanTreeUtility {
     }
 
 
-    private static abstract class HuffmanNode {
+    public static abstract class HuffmanNode {
         public abstract int getValue();
     }
-    private static class ValueHuffmanNode extends HuffmanNode {
+    public static class ValueHuffmanNode extends HuffmanNode {
         private int frequency;
         private Object object;
         public ValueHuffmanNode(int frequency, Object object) {
@@ -217,7 +263,7 @@ public class HuffmanTreeUtility {
             return object;
         }
     }
-    private static class ConnectingHuffmanNode extends HuffmanNode {
+    public static class ConnectingHuffmanNode extends HuffmanNode {
         private int value;
         private HuffmanNode node1;
         private HuffmanNode node2;
