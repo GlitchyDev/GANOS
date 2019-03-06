@@ -1,6 +1,7 @@
 package com.GlitchyDev.Game.GameStates.Server;
 
 import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ServerWorldGameState;
+import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Game.GameStates.GameStateType;
 import com.GlitchyDev.Game.Player.Player;
 import com.GlitchyDev.GameInput.Controllers.ControllerDirectionPad;
@@ -21,6 +22,7 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.DebugEntity;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Location;
@@ -111,6 +113,9 @@ public class DebugServerGameState extends ServerWorldGameState {
             world.linkRegion(region2.getRegionUUID(),region3.getRegionUUID(), RegionConnectionType.NORMAL);
             world.linkRegion(region3.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
             world.linkRegion(region3.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
+
+            DebugEntity debugEntity = new DebugEntity(this,getRegionAtLocation(new Location(5,1,0,spawnWorld)).getRegionUUID(), new Location(5,1,0,spawnWorld), Direction.NORTH);
+            spawnEntity(debugEntity);
             try {
                 saveWorld(file, world);
             } catch (IOException e) {
@@ -257,6 +262,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
     }
 
+    // For some reason the Render UTIL raises to fucking 80% when the alternate hidden region is loaded, wtf????
 
     @Override
     public void render() {

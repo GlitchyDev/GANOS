@@ -24,13 +24,15 @@ public class DebugEntity extends EntityBase {
 
     public DebugEntity(WorldGameState worldGameState, UUID currentRegionUUID, Location location, Direction direction) {
         super(worldGameState, currentRegionUUID, EntityType.DEBUG_ENTITY, location, direction);
-        spriteItem = new SpriteItem(AssetLoader.loadTexture("Icon32x32"),true);
+        spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Icon32x32"),true);
+        spriteItem.setPosition(getLocation().getNormalizedPosition());
     }
 
 
     public DebugEntity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility) throws IOException {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, EntityType.DEBUG_ENTITY);
-        spriteItem = new SpriteItem(AssetLoader.loadTexture("Icon32x32"),true);
+        spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Icon32x32"),true);
+        spriteItem.setPosition(getLocation().getNormalizedPosition());
     }
 
     @Override
