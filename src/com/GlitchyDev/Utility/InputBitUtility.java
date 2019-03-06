@@ -119,8 +119,8 @@ public class InputBitUtility {
         return objectInputStream.available();
     }
 
-    public boolean ready() {
-        return ready();
+    public boolean ready() throws IOException {
+        return objectInputStream.available() != 0;
     }
 
     public void close() throws IOException {

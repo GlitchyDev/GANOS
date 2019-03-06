@@ -1,21 +1,25 @@
 package com.GlitchyDev.DebugMain;
 
-import com.GlitchyDev.Utility.HuffmanTreeUtility;
 import com.GlitchyDev.Utility.InputBitUtility;
-import com.GlitchyDev.Utility.OutputBitUtility;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 public class DebugFileWriter {
 
 
     public static void main(String[] args) throws IOException {
 
-        File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
+        File file = new File(System.getProperty("user.home") + "/Desktop/WorldData.crp");
+        InputBitUtility inputBitUtility = new InputBitUtility(file);
+
+        while(inputBitUtility.ready()) {
+            System.out.print(inputBitUtility.getNextBit() ? "1" : "0");
+        }
+        System.out.println();
 
 
+        /*
         int itemCount = (int) (Math.random() * 100 + 1);
         Integer[] items = new Integer[itemCount];
         int[] frequency = new int[itemCount];
@@ -53,10 +57,7 @@ public class DebugFileWriter {
             System.out.println(values2.get(s) + ": " + s);
         }
         System.out.println("------- " + totalBytes);
-
-
-
-
+        */
 
     }
 

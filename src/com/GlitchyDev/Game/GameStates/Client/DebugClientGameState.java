@@ -186,12 +186,11 @@ public class DebugClientGameState extends ClientWorldGameState {
     @Override
     public void processPacket(PacketBase packet) {
         if(packet instanceof WorldStateModifyingPackets) {
-            System.out.println(packet);
             ((WorldStateModifyingPackets) packet).executeModification(this);
         } else {
-            System.out.println(packet);
         }
     }
+
 
     @Override
     public void onConnectedToServer() {

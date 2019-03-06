@@ -34,6 +34,9 @@ public abstract class ViewingEntityBase extends EntityBase {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, entityType);
     }
 
+    public ViewingEntityBase(WorldGameState worldGameState, UUID worldUUID, RegionBase regionBase, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+        super(worldGameState, worldUUID, regionBase, inputBitUtility, entityType);
+    }
 
 
 

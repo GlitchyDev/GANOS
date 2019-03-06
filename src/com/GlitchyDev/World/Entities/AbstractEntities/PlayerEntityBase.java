@@ -29,6 +29,10 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, entityType);
     }
 
+    public PlayerEntityBase(WorldGameState worldGameState, UUID worldUUID, RegionBase regionBase, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+        super(worldGameState, worldUUID, regionBase, inputBitUtility, entityType);
+    }
+
     public void setPlayer(Player player) {
         this.player = player;
     }

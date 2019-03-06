@@ -80,6 +80,26 @@ public abstract class EntityBase {
         }
     }
 
+    // Esclusively for reading from file
+    public EntityBase(WorldGameState worldGameState, UUID worldUUID, RegionBase region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+        this.worldGameState = worldGameState;
+        this.currentRegionUUID = region.getRegionUUID();
+        this.entityType = entityType;
+        this.uuid = inputBitUtility.getNextUUID();
+        Location regionLocation = region.getLocation();
+        Location relativeLocation = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), worldUUID);
+        this.location = regionLocation.getOffsetLocation(relativeLocation);
+        this.direction = Direction.values()[inputBitUtility.getNextCorrectedIntBit(3)];
+        int totalEffects = inputBitUtility.getNextCorrectIntByte();
+        this.effects = new ArrayList<>(totalEffects);
+        for(int i = 0; i < totalEffects; i++) {
+            EffectType effectType = EffectType.values()[inputBitUtility.getNextCorrectIntByte()];
+            EffectBase effect = effectType.getEffectFromInput(inputBitUtility, worldGameState, this);
+            effects.add(effect);
+        }
+    }
+
+
 
     public abstract void onSpawn(SpawnReason spawnReason);
 

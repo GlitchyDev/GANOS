@@ -14,6 +14,7 @@ import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
+import com.GlitchyDev.World.Region.RegionBase;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -33,9 +34,13 @@ public class DebugPlayerEntityBase extends PlayerEntityBase {
         this.gameItem = new GameItem(AssetLoader.getMeshAsset("cube").clone());
         gameItem.getMesh().setTexture(AssetLoader.getTextureAsset("DefaultTexture"));
         gameItem.setPosition(getLocation().getNormalizedPosition());
+    }
 
-
-        //
+    public DebugPlayerEntityBase(WorldGameState worldGameState, UUID worldUUID, RegionBase region, InputBitUtility inputBitUtility) throws IOException {
+        super(worldGameState, worldUUID, region, inputBitUtility, EntityType.DEBUG_PLAYER);
+        this.gameItem = new GameItem(AssetLoader.getMeshAsset("cube").clone());
+        gameItem.getMesh().setTexture(AssetLoader.getTextureAsset("DefaultTexture"));
+        gameItem.setPosition(getLocation().getNormalizedPosition());
     }
 
     @Override

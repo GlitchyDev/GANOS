@@ -37,6 +37,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
     public RegionBase getRegion(UUID regionUUID, UUID worldUUID) {
+        System.out.println("RegionBasse " + regionUUID + " " + worldUUID);
         return getWorld(worldUUID).getRegions().get(regionUUID);
     }
 
@@ -119,7 +120,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
         }
         world.getRegions().put(regionBase.getRegionUUID(),regionBase);
         for(EntityBase entity: regionBase.getEntities()) {
-            spawnEntity(entity);
+            world.getEntities().put(entity.getUUID(), entity);
         }
         for(BlockBase block: regionBase.getBlocksArray()) {
             if(block instanceof TickableBlock) {

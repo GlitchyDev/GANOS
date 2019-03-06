@@ -5,6 +5,7 @@ import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Networking.Packets.General.Authentication.GeneralAuthDisconnectPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
+import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerSpawnRegionPacket;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 
@@ -106,15 +107,26 @@ public abstract class GameSocketBase {
         public PacketReadThread() {
             keepThreadAlive = new AtomicBoolean(true);
         }
+        private int count = 0;
+        private boolean isClient = false;
 
         @Override
         public void run() {
             isConnected.set(true);
             try {
                 while(keepThreadAlive.get()) {
+                    if(count == 3) {
+                        while(true) {
+                            System.out.print(input.getNextBit() ? "1" : "0");
+                        }
+                    }
                     PacketType packetType = PacketType.values()[input.getNextCorrectIntByte()];
                     PacketBase packet = packetType.getPacketFromInput(input, worldGameState);
-                    System.out.println("GameSocket: Recieved Packet " + packet);
+                    System.out.println("GameSocket: Recieved Packet #" + count++ + " " + packet);
+
+                    if(packet instanceof ServerSpawnRegionPacket) {
+                        isClient = true;
+                    }
                     if (packet instanceof GeneralAuthDisconnectPacket) {
                         keepThreadAlive.set(false);
                         socket.close();

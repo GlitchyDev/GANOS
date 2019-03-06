@@ -111,12 +111,14 @@ public class RegionBase {
             }
         }
 
+
         int totalEntities = inputBitUtility.getNextCorrectIntByte();
         this.entities = new ArrayList<>(totalEntities);
+        System.out.println("Region ID " + getRegionUUID());
         for(int i = 0; i < totalEntities; i++) {
             EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
-            EntityBase entity = entityType.getEntityFromInput(inputBitUtility, worldGameState, regionUUID, worldUUID);
-            entities.add(entity);
+            EntityBase entity = entityType.getEntityFromInput(inputBitUtility, worldGameState, worldUUID, this );
+            getEntities().add(entity);
         }
 
 
