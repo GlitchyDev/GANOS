@@ -2,7 +2,7 @@ package com.GlitchyDev.World;
 
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Region.RegionConnectionType;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class World {
     // Loaded Regions for this world, probably loaded from a WorldRegionList
-    private HashMap<UUID,RegionBase> regions;
+    private HashMap<UUID, Region> regions;
     private HashMap<UUID,EntityBase> entities;
     private HashMap<Location,TickableBlock> tickableBlocks;
     // A File loaded with the world that would contain the connections between regions
@@ -41,7 +41,7 @@ public class World {
     }
 
     public boolean isARegionAtLocation(Location location) {
-        for(RegionBase region: regions.values()) {
+        for(Region region: regions.values()) {
             if(region.isLocationInRegion(location)) {
                 return true;
             }
@@ -51,7 +51,7 @@ public class World {
 
     public int countRegionsAtLocation(Location location) {
         int count = 0;
-        for(RegionBase region: regions.values()) {
+        for(Region region: regions.values()) {
             if(region.isLocationInRegion(location)) {
                 count++;
             }
@@ -60,8 +60,8 @@ public class World {
     }
 
 
-    public RegionBase getRegionAtLocation(Location location) {
-        for(RegionBase region: regions.values()) {
+    public Region getRegionAtLocation(Location location) {
+        for(Region region: regions.values()) {
             if(region.isLocationInRegion(location)) {
                 return region;
             }
@@ -71,9 +71,9 @@ public class World {
 
 
 
-    public ArrayList<RegionBase> getRegionsAtLocation(Location location) {
-        ArrayList<RegionBase> presentRegions = new ArrayList<>();
-        for(RegionBase region: regions.values()) {
+    public ArrayList<Region> getRegionsAtLocation(Location location) {
+        ArrayList<Region> presentRegions = new ArrayList<>();
+        for(Region region: regions.values()) {
             if(region.isLocationInRegion(location)) {
                 presentRegions.add(region);
             }
@@ -104,7 +104,7 @@ public class World {
 
     // Getters
 
-    public HashMap<UUID, RegionBase> getRegions() {
+    public HashMap<UUID, Region> getRegions() {
         return regions;
     }
 

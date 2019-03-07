@@ -1,6 +1,7 @@
 package com.GlitchyDev.DebugMain;
 
 import com.GlitchyDev.Utility.InputBitUtility;
+import com.GlitchyDev.Utility.OutputBitUtility;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,10 +11,29 @@ public class DebugFileWriter {
 
     public static void main(String[] args) throws IOException {
 
-        File file = new File(System.getProperty("user.home") + "/Desktop/WorldData.crp");
-        InputBitUtility inputBitUtility = new InputBitUtility(file);
+        File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
+        OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
+        fileOutputBitUtility.writeNextCorrectedBitsInt(7,3);
+        fileOutputBitUtility.writeNextCorrectedBitsInt(0,5);
+        fileOutputBitUtility.writeNextCorrectedBitsInt(15,4);
+        fileOutputBitUtility.flush();
 
-        while(inputBitUtility.ready()) {
+
+
+
+        InputBitUtility inputBitUtility = new InputBitUtility(file);
+        int bits = inputBitUtility.getRemainingBytes() * 8;
+
+        System.out.print(inputBitUtility.getNextBit() ? "1" : "0");
+        bits--;
+        System.out.print(inputBitUtility.getNextBit() ? "1" : "0");
+        bits--;
+        System.out.print(inputBitUtility.getNextBit() ? "1" : "0");
+        bits--;
+        inputBitUtility.complete();
+        bits -= 5;
+
+        for(int i = 0; i < bits; i++) {
             System.out.print(inputBitUtility.getNextBit() ? "1" : "0");
         }
         System.out.println();
@@ -95,7 +115,7 @@ public class DebugFileWriter {
 
 
 
-            RegionBase testRegion = new RegionBase(width,length,height);
+            Region testRegion = new Region(width,length,height);
             for (int y = 0; y < testRegion.getHeight(); y++) {
                 for (int x = 0; x < testRegion.getWidth(); x++) {
                     for (int z = 0; z < testRegion.getLength(); z++) {
@@ -140,7 +160,7 @@ public class DebugFileWriter {
 
             timeStart = System.currentTimeMillis();
             // Needs whole system to run
-            RegionBase loadedRegion = new RegionBase(inputBitUtility);
+            Region loadedRegion = new Region(inputBitUtility);
             timeEnd = System.currentTimeMillis();
             System.out.println("Time: " + (timeEnd - timeStart) / 1000.0 + "s");
 

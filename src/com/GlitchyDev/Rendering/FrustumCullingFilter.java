@@ -2,7 +2,7 @@ package com.GlitchyDev.Rendering;
 
 import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
-import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.Region.Region;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -38,10 +38,10 @@ public class FrustumCullingFilter {
         }
     }
 
-    public static void filter(Collection<RegionBase> regions) {
+    public static void filter(Collection<Region> regions) {
         float boundingRadius;
         Vector3i pos;
-        for(RegionBase region: regions) {
+        for(Region region: regions) {
             for(BlockBase block: region.getBlocksArray()) {
                 boundingRadius = 1.80f;
                 pos = block.getLocation().getNormalizedPosition();

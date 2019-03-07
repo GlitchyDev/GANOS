@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * A Holder class for Regions, used to keep track of Blocks, Entities, the connections between it and other Regions, Ect
  */
-public class RegionBase {
+public class Region {
     public static final RegionFileVersion CURRENT_VERSION = RegionFileVersion.VERSION_0;
     public static final RegionFileVersion LEAST_SUPPORTED_VERSION = RegionFileVersion.VERSION_0;
     public static final String FILETYPE = "region";
@@ -32,7 +32,7 @@ public class RegionBase {
     private Location location;     // Placement of the bottom upper right hand corner of the region
 
 
-    public RegionBase(WorldGameState worldGameState, UUID worldUUID, int width, int height, int length, Location location) {
+    public Region(WorldGameState worldGameState, UUID worldUUID, int width, int height, int length, Location location) {
         this.worldGameState = worldGameState;
         this.worldUUID = worldUUID;
 
@@ -44,8 +44,8 @@ public class RegionBase {
         populateRegions();
     }
 
-    public RegionBase createCopy() {
-        RegionBase copy = new RegionBase(worldGameState, worldUUID, getWidth(), getLength(), getHeight(), location.clone());
+    public Region createCopy() {
+        Region copy = new Region(worldGameState, worldUUID, getWidth(), getLength(), getHeight(), location.clone());
         for(int y = 0; y < getHeight(); y++) {
             for(int x = 0; x < getWidth(); x++) {
                 for(int z = 0; z < getLength(); z++) {
@@ -69,7 +69,7 @@ public class RegionBase {
         }
     }
 
-    public RegionBase(InputBitUtility inputBitUtility, Location location, WorldGameState worldGameState) throws IOException {
+    public Region(InputBitUtility inputBitUtility, Location location, WorldGameState worldGameState) throws IOException {
         this.worldGameState = worldGameState;
         this.worldUUID = location.getWorldUUID();
         this.location = location;
@@ -114,7 +114,6 @@ public class RegionBase {
 
         int totalEntities = inputBitUtility.getNextCorrectIntByte();
         this.entities = new ArrayList<>(totalEntities);
-        System.out.println("Region ID " + getRegionUUID());
         for(int i = 0; i < totalEntities; i++) {
             EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
             EntityBase entity = entityType.getEntityFromInput(inputBitUtility, worldGameState, worldUUID, this );
@@ -190,11 +189,11 @@ public class RegionBase {
         }
 
         outputBitUtility.writeNextCorrectByteInt(getEntities().size());
-        for(EntityBase entityBase: getEntities()) {
-            System.out.println("Writing entity " + entityBase);
-            entityBase.writeData(outputBitUtility);
+        if(entities.size() != 0) {
+            for (EntityBase entityBase : getEntities()) {
+                entityBase.writeData(outputBitUtility);
+            }
         }
-
     }
 
 
@@ -209,7 +208,7 @@ public class RegionBase {
         return false;
     }
 
-    public boolean doRegionsIntersect(RegionBase comparedRegion) {
+    public boolean doRegionsIntersect(Region comparedRegion) {
         if(getLocation().getY() + getHeight() < comparedRegion.getLocation().getY()) {
             return false;
         }

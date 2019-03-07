@@ -23,6 +23,7 @@ public class ServerDespawnRegionPacket extends WorldStateModifyingPackets {
         super(PacketType.SERVER_DESPAWN_REGION, inputBitUtility, worldGameState);
         this.regionUUID = inputBitUtility.getNextUUID();
         this.worldUUID = inputBitUtility.getNextUUID();
+        inputBitUtility.complete();
     }
 
     @Override

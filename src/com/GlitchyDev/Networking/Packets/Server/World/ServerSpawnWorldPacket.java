@@ -25,7 +25,6 @@ public class ServerSpawnWorldPacket extends WorldStateModifyingPackets {
 
     @Override
     public void executeModification(WorldGameState worldGameState) {
-
         worldGameState.addWorld(new World(worldUUID));
     }
 

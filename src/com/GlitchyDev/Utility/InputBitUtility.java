@@ -11,13 +11,13 @@ public class InputBitUtility {
 
     public InputBitUtility(File file) throws IOException {
         this.objectInputStream = new ObjectInputStream(new FileInputStream(file));
-        position = 8;
+        position = 9;
         currentByte = 0;
     }
 
     public InputBitUtility(InputStream inputStream) throws IOException {
         this.objectInputStream = new ObjectInputStream(inputStream);
-        position = 8;
+        position = 9;
         currentByte = 0;
     }
 
@@ -25,10 +25,15 @@ public class InputBitUtility {
     // Read Info
     public boolean getNextBit() throws IOException {
         if(position >= 8) {
+            //if(position == 8) {
+            //    System.out.print("*");
+            //}
             currentByte = objectInputStream.readByte();
             position = 0;
         }
-        return getByteValue(currentByte,position++);
+        boolean bitValue = getByteValue(currentByte,position++);
+        //System.out.print(bitValue ? "1" : "0");
+        return bitValue;
     }
 
     public boolean[] getNextBits(int length) throws IOException {
@@ -117,6 +122,19 @@ public class InputBitUtility {
 
     public int getRemainingBytes() throws IOException {
         return objectInputStream.available();
+    }
+
+    public void complete() throws IOException {
+        //for(int i = position; i < 8; i++) {
+        //    System.out.print("#");
+        //}
+        if(objectInputStream.available() > 0) {
+            position = 0;
+            currentByte = objectInputStream.readByte();
+        } else {
+            position = 8;
+        }
+        //System.out.println();
     }
 
     public boolean ready() throws IOException {

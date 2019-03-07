@@ -6,16 +6,16 @@ import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.Region.Region;
 
 import java.io.IOException;
 import java.util.UUID;
 
 public class ServerSpawnRegionPacket extends WorldStateModifyingPackets {
     private final Location location;
-    private final RegionBase region;
+    private final Region region;
 
-    public ServerSpawnRegionPacket(RegionBase region) {
+    public ServerSpawnRegionPacket(Region region) {
         super(PacketType.SERVER_SPAWN_REGION);
         this.location = region.getLocation();
         this.region = region;
@@ -29,7 +29,8 @@ public class ServerSpawnRegionPacket extends WorldStateModifyingPackets {
         int z = inputBitUtility.getNextInteger();
         UUID worldUUID = inputBitUtility.getNextUUID();
         this.location = new Location(x,y,z,worldUUID);
-        region = new RegionBase(inputBitUtility, location, worldGameState);
+        region = new Region(inputBitUtility, location, worldGameState);
+        inputBitUtility.complete();
     }
 
     @Override
@@ -39,12 +40,12 @@ public class ServerSpawnRegionPacket extends WorldStateModifyingPackets {
 
     @Override
     protected void transmitPacketBody(OutputBitUtility outputBitUtility) throws IOException {
-        System.out.println("Spawn Region " + location);
         outputBitUtility.writeNextInteger(location.getX());
         outputBitUtility.writeNextInteger(location.getY());
         outputBitUtility.writeNextInteger(location.getZ());
         outputBitUtility.writeNextUUID(location.getWorldUUID());
         region.writeData(outputBitUtility);
+
     }
 
     @Override

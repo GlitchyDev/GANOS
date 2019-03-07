@@ -18,7 +18,7 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.World;
 
 import java.io.IOException;
@@ -166,7 +166,7 @@ public class DebugClientGameState extends ClientWorldGameState {
             for(UUID worldUUID: getWorlds()) {
                 world = getWorld(worldUUID);
             }
-            for(RegionBase region: world.getRegions().values()) {
+            for(Region region: world.getRegions().values()) {
                 for (BlockBase block : region.getBlocksArray()) {
                     if (block instanceof CustomRenderBlock) {
                         ((CustomRenderBlock) block).render(renderer, globalGameData.getGameWindow(), camera, null);
@@ -185,9 +185,13 @@ public class DebugClientGameState extends ClientWorldGameState {
 
     @Override
     public void processPacket(PacketBase packet) {
+        System.out.println();
+        System.out.println("Received Packet @ " + packet);
+        System.out.println();
         if(packet instanceof WorldStateModifyingPackets) {
             ((WorldStateModifyingPackets) packet).executeModification(this);
         } else {
+
         }
     }
 

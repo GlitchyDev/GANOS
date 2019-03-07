@@ -1,7 +1,6 @@
 package com.GlitchyDev.Game.GameStates.Server;
 
 import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ServerWorldGameState;
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Game.GameStates.GameStateType;
 import com.GlitchyDev.Game.Player.Player;
 import com.GlitchyDev.GameInput.Controllers.ControllerDirectionPad;
@@ -26,7 +25,7 @@ import com.GlitchyDev.World.Entities.DebugEntity;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Region.RegionConnectionType;
 import com.GlitchyDev.World.World;
 import com.GlitchyDev.World.WorldFileType;
@@ -76,9 +75,9 @@ public class DebugServerGameState extends ServerWorldGameState {
         if(!file.exists()) {
             World world = new World(spawnWorld);
             addWorld(world);
-            RegionBase region1 = new RegionBase(this,spawnWorld,10,10,10,new Location(0,0,0,spawnWorld));
-            RegionBase region2 = new RegionBase(this,spawnWorld,10,10,10,new Location(10,0,0,spawnWorld));
-            RegionBase region3 = new RegionBase(this,spawnWorld,10,10,10,new Location(10, 0,10,spawnWorld));
+            Region region1 = new Region(this,spawnWorld,10,10,10,new Location(0,0,0,spawnWorld));
+            Region region2 = new Region(this,spawnWorld,10,10,10,new Location(10,0,0,spawnWorld));
+            Region region3 = new Region(this,spawnWorld,10,10,10,new Location(10, 0,10,spawnWorld));
 
 
             System.out.println("-------------------");
@@ -164,7 +163,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         textItems.get(0).setText("FPS: " + getCurrentFPS() + " Logic Util: " + formatter.format(getLogicUtilization()) + " Render Util: " + formatter.format(getRenderUtilization()));
         textItems.get(1).setText("Camera Pos: " + formatter.format(camera.getPosition().x) + "," + formatter.format(camera.getPosition().y) + "," + formatter.format(camera.getPosition().z));
         textItems.get(2).setText("Camera Rot: " + formatter.format(camera.getRotation().x) + "," + formatter.format(camera.getRotation().y) + "," + formatter.format(camera.getRotation().z));
-        textItems.get(3).setText("P: " + countRegionsAtLocation(testPlayer.getPlayerEntity().getLocation()));
+        textItems.get(3).setText("P: " + getRegionAtLocation(testPlayer.getPlayerEntity().getLocation()).getEntities().size());
 
         int startServerInfo = 5;
         if(isRunning) {
@@ -267,7 +266,7 @@ public class DebugServerGameState extends ServerWorldGameState {
     @Override
     public void render() {
         renderer.prepRender(globalGameData.getGameWindow());
-        for(RegionBase region: testPlayer.getPlayerEntity().getEntityView().getViewableRegions()) {
+        for(Region region: testPlayer.getPlayerEntity().getEntityView().getViewableRegions()) {
             for(BlockBase block: region.getBlocksArray()) {
                 if(block instanceof CustomRenderBlock) {
                     ((CustomRenderBlock) block).render(renderer,globalGameData.getGameWindow(),camera,testPlayer);
@@ -285,18 +284,19 @@ public class DebugServerGameState extends ServerWorldGameState {
 
     @Override
     public void processPacket(UUID playerUUID, PacketBase packet) {
-        //System.out.println(packet);
+        System.out.println();
+        System.out.println("Recieved packet " + packet);
+        System.out.println();
         if(packet instanceof ClientSendInputPacket) {
             Direction direction = ((ClientSendInputPacket) packet).getClientInputType().getDirection();
             Player movingPlayer = currentPlayers.get(playerUUID);
             movingPlayer.getPlayerEntity().move(movingPlayer.getPlayerEntity().getLocation().getDirectionLocation(direction), EntityMovementType.WALKING);
-            //System.out.println("Client moved " + direction);
         }
     }
 
     @Override
     public void onPlayerLogin(UUID playerUUID) {
-        RegionBase spawnRegion = getRegionAtLocation(getWorld(spawnWorld).getOriginLocation());
+        Region spawnRegion = getRegionAtLocation(getWorld(spawnWorld).getOriginLocation());
         DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,spawnRegion.getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
         Player loginPlayer = new Player(this,playerUUID,playerEntity);
         try {
@@ -356,7 +356,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         UUID[] regionUUIDs = new UUID[numRegions];
         for(int i = 0; i < numRegions; i++) {
             Location location = new Location(inputBitUtility.getNextInteger(), inputBitUtility.getNextInteger(), inputBitUtility.getNextInteger(), worldUUID);
-            RegionBase region = new RegionBase(inputBitUtility, location, this);
+            Region region = new Region(inputBitUtility, location, this);
             regionUUIDs[i] = region.getRegionUUID();
             addRegionToGame(region);
         }
@@ -387,7 +387,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         int numRegions = world.getRegions().size();
         outputBitUtility.writeNextCorrectByteInt(numRegions);
         for(UUID regionUUID: world.getRegions().keySet()) {
-            RegionBase region = world.getRegions().get(regionUUID);
+            Region region = world.getRegions().get(regionUUID);
             Location location = region.getLocation();
 
             outputBitUtility.writeNextInteger(location.getX());

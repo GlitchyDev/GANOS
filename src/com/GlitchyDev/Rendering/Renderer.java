@@ -5,7 +5,7 @@ import com.GlitchyDev.Rendering.Assets.Shaders.ShaderProgram;
 import com.GlitchyDev.Rendering.Assets.WorldElements.*;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.GameWindow;
-import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.Region.Region;
 import org.joml.Matrix4f;
 
 import java.util.Collection;
@@ -262,7 +262,7 @@ public class Renderer {
         return transformation;
     }
 
-    public void updateFrustumCullingFilter(GameWindow gameWindow, Camera camera, Collection<RegionBase> regions) {
+    public void updateFrustumCullingFilter(GameWindow gameWindow, Camera camera, Collection<Region> regions) {
         FrustumCullingFilter.updateFrustum(transformation.getProjectionMatrix(FOV, gameWindow.getWidth(), gameWindow.getHeight(), Z_NEAR, Z_FAR),transformation.getViewMatrix(camera));
         FrustumCullingFilter.filter(regions);
     }

@@ -17,7 +17,7 @@ import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.Region.Region;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public abstract class EntityBase {
     }
 
     // Esclusively for reading from file
-    public EntityBase(WorldGameState worldGameState, UUID worldUUID, RegionBase region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+    public EntityBase(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
         this.worldGameState = worldGameState;
         this.currentRegionUUID = region.getRegionUUID();
         this.entityType = entityType;
@@ -176,7 +176,7 @@ public abstract class EntityBase {
         outputBitUtility.writeNextCorrectByteInt(entityType.ordinal());
         outputBitUtility.writeNextUUID(uuid);
 
-        RegionBase currentRegion = worldGameState.getRegionAtLocation(location);
+        Region currentRegion = worldGameState.getRegionAtLocation(location);
         Location internalOffset = currentRegion.getLocation().getLocationDifference(getLocation());
         outputBitUtility.writeNextCorrectByteInt(internalOffset.getX());
         outputBitUtility.writeNextCorrectByteInt(internalOffset.getY());

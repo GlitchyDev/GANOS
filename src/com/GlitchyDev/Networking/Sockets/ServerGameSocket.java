@@ -24,7 +24,8 @@ public class ServerGameSocket extends GameSocketBase {
 
     @Override
     public void sendPacket(PacketBase packet) throws IOException {
-        super.sendPacket(packet);
+        System.out.println();
         System.out.println("Sending Packet " + packet);
+        super.sendPacket(packet);
     }
 }

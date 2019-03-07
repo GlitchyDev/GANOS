@@ -21,7 +21,7 @@ import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.World;
 
 import java.io.IOException;
@@ -103,7 +103,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
     /**
     Linking and unlinking regions shouldn't happen, Worlds should be relatively static
-    private HashSet<RegionBase> recalculateRegionEntityList = new HashSet<>();
+    private HashSet<Region> recalculateRegionEntityList = new HashSet<>();
     @Override
     public void linkRegions(UUID worldUUID, UUID hostRegion, UUID connectedRegion, RegionConnectionType connectionType) {
         super.linkRegions(worldUUID, hostRegion, connectedRegion, connectionType);
@@ -202,9 +202,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
     }
 
     // Check to make sure the correct "Region" is sent, visibility and all
-    public void playerAddRegionToView(UUID playerUUID, RegionBase region) throws IOException {
+    public void playerAddRegionToView(UUID playerUUID, Region region) throws IOException {
         if(currentPlayers.containsKey(playerUUID)) {
-            RegionBase regionCopy = region.createCopy();
+            Region regionCopy = region.createCopy();
             for (BlockBase blockBase : region.getBlocksArray()) {
                 if (blockBase instanceof CustomVisableBlock) {
                     Location relativeLocation = region.getLocation().getLocationDifference(blockBase.getLocation());

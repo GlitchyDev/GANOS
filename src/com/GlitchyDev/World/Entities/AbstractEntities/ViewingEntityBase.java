@@ -12,7 +12,7 @@ import com.GlitchyDev.World.Entities.Effects.Abstract.RegionRevealingEffect;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Region.RegionConnectionType;
 import com.GlitchyDev.World.Views.EntityView;
 
@@ -34,8 +34,8 @@ public abstract class ViewingEntityBase extends EntityBase {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, entityType);
     }
 
-    public ViewingEntityBase(WorldGameState worldGameState, UUID worldUUID, RegionBase regionBase, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
-        super(worldGameState, worldUUID, regionBase, inputBitUtility, entityType);
+    public ViewingEntityBase(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+        super(worldGameState, worldUUID, region, inputBitUtility, entityType);
     }
 
 
@@ -56,10 +56,10 @@ public abstract class ViewingEntityBase extends EntityBase {
             Location oldLocation = getLocation();
             setLocation(newLocation);
 
-            RegionBase selectedRegion = null;
+            Region selectedRegion = null;
             if (worldGameState.countRegionsAtLocation(oldLocation) > 1) {
-                ArrayList<RegionBase> overlappingRegion = worldGameState.getRegionsAtLocation(getLocation());
-                for (RegionBase viewableRegion : getEntityView().getViewableRegions()) {
+                ArrayList<Region> overlappingRegion = worldGameState.getRegionsAtLocation(getLocation());
+                for (Region viewableRegion : getEntityView().getViewableRegions()) {
                     if (overlappingRegion.contains(viewableRegion)) {
                         selectedRegion = viewableRegion;
                     }
@@ -85,7 +85,7 @@ public abstract class ViewingEntityBase extends EntityBase {
 
 
     public void recalculateView() {
-        ArrayList<RegionBase> connectedRegions = new ArrayList<>();
+        ArrayList<Region> connectedRegions = new ArrayList<>();
         HashMap<UUID, HashMap<RegionConnectionType, ArrayList<UUID>>> connections = worldGameState.getRegionConnections(getWorldUUID());
         ArrayList<RegionConnectionType> seeableConnectionTypes = new ArrayList<>();
 
@@ -114,7 +114,7 @@ public abstract class ViewingEntityBase extends EntityBase {
 
         for(RegionConnectionType regionConnectionType: seeableConnectionTypes) {
             for(UUID regionUUID: connections.get(getCurrentRegionUUID()).get(regionConnectionType)) {
-                RegionBase region = worldGameState.getRegion(regionUUID, getWorldUUID());
+                Region region = worldGameState.getRegion(regionUUID, getWorldUUID());
                 connectedRegions.add(region);
             }
         }

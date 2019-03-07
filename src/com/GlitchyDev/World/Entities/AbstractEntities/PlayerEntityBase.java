@@ -10,7 +10,7 @@ import com.GlitchyDev.World.Entities.Effects.Abstract.RegionHidingEffect;
 import com.GlitchyDev.World.Entities.Effects.Abstract.RegionRevealingEffect;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.RegionBase;
+import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Region.RegionConnectionType;
 
 import java.io.IOException;
@@ -29,8 +29,8 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, entityType);
     }
 
-    public PlayerEntityBase(WorldGameState worldGameState, UUID worldUUID, RegionBase regionBase, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
-        super(worldGameState, worldUUID, regionBase, inputBitUtility, entityType);
+    public PlayerEntityBase(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+        super(worldGameState, worldUUID, region, inputBitUtility, entityType);
     }
 
     public void setPlayer(Player player) {
@@ -43,13 +43,13 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
 
     @Override
     public void recalculateView() {
-        System.out.println("RECALCULATE");
+        System.out.println("Recalculating view for Player " + player.getPlayerUUID());
         if(worldGameState instanceof ServerWorldGameState) {
-            ArrayList<RegionBase> previousRegions = getEntityView().getViewableRegions();
+            ArrayList<Region> previousRegions = getEntityView().getViewableRegions();
 
-            ArrayList<RegionBase> connectedRegions = new ArrayList<>();
-            ArrayList<RegionBase> newlyConnected = new ArrayList<>();
-            ArrayList<RegionBase> newlyRemoved = new ArrayList<>();
+            ArrayList<Region> connectedRegions = new ArrayList<>();
+            ArrayList<Region> newlyConnected = new ArrayList<>();
+            ArrayList<Region> newlyRemoved = new ArrayList<>();
 
             HashMap<UUID, HashMap<RegionConnectionType, ArrayList<UUID>>> connections = worldGameState.getRegionConnections(getWorldUUID());
 
@@ -90,7 +90,7 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
 
             for(RegionConnectionType regionConnectionType: seeableConnectionTypes) {
                 for(UUID regionUUID: connections.get(getCurrentRegionUUID()).get(regionConnectionType)) {
-                    RegionBase region = worldGameState.getRegion(regionUUID, getWorldUUID());
+                    Region region = worldGameState.getRegion(regionUUID, getWorldUUID());
                     connectedRegions.add(region);
                     if(!previousRegions.contains(region)) {
                         newlyConnected.add(region);
@@ -98,7 +98,7 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
                 }
             }
 
-            for(RegionBase region: previousRegions) {
+            for(Region region: previousRegions) {
                 if(!connectedRegions.contains(region)) {
                     newlyRemoved.add(region);
                 }
@@ -109,14 +109,14 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
 
 
 
-            for(RegionBase region: newlyConnected) {
+            for(Region region: newlyConnected) {
                 try {
                     ((ServerWorldGameState) worldGameState).playerAddRegionToView(getPlayer().getPlayerUUID(),region);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            for(RegionBase region: newlyRemoved) {
+            for(Region region: newlyRemoved) {
                 try {
                     ((ServerWorldGameState) worldGameState).playerRemoveRegionFromView(getPlayer().getPlayerUUID(),region.getRegionUUID(),region.getWorldUUID());
                 } catch (IOException e) {
