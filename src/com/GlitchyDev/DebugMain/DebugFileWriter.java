@@ -11,33 +11,6 @@ public class DebugFileWriter {
 
     public static void main(String[] args) throws IOException {
 
-        File file = new File(System.getProperty("user.home") + "/Desktop/Test.crp");
-        OutputBitUtility fileOutputBitUtility = new OutputBitUtility(file);
-        fileOutputBitUtility.writeNextCorrectedBitsInt(7,3);
-        fileOutputBitUtility.writeNextCorrectedBitsInt(0,5);
-        fileOutputBitUtility.writeNextCorrectedBitsInt(15,4);
-        fileOutputBitUtility.flush();
-
-
-
-
-        InputBitUtility inputBitUtility = new InputBitUtility(file);
-        int bits = inputBitUtility.getRemainingBytes() * 8;
-
-        System.out.print(inputBitUtility.getNextBit() ? "1" : "0");
-        bits--;
-        System.out.print(inputBitUtility.getNextBit() ? "1" : "0");
-        bits--;
-        System.out.print(inputBitUtility.getNextBit() ? "1" : "0");
-        bits--;
-        inputBitUtility.complete();
-        bits -= 5;
-
-        for(int i = 0; i < bits; i++) {
-            System.out.print(inputBitUtility.getNextBit() ? "1" : "0");
-        }
-        System.out.println();
-
 
         /*
         int itemCount = (int) (Math.random() * 100 + 1);

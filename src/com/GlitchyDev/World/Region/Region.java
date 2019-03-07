@@ -126,12 +126,19 @@ public class Region {
 
     public void writeData(OutputBitUtility outputBitUtility) throws IOException {
         //outputBitUtility.writeNextCorrectByteInt(CURRENT_VERSION.ordinal());
+        System.out.println("Writing Region File Type");
         outputBitUtility.writeNextCorrectByteInt(RegionFileType.NORMAL.ordinal());
+        System.out.println();
+        System.out.println("Writing Region UUID");
         outputBitUtility.writeNextUUID(regionUUID);
+        System.out.println();
 
+        System.out.println("Write Size");
         outputBitUtility.writeNextCorrectByteInt(getWidth()-1);
         outputBitUtility.writeNextCorrectByteInt(getHeight()-1);
         outputBitUtility.writeNextCorrectByteInt(getLength()-1);
+        System.out.println();
+
         // Count number of unique blocks, like ouch
         // Counts the total number of unique blocks, stores them block, count
         HashMap<BlockBase,Integer> countMap = new HashMap<>();
@@ -166,17 +173,27 @@ public class Region {
 
 
         // Write Palette Length
+        System.out.println("Write Palette Length");
         outputBitUtility.writeNextCorrectByteInt(palette.length);
+        System.out.println();
+
         // Write Palette
 
+        System.out.println("Writing Palette");
         for(Object block: HuffmanTreeUtility.encodeObjectList(headTreeNode)) {
             ((BlockBase)block).writeData(outputBitUtility);
         }
+        System.out.println();
+
         // Write Huffman Tree Values
+        System.out.println("Writing Huffman Tree");
         HuffmanTreeUtility.saveHuffmanTreeValues(outputBitUtility, headTreeNode);
+        System.out.println();
+
         // Create Keyset
         HashMap<Object,String> keyset = HuffmanTreeUtility.generateEncodeHuffmanValues(headTreeNode);
 
+        System.out.println("Encoding Blocks");
         for(int y = 0; y < getHeight(); y++) {
             for(int x = 0; x < getWidth(); x++) {
                 for(int z = 0; z < getLength(); z++) {
@@ -187,13 +204,17 @@ public class Region {
                 }
             }
         }
+        System.out.println();
 
+
+        System.out.println("Writing Entity Length");
         outputBitUtility.writeNextCorrectByteInt(getEntities().size());
         if(entities.size() != 0) {
             for (EntityBase entityBase : getEntities()) {
                 entityBase.writeData(outputBitUtility);
             }
         }
+
     }
 
 

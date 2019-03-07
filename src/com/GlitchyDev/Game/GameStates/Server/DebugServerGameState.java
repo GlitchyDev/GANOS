@@ -113,6 +113,17 @@ public class DebugServerGameState extends ServerWorldGameState {
             world.linkRegion(region3.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
             world.linkRegion(region3.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
 
+            for(RegionBase region: world.getRegions().values()) {
+                File regionFile = new File(System.getProperty("user.home") + "/Desktop/" + region.getRegionUUID() + ".reg");
+                try {
+                    OutputBitUtility outputBitUtility = new OutputBitUtility(regionFile);
+                    region.writeData(outputBitUtility);
+                    outputBitUtility.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             DebugEntity debugEntity = new DebugEntity(this,getRegionAtLocation(new Location(5,1,0,spawnWorld)).getRegionUUID(), new Location(5,1,0,spawnWorld), Direction.NORTH);
             spawnEntity(debugEntity);
             try {
