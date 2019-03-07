@@ -26,14 +26,14 @@ public class OutputBitUtility {
 
 
     public void writeNextBit(boolean bit) throws IOException {
-        //System.out.print(bit ? "A" : "B");
+        System.out.print(bit ? "A" : "B");
         if(bit) {
             currentByte = setByteValue(currentByte,position);
         }
         position++;
 
         if(position >= 8) {
-            //System.out.print("*");
+            System.out.print("*");
             objectOutputStream.writeByte(currentByte);
             position = 0;
             currentByte = 0;
@@ -134,12 +134,12 @@ public class OutputBitUtility {
     public int flush() throws IOException {
         if(position != 0) {
             objectOutputStream.writeByte(currentByte);
-            //for(int i = position; i < 8; i++) {
-            //    System.out.print("!");
-            //}
+            for(int i = position; i < 8; i++) {
+                System.out.print("!");
+            }
         }
-        //System.out.println();
-        //System.out.println("OutputBitUtility: Wasted " + (7-position) + " Bits");
+        System.out.println();
+        System.out.println("OutputBitUtility: Wasted " + (7-position) + " Bits");
         position = 0;
 
 

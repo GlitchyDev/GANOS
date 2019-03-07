@@ -25,15 +25,15 @@ public class InputBitUtility {
     // Read Info
     public boolean getNextBit() throws IOException {
         if(position >= 8) {
-            //if(position == 8) {
-            //    System.out.print("*");
-            //}
+            if(position == 8) {
+                System.out.print("*");
+            }
             currentByte = objectInputStream.readByte();
             currentByte = objectInputStream.readByte();
             position = 0;
         }
         boolean bitValue = getByteValue(currentByte,position++);
-        //System.out.print(bitValue ? "1" : "0");
+        System.out.print(bitValue ? "1" : "0");
         return bitValue;
     }
 
@@ -126,16 +126,16 @@ public class InputBitUtility {
     }
 
     public void complete() throws IOException {
-        //for(int i = position; i < 8; i++) {
-        //    System.out.print("#");
-        //}
+        for(int i = position; i < 8; i++) {
+            System.out.print("#");
+        }
         if(objectInputStream.available() > 0) {
             position = 0;
             currentByte = objectInputStream.readByte();
         } else {
             position = 8;
         }
-        //System.out.println();
+        System.out.println();
     }
 
     public boolean ready() throws IOException {
