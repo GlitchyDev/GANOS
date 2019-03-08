@@ -39,7 +39,6 @@ public class OutputBitUtility {
             currentByte = 0;
             totalOutputBytes++;
         }
-        System.out.print(bit ? "1" : "0");
     }
 
     public void writeNextBits(boolean[] bits) throws IOException {

@@ -29,7 +29,6 @@ public class InputBitUtility {
                 System.out.print("*");
             }
             currentByte = objectInputStream.readByte();
-            currentByte = objectInputStream.readByte();
             position = 0;
         }
         boolean bitValue = getByteValue(currentByte,position++);

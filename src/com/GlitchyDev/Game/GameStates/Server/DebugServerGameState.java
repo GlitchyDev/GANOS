@@ -381,6 +381,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         System.out.println("DebugServerGameState: Saving world " + world.getWorldUUID() + " to file " + file.getName());
         OutputBitUtility outputBitUtility = new OutputBitUtility(file);
 
+        System.out.println("Writing Value " + WorldFileType.NORMAL.ordinal());
         outputBitUtility.writeNextCorrectByteInt(WorldFileType.NORMAL.ordinal());
 
         outputBitUtility.writeNextUUID(world.getWorldUUID());
