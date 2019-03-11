@@ -128,15 +128,11 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
     public void removeRegionFromGame(UUID regionUUID, UUID worldUUID) {
+        World world = new World(worldUUID);
         Region region = getWorld(worldUUID).getRegions().get(regionUUID);
-        if(region == null) {
-            System.out.println("No world for you");
-        }
-
         for (EntityBase entity : region.getEntities()) {
-            despawnEntity(entity.getUUID(), worldUUID);
+            world.getEntities().remove(entity.getUUID());
         }
-
         for(BlockBase block: region.getBlocksArray()) {
             if(block instanceof TickableBlock) {
                 getWorld(worldUUID).getTickableBlocks().remove(block.getLocation());

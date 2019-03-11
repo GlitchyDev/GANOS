@@ -45,7 +45,7 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
     public void recalculateView() {
         System.out.println("Recalculating view for Player " + player.getPlayerUUID());
         if(worldGameState instanceof ServerWorldGameState) {
-            ArrayList<Region> previousRegions = getEntityView().getViewableRegions();
+            ArrayList<Region> previouslyConnectedRegions = getEntityView().getViewableRegions();
 
             ArrayList<Region> connectedRegions = new ArrayList<>();
             ArrayList<Region> newlyConnected = new ArrayList<>();
@@ -55,9 +55,18 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
 
 
 
-            ArrayList<RegionConnectionType> seeableConnectionTypes = new ArrayList<>();
 
-            newlyConnected.add(worldGameState.getRegion(getCurrentRegionUUID(),getWorldUUID()));
+            Region startingRegion = worldGameState.getRegion(getCurrentRegionUUID(),getWorldUUID());
+            System.out.println("Starting Region " + getCurrentRegionUUID());
+            if(!previouslyConnectedRegions.contains(startingRegion)) {
+                newlyConnected.add(startingRegion);
+            }
+            connectedRegions.add(startingRegion);
+
+
+
+
+            ArrayList<RegionConnectionType> seeableConnectionTypes = new ArrayList<>();
             for(RegionConnectionType regionConnection: connections.get(getCurrentRegionUUID()).keySet()) {
                 if(regionConnection.isVisibleByDefault()) {
                     boolean hideRegion = false;
@@ -92,13 +101,13 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
                 for(UUID regionUUID: connections.get(getCurrentRegionUUID()).get(regionConnectionType)) {
                     Region region = worldGameState.getRegion(regionUUID, getWorldUUID());
                     connectedRegions.add(region);
-                    if(!previousRegions.contains(region)) {
+                    if(!previouslyConnectedRegions.contains(region)) {
                         newlyConnected.add(region);
                     }
                 }
             }
 
-            for(Region region: previousRegions) {
+            for(Region region: previouslyConnectedRegions) {
                 if(!connectedRegions.contains(region)) {
                     newlyRemoved.add(region);
                 }
@@ -109,16 +118,19 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
 
 
 
-            for(Region region: newlyConnected) {
+
+            for(Region addedRegion: newlyConnected) {
                 try {
-                    ((ServerWorldGameState) worldGameState).playerAddRegionToView(getPlayer().getPlayerUUID(),region);
+                    ((ServerWorldGameState) worldGameState).playerAddRegionToView(getPlayer().getPlayerUUID(),addedRegion);
+                    System.out.println("Adding Region " + addedRegion.getRegionUUID());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            for(Region region: newlyRemoved) {
+            for(Region removedRegion: newlyRemoved) {
                 try {
-                    ((ServerWorldGameState) worldGameState).playerRemoveRegionFromView(getPlayer().getPlayerUUID(),region.getRegionUUID(),region.getWorldUUID());
+                    ((ServerWorldGameState) worldGameState).playerRemoveRegionFromView(getPlayer().getPlayerUUID(),removedRegion.getRegionUUID(),removedRegion.getWorldUUID());
+                    System.out.println("Removed Region " + removedRegion.getRegionUUID());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
