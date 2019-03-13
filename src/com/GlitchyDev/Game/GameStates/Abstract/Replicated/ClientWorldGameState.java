@@ -21,7 +21,7 @@ public abstract class ClientWorldGameState extends WorldGameState {
 
     @Override
     public void logic() {
-        if(gameSocket != null && gameSocket.isConnected()) {
+        if(gameSocket != null && gameSocket.isConnected() && gameSocket.hasUnprocessedPackets()) {
             for (PacketBase packet : gameSocket.getUnprocessedPackets()) {
                 processPacket(packet);
             }

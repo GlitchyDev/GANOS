@@ -163,7 +163,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         cameraControlsLogic();
 
-        textItems.get(0).setText("FPS: " + getCurrentFPS() + " Logic Util: " + formatter.format(getLogicUtilization()) + " Render Util: " + formatter.format(getRenderUtilization()));
+        textItems.get(0).setText("FPS: " + getCurrentFPS() + " Render: " + formatter.format(getRenderUtilization()) + " Logic: " + formatter.format(getLogicUtilization()));
         textItems.get(1).setText("Camera Pos: " + formatter.format(camera.getPosition().x) + "," + formatter.format(camera.getPosition().y) + "," + formatter.format(camera.getPosition().z));
         textItems.get(2).setText("Camera Rot: " + formatter.format(camera.getRotation().x) + "," + formatter.format(camera.getRotation().y) + "," + formatter.format(camera.getRotation().z));
         textItems.get(3).setText("P: " + getRegionAtLocation(testPlayer.getPlayerEntity().getLocation()).getEntities().size());

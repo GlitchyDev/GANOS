@@ -67,7 +67,7 @@ public class DebugClientGameState extends ClientWorldGameState {
         controller.tick();
         cameraControlsLogic();
 
-        textItems.get(0).setText("FPS: " + getCurrentFPS() + " Logic Util: " + formatter.format(getLogicUtilization()) + " Render Util: " + formatter.format(getRenderUtilization()));
+        textItems.get(0).setText("FPS: " + getCurrentFPS() + " Render: " + formatter.format(getRenderUtilization()) + " Logic: " + formatter.format(getLogicUtilization()));
         textItems.get(1).setText("Camera Pos: " + formatter.format(camera.getPosition().x) + "," + formatter.format(camera.getPosition().y) + "," + formatter.format(camera.getPosition().z));
         textItems.get(2).setText("Camera Rot: " + formatter.format(camera.getRotation().x) + "," + formatter.format(camera.getRotation().y) + "," + formatter.format(camera.getRotation().z));
 
@@ -170,10 +170,6 @@ public class DebugClientGameState extends ClientWorldGameState {
                 for (BlockBase block : region.getBlocksArray()) {
                     if (block instanceof CustomRenderBlock) {
                         ((CustomRenderBlock) block).render(renderer, globalGameData.getGameWindow(), camera, null);
-                    }
-
-                    for (EntityBase entity : region.getEntities()) {
-                        entity.render(renderer, globalGameData.getGameWindow(), camera);
                     }
                 }
                 for(EntityBase entity: region.getEntities()) {
