@@ -7,6 +7,7 @@ import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
+import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -26,12 +27,12 @@ public class ServerSpawnEntityPacket extends WorldStateModifyingPackets {
         UUID regionUUID = inputBitUtility.getNextUUID();
         EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
         this.entityBase = entityType.getEntityFromInput(inputBitUtility,worldGameState,worldUUID, regionUUID);
-        worldGameState.spawnEntity(entityBase);
+        worldGameState.spawnEntity(entityBase, SpawnReason.READ_FILE);
     }
 
     @Override
     public void executeModification(WorldGameState worldGameState) {
-        worldGameState.spawnEntity(entityBase);
+        worldGameState.spawnEntity(entityBase, SpawnReason.PACKET_SPAWN);
     }
 
     @Override

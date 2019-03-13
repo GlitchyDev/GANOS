@@ -65,6 +65,9 @@ public class Region {
                 }
             }
         }
+
+        copy.getEntities().addAll(entities);
+
         return copy;
     }
 

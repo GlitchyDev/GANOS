@@ -4,4 +4,5 @@ public enum DespawnReason {
     DEBUG,
     DEATH,
     LOGOUT,
+    PACKET_DESPAWN
 }

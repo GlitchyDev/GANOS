@@ -5,6 +5,7 @@ import com.GlitchyDev.Networking.Packets.AbstractPackets.WorldStateModifyingPack
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
+import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -27,7 +28,7 @@ public class ServerDespawnEntityPacket extends WorldStateModifyingPackets {
 
     @Override
     public void executeModification(WorldGameState worldGameState) {
-        worldGameState.despawnEntity(entityUUID,worldUUID);
+        worldGameState.despawnEntity(entityUUID,worldUUID, DespawnReason.PACKET_DESPAWN);
     }
 
     @Override

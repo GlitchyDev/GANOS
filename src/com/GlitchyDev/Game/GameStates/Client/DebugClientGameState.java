@@ -176,6 +176,9 @@ public class DebugClientGameState extends ClientWorldGameState {
                         entity.render(renderer, globalGameData.getGameWindow(), camera);
                     }
                 }
+                for(EntityBase entity: region.getEntities()) {
+                    entity.render(renderer, globalGameData.getGameWindow(), camera);
+                }
             }
         }
 

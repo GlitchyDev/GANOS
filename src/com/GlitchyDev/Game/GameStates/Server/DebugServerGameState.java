@@ -23,7 +23,9 @@ import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugEntity;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
+import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
+import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Region.RegionConnectionType;
@@ -115,7 +117,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
             DebugEntity debugEntity = new DebugEntity(this,getRegionAtLocation(new Location(5,1,0,spawnWorld)).getRegionUUID(), new Location(5,1,0,spawnWorld), Direction.NORTH);
-            spawnEntity(debugEntity);
+            spawnEntity(debugEntity, SpawnReason.DEBUG);
             try {
                 saveWorld(file, world);
             } catch (IOException e) {
@@ -136,7 +138,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,getRegionAtLocation(new Location(0,1,0,spawnWorld)).getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
         this.testPlayer = new Player(this,UUID.randomUUID(),playerEntity);
-        spawnEntity(playerEntity);
+        spawnEntity(playerEntity, SpawnReason.DEBUG);
         playerEntity.recalculateView();
 
         camera = new Camera();
@@ -306,14 +308,14 @@ public class DebugServerGameState extends ServerWorldGameState {
             e.printStackTrace();
         }
         currentPlayers.put(playerUUID,loginPlayer);
-        spawnEntity(playerEntity);
+        spawnEntity(playerEntity, SpawnReason.LOGIN);
         playerEntity.recalculateView();
     }
 
     @Override
     public void onPlayerLogout(UUID playerUUID, NetworkDisconnectType reason) {
         System.out.println("DebugServer: User " + playerUUID + " disconnected for " + reason);
-        despawnEntity(currentPlayers.get(playerUUID).getPlayerEntity().getUUID(), currentPlayers.get(playerUUID).getPlayerEntity().getWorldUUID());
+        despawnEntity(currentPlayers.get(playerUUID).getPlayerEntity().getUUID(), currentPlayers.get(playerUUID).getPlayerEntity().getWorldUUID(), DespawnReason.LOGOUT);
         currentPlayers.remove(playerUUID);
     }
 

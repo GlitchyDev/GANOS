@@ -20,6 +20,8 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisableBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
+import com.GlitchyDev.World.Entities.Enums.DespawnReason;
+import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.World;
@@ -120,9 +122,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
     // Spawning entities triggers an viewcheck on EVERY Player in the world, the Server View should already show an update
     private HashMap<UUID, ArrayList<ServerSpawnEntityPacket>> spawnedEntities = new HashMap<>();
     @Override
-    public void spawnEntity(EntityBase entity) {
+    public void spawnEntity(EntityBase entity, SpawnReason spawnReason) {
         // This is replicated, mark for Entities who can view its region
-        super.spawnEntity(entity);
+        super.spawnEntity(entity, spawnReason);
         if(!spawnedEntities.containsKey(getRegionAtLocation(entity.getLocation()).getRegionUUID())) {
             spawnedEntities.put(getRegionAtLocation(entity.getLocation()).getRegionUUID(), new ArrayList<>());
         }
@@ -133,9 +135,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
     // Despawning entities triggers an viewcheck on EVERY Player in the world, the Server View should already show an update
     private HashMap<UUID, ArrayList<ServerDespawnEntityPacket>> despawnedEntities = new HashMap<>();
     @Override
-    public void despawnEntity(UUID entityUUID, UUID worldUUID) {
+    public void despawnEntity(UUID entityUUID, UUID worldUUID, DespawnReason despawnReason) {
         EntityBase entity = getEntity(entityUUID,worldUUID);
-        super.despawnEntity(entityUUID, worldUUID);
+        super.despawnEntity(entityUUID, worldUUID, despawnReason);
         UUID regionUUID = getRegionAtLocation(entity.getLocation()).getRegionUUID();
         if(!despawnedEntities.containsKey(regionUUID)) {
             despawnedEntities.put(regionUUID, new ArrayList<>());

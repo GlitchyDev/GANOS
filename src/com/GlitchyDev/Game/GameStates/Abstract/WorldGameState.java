@@ -5,6 +5,8 @@ import com.GlitchyDev.Utility.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.Enums.DespawnReason;
+import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Region.RegionConnectionType;
@@ -119,6 +121,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
         world.getRegions().put(region.getRegionUUID(), region);
         for(EntityBase entity: region.getEntities()) {
             world.getEntities().put(entity.getUUID(), entity);
+            entity.onSpawn(SpawnReason.REGION_MANUALLY_ADDED);
         }
         for(BlockBase block: region.getBlocksArray()) {
             if(block instanceof TickableBlock) {
@@ -143,19 +146,20 @@ public abstract class WorldGameState extends EnvironmentGameState {
 
     // Replicate Functions
 
-    public void spawnEntity(EntityBase entity) {
+    public void spawnEntity(EntityBase entity, SpawnReason spawnReason) {
         World world = getWorld(entity.getLocation().getWorldUUID());
         world.getRegionAtLocation(entity.getLocation()).getEntities().add(entity);
         world.getEntities().put(entity.getUUID(),entity);
-
+        entity.onSpawn(spawnReason);
     }
 
-    public void despawnEntity(UUID entityUUID, UUID worldUUID) {
+    public void despawnEntity(UUID entityUUID, UUID worldUUID, DespawnReason despawnReason) {
         EntityBase entity = getWorld(worldUUID).getEntities().get(entityUUID);
         Region hostRegion = getRegion(entity.getCurrentRegionUUID(), worldUUID);
         hostRegion.getEntities().remove(entity);
         getWorld(worldUUID).getRegionAtLocation(entity.getLocation()).getEntities().remove(entityUUID);
         getWorld(worldUUID).getEntities().remove(entityUUID);
+        entity.onDespawn(despawnReason);
 
     }
 

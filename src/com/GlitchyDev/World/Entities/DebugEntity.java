@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class DebugEntity extends EntityBase {
-    private final SpriteItem spriteItem;
+    private SpriteItem spriteItem;
 
 
     public DebugEntity(WorldGameState worldGameState, UUID currentRegionUUID, Location location, Direction direction) {
@@ -32,19 +32,16 @@ public class DebugEntity extends EntityBase {
 
     public DebugEntity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility) throws IOException {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, EntityType.DEBUG_ENTITY);
-        spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Icon32x32"),1,1, true);
-        spriteItem.setPosition(getLocation().getNormalizedPosition());
     }
     public DebugEntity(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility) throws IOException {
         super(worldGameState, worldUUID, region, inputBitUtility, EntityType.DEBUG_ENTITY);
-        spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Icon32x32"),1,1, true);
-        spriteItem.setPosition(getLocation().getNormalizedPosition());
     }
 
 
     @Override
     public void onSpawn(SpawnReason spawnReason) {
-
+        spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Icon32x32"),1,1, true);
+        spriteItem.setPosition(getLocation().getNormalizedPosition());
     }
 
     @Override
