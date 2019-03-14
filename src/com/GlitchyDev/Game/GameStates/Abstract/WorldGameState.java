@@ -148,9 +148,14 @@ public abstract class WorldGameState extends EnvironmentGameState {
 
     public void spawnEntity(EntityBase entity, SpawnReason spawnReason) {
         World world = getWorld(entity.getLocation().getWorldUUID());
+
+        Location regionLocation = getRegion(entity.getCurrentRegionUUID(),entity.getWorldUUID()).getLocation();
+        entity.setLocation(entity.getLocation().getOffsetLocation(regionLocation));
+
         world.getRegionAtLocation(entity.getLocation()).getEntities().add(entity);
         world.getEntities().put(entity.getUUID(),entity);
         entity.onSpawn(spawnReason);
+
     }
 
     public void despawnEntity(UUID entityUUID, UUID worldUUID, DespawnReason despawnReason) {

@@ -50,7 +50,7 @@ public class DebugPlayerEntityBase extends PlayerEntityBase {
 
     @Override
     public void tick() {
-        gameItem.setPosition(getLocation().getNormalizedPosition());
+
     }
 
     @Override
@@ -67,5 +67,11 @@ public class DebugPlayerEntityBase extends PlayerEntityBase {
     @Override
     public void writeData(OutputBitUtility outputBitUtility) throws IOException {
         super.writeData(outputBitUtility);
+    }
+
+    @Override
+    public void setLocation(Location location) {
+        super.setLocation(location);
+        gameItem.setPosition(getLocation().getNormalizedPosition());
     }
 }

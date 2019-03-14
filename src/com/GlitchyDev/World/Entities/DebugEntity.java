@@ -69,4 +69,10 @@ public class DebugEntity extends EntityBase {
         return false;
     }
 
+    @Override
+    public void setLocation(Location location) {
+        super.setLocation(location);
+        spriteItem.setPosition(getLocation().getNormalizedPosition());
+    }
+
 }

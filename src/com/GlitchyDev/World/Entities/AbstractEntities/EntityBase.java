@@ -62,15 +62,16 @@ public abstract class EntityBase {
      * @param entityType
      * @throws IOException
      */
+
+    // This particular constructor is used to retrieve a single entity from file, or from a spawn packet
     public EntityBase(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
         this.worldGameState = worldGameState;
         this.currentRegionUUID = currentRegionUUID;
         this.entityType = entityType;
         this.uuid = inputBitUtility.getNextUUID();
-        System.out.println("PR " + currentRegionUUID);
-        Location regionLocation = worldGameState.getRegion(currentRegionUUID,worldUUID).getLocation();
         Location relativeLocation = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), worldUUID);
-        this.location = regionLocation.getOffsetLocation(relativeLocation);
+        // This location will be updated on Spawn
+        this.location = relativeLocation;
         this.direction = Direction.values()[inputBitUtility.getNextCorrectedIntBit(3)];
         int totalEffects = inputBitUtility.getNextCorrectIntByte();
         this.effects = new ArrayList<>(totalEffects);
@@ -81,7 +82,7 @@ public abstract class EntityBase {
         }
     }
 
-    // Esclusively for reading from file
+    // Exclusively from reading from a Region File
     public EntityBase(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
         this.worldGameState = worldGameState;
         this.currentRegionUUID = region.getRegionUUID();
