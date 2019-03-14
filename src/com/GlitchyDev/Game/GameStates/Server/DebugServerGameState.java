@@ -308,8 +308,8 @@ public class DebugServerGameState extends ServerWorldGameState {
             e.printStackTrace();
         }
         currentPlayers.put(playerUUID,loginPlayer);
-        spawnEntity(playerEntity, SpawnReason.LOGIN);
         playerEntity.recalculateView();
+        spawnEntity(playerEntity, SpawnReason.LOGIN);
     }
 
     @Override

@@ -43,7 +43,9 @@ public abstract class ViewingEntityBase extends EntityBase {
 
     @Override
     public void move(Location newLocation, EntityMovementType movementType) {
+        // Check and Verify we actually BE IN THE CORRECT PLACE DAWG
         if(worldGameState.isARegionAtLocation(newLocation)) {
+            // Check the blocks for preventing leave triggers
             BlockBase currentBlock = worldGameState.getBlockAtLocation(getLocation());
             if (currentBlock instanceof TriggerableBlock) {
                 ((TriggerableBlock) currentBlock).exitBlockSuccessfully(movementType, this);
@@ -53,9 +55,11 @@ public abstract class ViewingEntityBase extends EntityBase {
                 ((TriggerableBlock) newLocation).enterBlockSccessfully(movementType, this);
             }
 
+            // GO AHEAD AND CHANGE THE LOCATION
             Location oldLocation = getLocation();
             setLocation(newLocation);
 
+            // Find where we are moving, if there is no overlap, no problem, just go to that one, if overlap, go to one in view
             Region selectedRegion = null;
             if (worldGameState.countRegionsAtLocation(oldLocation) > 1) {
                 ArrayList<Region> overlappingRegion = worldGameState.getRegionsAtLocation(getLocation());
@@ -68,6 +72,7 @@ public abstract class ViewingEntityBase extends EntityBase {
                 selectedRegion = worldGameState.getRegionAtLocation(getLocation());
             }
 
+            // Change our current RegionID to match the correct stuff, and move the entity across the border
             if (getCurrentRegionUUID() != selectedRegion.getRegionUUID()) {
                 worldGameState.getRegion(getCurrentRegionUUID(), getWorldUUID()).getEntities().remove(this);
                 setCurrentRegionUUID(selectedRegion.getRegionUUID());
@@ -75,6 +80,7 @@ public abstract class ViewingEntityBase extends EntityBase {
                 recalculateView();
             }
 
+            // Replicate
             if (worldGameState instanceof ServerWorldGameState) {
                 ((ServerWorldGameState) worldGameState).replicateMoveEntity(getUUID(), oldLocation, newLocation);
             }
@@ -118,6 +124,11 @@ public abstract class ViewingEntityBase extends EntityBase {
                 connectedRegions.add(region);
             }
         }
+
+        entityView.getViewableRegions().clear();
+        entityView.getViewableRegions().addAll(connectedRegions);
+
+
 
         // Call Server World Add region for Client
         // Call Server world remove Region for Client

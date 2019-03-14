@@ -28,6 +28,7 @@ public class ServerSpawnEntityPacket extends WorldStateModifyingPackets {
         EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
         this.entityBase = entityType.getEntityFromInput(inputBitUtility,worldGameState,worldUUID, regionUUID);
         worldGameState.spawnEntity(entityBase, SpawnReason.READ_FILE);
+        inputBitUtility.complete();
     }
 
     @Override

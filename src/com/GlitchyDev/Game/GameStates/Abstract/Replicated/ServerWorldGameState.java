@@ -24,6 +24,7 @@ import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Region;
+import com.GlitchyDev.World.Views.EntityView;
 import com.GlitchyDev.World.World;
 
 import java.io.IOException;
@@ -53,6 +54,11 @@ public abstract class ServerWorldGameState extends WorldGameState {
             getWorld(worldUUID).tick();
         }
 
+        try {
+            replicateChanges();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // Replicate
 
@@ -68,6 +74,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
         }
         Location spawnLocation = world.getOriginLocation();
         UUID regionUUID = getRegionAtLocation(spawnLocation).getRegionUUID();
+
         DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,regionUUID,spawnLocation,Direction.NORTH);
         Player player = new Player(this,playerUUID,playerEntity);
         try {
@@ -76,7 +83,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
             e.printStackTrace();
         }
         currentPlayers.put(playerUUID,player);
+
         playerEntity.recalculateView();
+        spawnEntity(playerEntity, SpawnReason.LOGIN);
     }
 
     public void onPlayerLogout(UUID playerUUID, NetworkDisconnectType reason) {
@@ -85,13 +94,82 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
 
 
-    private void replicateChanges() {
-        // Set blocks
-        // Chance Directions
+    private void replicateChanges() throws IOException {
 
-        // Spawn Entities global removal
-        // Despawn Entities global Removal
+        for(Player player: currentPlayers.values()) {
+            EntityView playerView = player.getEntityView();
+
+
+            for(EntityBase entity: despawnedEntities.keySet()) {
+                if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().contains(entity)) {
+                    serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(despawnedEntities.get(entity));
+                }
+            }
+
+            for(EntityBase entity: spawnedEntities.keySet()) {
+                if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().contains(entity)) {
+                    serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(spawnedEntities.get(entity));
+                }
+            }
+
+            for(EntityBase entity: entityRegionMovement.keySet()) {
+                UUID[] regions = entityRegionMovement.get(entity);
+                boolean containsNew = playerView.containsRegion(regions[0]);
+                boolean containsOld = playerView.containsRegion(regions[1]);
+
+
+                System.out.println("Start " + playerView.getViewableRegions().size());
+                if(containsNew) {
+                    System.out.println("CLOSERRRRR");
+                    if(containsOld) {
+                        System.out.println("CLOSER");
+                        if(player.getEntityView().getRegion(regions[1]).getEntities().contains(entity)) {
+                            System.out.println("Replicating Movement");
+                            serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesBoth.get(entity));
+                        }
+                    } else {
+                        serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesNew.get(entity));
+                    }
+                } else {
+                    if(containsOld) {
+                        if(player.getEntityView().getRegion(regions[1]).getEntities().contains(entity)) {
+                            serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesOld.get(entity));
+                        }
+                    }
+                }
+            }
+
+
+            for(EntityBase entity: changedDirections.keySet()) {
+                if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().contains(entity)) {
+                    serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(changedDirections.get(entity));
+                }
+            }
+
+            for(UUID regionUUID: changedBlocks.keySet()) {
+                if(playerView.containsRegion(regionUUID)) {
+                    for(PacketBase packet: changedBlocks.get(regionUUID)) {
+                        serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(packet);
+                    }
+                }
+
+            }
+        }
+
+        spawnedEntities.clear();
+        despawnedEntities.clear();
+        entityRegionMovement.clear();
+        movedEntitiesBoth.clear();
+        movedEntitiesOld.clear();
+        movedEntitiesNew.clear();
+        changedDirections.clear();
+        changedBlocks.clear();
+
+
+
+
         // Move entities, spawn respawn and move
+        // Check EACH PLAYER for requisite information
 
 
 
@@ -120,71 +198,55 @@ public abstract class ServerWorldGameState extends WorldGameState {
     */
 
     // Spawning entities triggers an viewcheck on EVERY Player in the world, the Server View should already show an update
-    private HashMap<UUID, ArrayList<ServerSpawnEntityPacket>> spawnedEntities = new HashMap<>();
+    private HashMap<EntityBase, ServerSpawnEntityPacket> spawnedEntities = new HashMap<>();
     @Override
     public void spawnEntity(EntityBase entity, SpawnReason spawnReason) {
         // This is replicated, mark for Entities who can view its region
         super.spawnEntity(entity, spawnReason);
-        if(!spawnedEntities.containsKey(getRegionAtLocation(entity.getLocation()).getRegionUUID())) {
-            spawnedEntities.put(getRegionAtLocation(entity.getLocation()).getRegionUUID(), new ArrayList<>());
-        }
-        spawnedEntities.get(getRegionAtLocation(entity.getLocation()).getRegionUUID()).add(new ServerSpawnEntityPacket(entity));
+        spawnedEntities.put(entity,new ServerSpawnEntityPacket(entity));
     }
 
 
     // Despawning entities triggers an viewcheck on EVERY Player in the world, the Server View should already show an update
-    private HashMap<UUID, ArrayList<ServerDespawnEntityPacket>> despawnedEntities = new HashMap<>();
+    private HashMap<EntityBase, ServerDespawnEntityPacket> despawnedEntities = new HashMap<>();
     @Override
     public void despawnEntity(UUID entityUUID, UUID worldUUID, DespawnReason despawnReason) {
-        EntityBase entity = getEntity(entityUUID,worldUUID);
         super.despawnEntity(entityUUID, worldUUID, despawnReason);
-        UUID regionUUID = getRegionAtLocation(entity.getLocation()).getRegionUUID();
-        if(!despawnedEntities.containsKey(regionUUID)) {
-            despawnedEntities.put(regionUUID, new ArrayList<>());
-        }
-        despawnedEntities.get(regionUUID).add(new ServerDespawnEntityPacket(entityUUID, worldUUID));
+        EntityBase entity = getEntity(entityUUID,worldUUID);
+        despawnedEntities.put(entity,new ServerDespawnEntityPacket(entityUUID, worldUUID));
     }
 
 
 
     // Entities who move between regions
-    private HashMap<UUID, ArrayList<ServerMoveEntityPacket>> movedEntitiesBoth = new HashMap<>();
-    private HashMap<UUID, ArrayList<ServerDespawnEntityPacket>> movedEntitiesOld = new HashMap<>();
-    private HashMap<UUID, ArrayList<ServerSpawnEntityPacket>> movedEntitiesNew = new HashMap<>();
+    private HashMap<EntityBase,UUID[]> entityRegionMovement = new HashMap<>();
+    private HashMap<EntityBase, ServerMoveEntityPacket> movedEntitiesBoth = new HashMap<>();
+    private HashMap<EntityBase, ServerDespawnEntityPacket> movedEntitiesOld = new HashMap<>();
+    private HashMap<EntityBase, ServerSpawnEntityPacket> movedEntitiesNew = new HashMap<>();
     // Every Player in the world will get checked if they personally have access to t
     public void replicateMoveEntity(UUID entityUUID, Location oldLocation, Location newLocation) {
         // This is replicated, mark for entities who can view its region
         // Also mark if it enters and or exits Regions, update viewing
 
+        EntityBase entity = getEntity(entityUUID, newLocation.getWorldUUID());
         UUID previousRegion = getRegionAtLocation(oldLocation).getRegionUUID();
         UUID newRegion = getRegionAtLocation(newLocation).getRegionUUID();
 
-        if(!movedEntitiesBoth.containsKey(newRegion)) {
-            movedEntitiesBoth.put(newRegion, new ArrayList<>());
-        }
-        if(!movedEntitiesOld.containsKey(previousRegion)) {
-            movedEntitiesOld.put(previousRegion, new ArrayList<>());
-        }
-        if(!movedEntitiesNew.containsKey(newRegion)) {
-            movedEntitiesNew.put(newRegion, new ArrayList<>());
-        }
 
-        movedEntitiesBoth.get(newRegion).add(new ServerMoveEntityPacket(entityUUID, newLocation));
-        movedEntitiesOld.get(previousRegion).add(new ServerDespawnEntityPacket(entityUUID, oldLocation.getWorldUUID()));
-        EntityBase entity = getEntity(entityUUID, newLocation.getWorldUUID());
-        movedEntitiesNew.get(newRegion).add(new ServerSpawnEntityPacket(entity));
+
+        entityRegionMovement.put(entity,new UUID[]{newRegion,previousRegion});
+        movedEntitiesBoth.put(entity,new ServerMoveEntityPacket(entityUUID, newLocation));
+        movedEntitiesOld.put(entity,new ServerDespawnEntityPacket(entityUUID, oldLocation.getWorldUUID()));
+        movedEntitiesNew.put(entity,new ServerSpawnEntityPacket(entity));
     }
 
 
     // Replicate to players with this in its view
-    private HashMap<UUID, ArrayList<ServerChangeDirectionEntityPacket>> changedDirections = new HashMap<>();
+    private HashMap<EntityBase, ServerChangeDirectionEntityPacket> changedDirections = new HashMap<>();
     public void replicateChangeDirectionEntity(UUID entityUUID, UUID worldUUID, Direction direction) {
         // This is replicated, mark for entities who can view its region
-        UUID regionUUID = getRegionAtLocation(getEntity(entityUUID, worldUUID).getLocation()).getRegionUUID();
-        if(!changedDirections.containsKey(regionUUID)) {
-            changedDirections.put(regionUUID,new ArrayList<>());
-        }
-        changedDirections.get(regionUUID).add(new ServerChangeDirectionEntityPacket(entityUUID, worldUUID, direction));
+        EntityBase entity = getEntity(entityUUID, worldUUID);
+        changedDirections.put(entity,new ServerChangeDirectionEntityPacket(entityUUID, worldUUID, direction));
     }
 
 

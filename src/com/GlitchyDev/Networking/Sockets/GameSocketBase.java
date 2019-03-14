@@ -56,15 +56,28 @@ public abstract class GameSocketBase {
 
 
     public void sendPacket(PacketBase packet) throws IOException {
-        packet.transmit(output);
-        output.flush();
+        synchronized (this) {
+            packet.transmit(output);
+            output.flush();
+        }
     }
 
     public void sendPackets(Collection<PacketBase> packets) throws IOException {
-        for(PacketBase packet: packets) {
-            packet.transmit(output);
+        synchronized (this) {
+            for (PacketBase packet : packets) {
+                packet.transmit(output);
+            }
+            output.flush();
         }
-        output.flush();
+    }
+
+    public void sendPackets(ArrayList<PacketBase> packets) throws IOException {
+        synchronized (this) {
+            for (PacketBase packet : packets) {
+                packet.transmit(output);
+            }
+            output.flush();
+        }
     }
 
     public ArrayList<PacketBase> getUnprocessedPackets() {
@@ -102,6 +115,7 @@ public abstract class GameSocketBase {
 
 
 
+
     private class PacketReadThread extends Thread {
         public PacketReadThread() {
             keepThreadAlive = new AtomicBoolean(true);
@@ -113,6 +127,7 @@ public abstract class GameSocketBase {
             try {
                 while(keepThreadAlive.get()) {
                     PacketType packetType = PacketType.values()[input.getNextCorrectIntByte()];
+                    System.out.println("Recieved packet type " + packetType);
                     PacketBase packet = packetType.getPacketFromInput(input, worldGameState);
                     if (packet instanceof GeneralAuthDisconnectPacket) {
                         keepThreadAlive.set(false);

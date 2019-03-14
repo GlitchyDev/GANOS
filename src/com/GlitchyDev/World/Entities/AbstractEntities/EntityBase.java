@@ -67,6 +67,7 @@ public abstract class EntityBase {
         this.currentRegionUUID = currentRegionUUID;
         this.entityType = entityType;
         this.uuid = inputBitUtility.getNextUUID();
+        System.out.println("PR " + currentRegionUUID);
         Location regionLocation = worldGameState.getRegion(currentRegionUUID,worldUUID).getLocation();
         Location relativeLocation = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), worldUUID);
         this.location = regionLocation.getOffsetLocation(relativeLocation);
@@ -138,6 +139,7 @@ public abstract class EntityBase {
      * @param movementType
      */
     public void move(Location newLocation, EntityMovementType movementType) {
+        // Find our TRIGGER WARNINGS,
         BlockBase currentBlock = worldGameState.getBlockAtLocation(getLocation());
         if(worldGameState.isARegionAtLocation(newLocation)) {
             if (currentBlock instanceof TriggerableBlock) {
@@ -148,11 +150,15 @@ public abstract class EntityBase {
                 ((TriggerableBlock) newLocation).enterBlockSccessfully(movementType, this);
             }
 
-
+            Location oldLocation = getLocation();
             worldGameState.getRegion(currentRegionUUID, getWorldUUID()).getEntities().remove(this);
             setLocation(newLocation);
             setCurrentRegionUUID(worldGameState.getRegionAtLocation(getLocation()).getRegionUUID());
             worldGameState.getRegion(currentRegionUUID, getWorldUUID()).getEntities().add(this);
+
+            if (worldGameState instanceof ServerWorldGameState) {
+                ((ServerWorldGameState) worldGameState).replicateMoveEntity(getUUID(), oldLocation, newLocation);
+            }
         } else {
             System.out.println("EntityBase: No Valid region at " + newLocation);
         }

@@ -19,7 +19,6 @@ public class Player {
     private final UUID playerUUID;
     private PlayerEntityBase playerEntity;
     private final ArrayList<EntityBase> controlledEntities;
-    private final EntityView entityView;
     private final ArrayList<EffectBase> effects;
 
     public Player(WorldGameState worldGameState, UUID playerUUID, PlayerEntityBase playerEntity) {
@@ -28,7 +27,6 @@ public class Player {
         this.playerEntity = playerEntity;
         this.playerEntity.setPlayer(this);
         this.controlledEntities = new ArrayList<>();
-        this.entityView = new EntityView();
         this.effects = new ArrayList<>();
     }
 
@@ -51,7 +49,6 @@ public class Player {
             // Controllable entites can be living or non living
             // Spawn Entity4summon 
         }
-        this.entityView = new EntityView();
         int totalEffects = inputBitUtility.getNextCorrectIntByte();
         this.effects = new ArrayList<>(totalEffects);
         for(int i = 0; i < totalEffects; i++) {
@@ -94,7 +91,7 @@ public class Player {
     }
 
     public EntityView getEntityView() {
-        return entityView;
+        return playerEntity.getEntityView();
     }
 
     public UUID getPlayerUUID() {
