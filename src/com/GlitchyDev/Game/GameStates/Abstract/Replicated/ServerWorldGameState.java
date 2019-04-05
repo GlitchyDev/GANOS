@@ -93,7 +93,10 @@ public abstract class ServerWorldGameState extends WorldGameState {
     }
 
 
-
+    /**
+     * Replicates all changes of perception to all players
+     * @throws IOException
+     */
     private void replicateChanges() throws IOException {
 
         for(Player player: currentPlayers.values()) {
@@ -113,18 +116,15 @@ public abstract class ServerWorldGameState extends WorldGameState {
             }
 
             for(EntityBase entity: entityRegionMovement.keySet()) {
-                UUID[] regions = entityRegionMovement.get(entity);
-                boolean containsNew = playerView.containsRegion(regions[0]);
-                boolean containsOld = playerView.containsRegion(regions[1]);
+                UUID[] newAndOldRegions = entityRegionMovement.get(entity);
 
 
-                System.out.println("Start " + playerView.getViewableRegions().size());
+                boolean containsNew = playerView.containsRegion(newAndOldRegions[0]);
+                boolean containsOld = playerView.containsRegion(newAndOldRegions[1]);
+
                 if(containsNew) {
-                    System.out.println("CLOSERRRRR");
                     if(containsOld) {
-                        System.out.println("CLOSER");
-                        if(player.getEntityView().getRegion(regions[1]).getEntities().contains(entity)) {
-                            System.out.println("Replicating Movement");
+                        if(player.getEntityView().getRegion(newAndOldRegions[1]).getEntities().contains(entity)) {
                             serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesBoth.get(entity));
                         }
                     } else {
@@ -132,9 +132,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
                     }
                 } else {
                     if(containsOld) {
-                        if(player.getEntityView().getRegion(regions[1]).getEntities().contains(entity)) {
-                            serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesOld.get(entity));
-                        }
+                        serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesOld.get(entity));
                     }
                 }
             }
@@ -152,8 +150,23 @@ public abstract class ServerWorldGameState extends WorldGameState {
                         serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(packet);
                     }
                 }
-
             }
+
+            /*
+            for(UUID regionUUID: updatedBlocks.keySet()) {
+                if(playerView.containsRegion(regionUUID)) {
+                    for(PacketBase packet: changedBlocks.get(regionUUID)) {
+
+                        // Altr
+                        serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(packet);
+                    }
+                }
+            }
+            */
+
+
+
+
         }
 
         spawnedEntities.clear();
@@ -164,9 +177,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
         movedEntitiesNew.clear();
         changedDirections.clear();
         changedBlocks.clear();
-
-
-
+        updatedBlocks.clear();
 
         // Move entities, spawn respawn and move
         // Check EACH PLAYER for requisite information
@@ -196,6 +207,21 @@ public abstract class ServerWorldGameState extends WorldGameState {
         recalculateRegionEntityList.add(getRegion(hostRegion,worldUUID));
     }
     */
+
+    /*
+    private HashMap<EntityBase,ServerSpawnEntityPacket> updateEntitySpawnPacket = new HashMap<>();
+    private HashMap<EntityBase,ServerDespawnEntityPacket> updateEntityDespawnPacket = new HashMap<>();
+    public void updateEntityVisibility(EntityBase entity) {
+        updateEntitySpawnPacket.put(entity,new ServerSpawnEntityPacket(entity));
+        updateEntityDespawnPacket.put(entity,new ServerDespawnEntityPacket(entity.getUUID(), entity.getWorldUUID()));
+    }
+    */
+
+    private HashMap<UUID,BlockBase> updatedBlocks = new HashMap<>();
+    public void updateBlockVisibility(BlockBase block) {
+        updatedBlocks.put(getRegionAtLocation(block.getLocation()).getRegionUUID(),block);
+    }
+
 
     // Spawning entities triggers an viewcheck on EVERY Player in the world, the Server View should already show an update
     private HashMap<EntityBase, ServerSpawnEntityPacket> spawnedEntities = new HashMap<>();
@@ -274,7 +300,6 @@ public abstract class ServerWorldGameState extends WorldGameState {
                     Location relativeLocation = region.getLocation().getLocationDifference(blockBase.getLocation());
                     regionCopy.setBlockRelative(relativeLocation, ((CustomVisableBlock) blockBase).getVisibleBlock(currentPlayers.get(playerUUID)));
                 }
-
             }
             serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnRegionPacket(regionCopy));
         }

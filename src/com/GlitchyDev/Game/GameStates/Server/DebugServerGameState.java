@@ -19,6 +19,7 @@ import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
+import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugEntity;
@@ -105,6 +106,8 @@ public class DebugServerGameState extends ServerWorldGameState {
                 }
             }
 
+            region1.setBlockRelative(0,0,0,new DebugCustomRenderBlock(this,region1.getLocation().getOffsetLocation(0,0,0)));
+
 
             addRegionToGame(region1);
             addRegionToGame(region2);
@@ -167,8 +170,9 @@ public class DebugServerGameState extends ServerWorldGameState {
         textItems.get(1).setText("Camera Pos: " + formatter.format(camera.getPosition().x) + "," + formatter.format(camera.getPosition().y) + "," + formatter.format(camera.getPosition().z));
         textItems.get(2).setText("Camera Rot: " + formatter.format(camera.getRotation().x) + "," + formatter.format(camera.getRotation().y) + "," + formatter.format(camera.getRotation().z));
         textItems.get(3).setText("P: " + getRegionAtLocation(testPlayer.getPlayerEntity().getLocation()).getEntities().size());
+        textItems.get(4).setText("BlockType " + getBlockAtLocation(testPlayer.getPlayerEntity().getLocation()).getBlockType());
 
-        int startServerInfo = 5;
+        int startServerInfo = 6;
         if(isRunning) {
             textItems.get(startServerInfo).setText("Connected Players");
             for(int i = startServerInfo + 1; i < textItems.size(); i++) {
@@ -419,5 +423,9 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
         outputBitUtility.close();
+    }
+
+    public Player getTestPlayer() {
+        return testPlayer;
     }
 }
