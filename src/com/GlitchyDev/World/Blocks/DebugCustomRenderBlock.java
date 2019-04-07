@@ -1,7 +1,7 @@
 package com.GlitchyDev.World.Blocks;
 
+import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
-import com.GlitchyDev.Game.GameStates.Server.DebugServerGameState;
 import com.GlitchyDev.Game.Player.Player;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
@@ -12,13 +12,14 @@ import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisableBlock;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
 import java.util.Objects;
 
-public class DebugCustomRenderBlock extends BlockBase implements CustomRenderBlock, CustomVisableBlock {
+public class DebugCustomRenderBlock extends BlockBase implements CustomRenderBlock, CustomVisableBlock, TickableBlock {
     private final GameItem mesh;
     private final AirBlock replacementBlock;
 
@@ -58,13 +59,21 @@ public class DebugCustomRenderBlock extends BlockBase implements CustomRenderBlo
 
     @Override
     public BlockBase getVisibleBlock(Player player) {
-        System.out.println("AAAAAAAAH " + (((DebugServerGameState)worldGameState).getTestPlayer() == player));
-        return ((DebugServerGameState)worldGameState).getTestPlayer() == player ? this : replacementBlock;
+        return Math.random() > 0.5 ? this : replacementBlock;
     }
 
     @Override
     public void setLocation(Location location) {
         super.setLocation(location);
         replacementBlock.setLocation(location);
+    }
+
+    int tickCount = 0;
+    @Override
+    public void tick() {
+        if(tickCount % 120 == 0) {
+            ((ServerWorldGameState)worldGameState).updateBlockVisibility(this);
+        }
+        tickCount++;
     }
 }

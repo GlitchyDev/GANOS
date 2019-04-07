@@ -18,6 +18,7 @@ import com.GlitchyDev.Utility.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisableBlock;
 import com.GlitchyDev.World.Direction;
+import com.GlitchyDev.World.Entities.AbstractEntities.CustomVisibleEntity;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
@@ -110,7 +111,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
             }
 
             for(EntityBase entity: spawnedEntities.keySet()) {
-                if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().contains(entity)) {
+                if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && !player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().contains(entity)) {
                     serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(spawnedEntities.get(entity));
                 }
             }
@@ -124,7 +125,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
                 if(containsNew) {
                     if(containsOld) {
-                        if(player.getEntityView().getRegion(newAndOldRegions[1]).getEntities().contains(entity)) {
+                        if (!(entity instanceof CustomVisibleEntity) || entity instanceof CustomVisibleEntity && ((CustomVisibleEntity) entity).doSeeEntity(player)) {
                             serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesBoth.get(entity));
                         }
                     } else {
@@ -152,17 +153,41 @@ public abstract class ServerWorldGameState extends WorldGameState {
                 }
             }
 
-            /*
-            for(UUID regionUUID: updatedBlocks.keySet()) {
-                if(playerView.containsRegion(regionUUID)) {
-                    for(PacketBase packet: changedBlocks.get(regionUUID)) {
 
-                        // Altr
-                        serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(packet);
+            for(BlockBase block: updatedBlockVisibility) {
+                UUID regionUUID = getRegionAtLocation(block.getLocation()).getRegionUUID();
+                if(playerView.containsRegion(regionUUID)) {
+                    if(block instanceof CustomVisableBlock) {
+                        BlockBase viewedBlock = ((CustomVisableBlock) block).getVisibleBlock(player);
+                        Location regionLocation = player.getEntityView().getRegion(regionUUID).getLocation();
+                        Location blockRelative = regionLocation.getLocationDifference(block.getLocation());
+                        if(!player.getEntityView().getRegion(regionUUID).getBlockRelative(blockRelative).equals(viewedBlock)) {
+                            serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerChangeBlockPacket(viewedBlock));
+                            player.getEntityView().getRegion(regionUUID).setBlockRelative(blockRelative,viewedBlock);
+                        }
                     }
                 }
             }
-            */
+
+            for(EntityBase entity: updatedEntityVisibility) {
+                UUID regionUUID = entity.getCurrentRegionUUID();
+                if(playerView.containsRegion(regionUUID)) {
+                    if(entity instanceof CustomVisibleEntity) {
+                        boolean entityCurrentlyInView = playerView.getRegion(regionUUID).getEntities().contains(entity);
+                        boolean isCurrentlyVisible = ((CustomVisibleEntity) entity).doSeeEntity(player);
+
+                        System.out.println("Entity Currently in view " + entityCurrentlyInView + " is currently visible " + isCurrentlyVisible + " Size " + playerView.getRegion(regionUUID).getEntities());
+                        if(entityCurrentlyInView != isCurrentlyVisible) {
+                            if(isCurrentlyVisible) {
+                                serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerSpawnEntityPacket(entity));
+                            } else {
+                                serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerDespawnEntityPacket(entity.getUUID(),entity.getWorldUUID()));
+                            }
+                        }
+                    }
+                }
+            }
+
 
 
 
@@ -177,7 +202,8 @@ public abstract class ServerWorldGameState extends WorldGameState {
         movedEntitiesNew.clear();
         changedDirections.clear();
         changedBlocks.clear();
-        updatedBlocks.clear();
+        updatedBlockVisibility.clear();
+        updatedEntityVisibility.clear();
 
         // Move entities, spawn respawn and move
         // Check EACH PLAYER for requisite information
@@ -208,18 +234,17 @@ public abstract class ServerWorldGameState extends WorldGameState {
     }
     */
 
-    /*
-    private HashMap<EntityBase,ServerSpawnEntityPacket> updateEntitySpawnPacket = new HashMap<>();
-    private HashMap<EntityBase,ServerDespawnEntityPacket> updateEntityDespawnPacket = new HashMap<>();
-    public void updateEntityVisibility(EntityBase entity) {
-        updateEntitySpawnPacket.put(entity,new ServerSpawnEntityPacket(entity));
-        updateEntityDespawnPacket.put(entity,new ServerDespawnEntityPacket(entity.getUUID(), entity.getWorldUUID()));
-    }
-    */
-
-    private HashMap<UUID,BlockBase> updatedBlocks = new HashMap<>();
+    private ArrayList<BlockBase> updatedBlockVisibility = new ArrayList<>();
     public void updateBlockVisibility(BlockBase block) {
-        updatedBlocks.put(getRegionAtLocation(block.getLocation()).getRegionUUID(),block);
+        updatedBlockVisibility.add(block);
+    }
+
+    /**
+     * Must be done after movement, or will potentially trigger along the wrong region lines+
+     */
+    private ArrayList<EntityBase> updatedEntityVisibility = new ArrayList<>();
+    public void updateEntityVisbility(EntityBase entity) {
+        updatedEntityVisibility.add(entity);
     }
 
 
@@ -292,7 +317,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
     }
 
     // Check to make sure the correct "Region" is sent, visibility and all
-    public void playerAddRegionToView(UUID playerUUID, Region region) throws IOException {
+    public void playerAddRegionToView(UUID playerUUID, Region region, EntityView entityView) throws IOException {
         if(currentPlayers.containsKey(playerUUID)) {
             Region regionCopy = region.createCopy();
             for (BlockBase blockBase : region.getBlocksArray()) {
@@ -301,7 +326,19 @@ public abstract class ServerWorldGameState extends WorldGameState {
                     regionCopy.setBlockRelative(relativeLocation, ((CustomVisableBlock) blockBase).getVisibleBlock(currentPlayers.get(playerUUID)));
                 }
             }
+
+            for(EntityBase entity: region.getEntities()) {
+                if(entity instanceof CustomVisibleEntity) {
+                    if(((CustomVisibleEntity) entity).doSeeEntity(currentPlayers.get(playerUUID))) {
+                        regionCopy.getEntities().remove(entity);
+                    }
+                }
+            }
             serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnRegionPacket(regionCopy));
+            if(serverNetworkManager.getUsersGameSocket(playerUUID) != null) {
+                entityView.getViewableRegions().remove(region);
+                entityView.getViewableRegions().add(regionCopy);
+            }
         }
     }
 

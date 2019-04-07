@@ -147,6 +147,8 @@ public abstract class WorldGameState extends EnvironmentGameState {
     // Replicate Functions
 
     public void spawnEntity(EntityBase entity, SpawnReason spawnReason) {
+        entity.onSpawn(spawnReason);
+
         World world = getWorld(entity.getLocation().getWorldUUID());
 
         Location regionLocation = getRegion(entity.getCurrentRegionUUID(),entity.getWorldUUID()).getLocation();
@@ -154,7 +156,6 @@ public abstract class WorldGameState extends EnvironmentGameState {
 
         world.getRegionAtLocation(entity.getLocation()).getEntities().add(entity);
         world.getEntities().put(entity.getUUID(),entity);
-        entity.onSpawn(spawnReason);
 
     }
 

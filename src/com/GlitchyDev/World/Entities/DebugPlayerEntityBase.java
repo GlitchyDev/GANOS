@@ -20,31 +20,27 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class DebugPlayerEntityBase extends PlayerEntityBase {
-    private final GameItem gameItem;
+    private GameItem gameItem;
 
     public DebugPlayerEntityBase(WorldGameState worldGameState, UUID currentRegionUUID, Location location, Direction direction) {
         super(worldGameState, currentRegionUUID, EntityType.DEBUG_PLAYER, location, direction);
-        this.gameItem = new GameItem(AssetLoader.getMeshAsset("cube").clone());
-        gameItem.getMesh().setTexture(AssetLoader.getTextureAsset("DefaultTexture"));
-        gameItem.setPosition(getLocation().getNormalizedPosition());
+
     }
 
     public DebugPlayerEntityBase(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility) throws IOException {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, EntityType.DEBUG_PLAYER);
-        this.gameItem = new GameItem(AssetLoader.getMeshAsset("cube").clone());
-        gameItem.getMesh().setTexture(AssetLoader.getTextureAsset("DefaultTexture"));
-        gameItem.setPosition(getLocation().getNormalizedPosition());
+ 
     }
 
     public DebugPlayerEntityBase(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility) throws IOException {
         super(worldGameState, worldUUID, region, inputBitUtility, EntityType.DEBUG_PLAYER);
-        this.gameItem = new GameItem(AssetLoader.getMeshAsset("cube").clone());
-        gameItem.getMesh().setTexture(AssetLoader.getTextureAsset("DefaultTexture"));
-        gameItem.setPosition(getLocation().getNormalizedPosition());
+
     }
 
     @Override
     public void onSpawn(SpawnReason spawnReason) {
+        this.gameItem = new GameItem(AssetLoader.getMeshAsset("cube").clone());
+        gameItem.getMesh().setTexture(AssetLoader.getTextureAsset("DefaultTexture"));
         gameItem.setPosition(getLocation().getNormalizedPosition());
     }
 

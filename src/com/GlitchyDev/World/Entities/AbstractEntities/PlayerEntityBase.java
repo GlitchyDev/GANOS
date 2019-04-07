@@ -121,7 +121,7 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
 
             for(Region addedRegion: newlyConnected) {
                 try {
-                    ((ServerWorldGameState) worldGameState).playerAddRegionToView(getPlayer().getPlayerUUID(),addedRegion);
+                    ((ServerWorldGameState) worldGameState).playerAddRegionToView(getPlayer().getPlayerUUID(),addedRegion,player.getEntityView());
                     System.out.println("Adding Region " + addedRegion.getRegionUUID());
                 } catch (IOException e) {
                     e.printStackTrace();
