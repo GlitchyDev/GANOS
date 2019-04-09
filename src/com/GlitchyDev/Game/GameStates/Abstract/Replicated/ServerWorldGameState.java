@@ -176,12 +176,13 @@ public abstract class ServerWorldGameState extends WorldGameState {
                         boolean entityCurrentlyInView = playerView.getRegion(regionUUID).getEntities().contains(entity);
                         boolean isCurrentlyVisible = ((CustomVisibleEntity) entity).doSeeEntity(player);
 
-                        System.out.println("Entity Currently in view " + entityCurrentlyInView + " is currently visible " + isCurrentlyVisible + " Size " + playerView.getRegion(regionUUID).getEntities());
                         if(entityCurrentlyInView != isCurrentlyVisible) {
                             if(isCurrentlyVisible) {
                                 serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerSpawnEntityPacket(entity));
+                                playerView.getRegion(regionUUID).getEntities().add(entity);
                             } else {
                                 serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerDespawnEntityPacket(entity.getUUID(),entity.getWorldUUID()));
+                                playerView.getRegion(regionUUID).getEntities().remove(entity);
                             }
                         }
                     }
@@ -329,7 +330,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
             for(EntityBase entity: region.getEntities()) {
                 if(entity instanceof CustomVisibleEntity) {
-                    if(((CustomVisibleEntity) entity).doSeeEntity(currentPlayers.get(playerUUID))) {
+                    if(!((CustomVisibleEntity) entity).doSeeEntity(currentPlayers.get(playerUUID))) {
                         regionCopy.getEntities().remove(entity);
                     }
                 }

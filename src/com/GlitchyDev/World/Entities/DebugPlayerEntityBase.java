@@ -29,7 +29,7 @@ public class DebugPlayerEntityBase extends PlayerEntityBase {
 
     public DebugPlayerEntityBase(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility) throws IOException {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, EntityType.DEBUG_PLAYER);
- 
+
     }
 
     public DebugPlayerEntityBase(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility) throws IOException {

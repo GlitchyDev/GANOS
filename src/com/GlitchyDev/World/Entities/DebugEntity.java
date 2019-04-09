@@ -75,7 +75,7 @@ public class DebugEntity extends EntityBase implements CustomVisibleEntity {
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof DebugEntity) {
-            if(((DebugEntity) obj).getUUID() == getWorldUUID()) {
+            if(((DebugEntity) obj).getUUID() == getUUID()) {
                 return true;
             }
         }
@@ -91,6 +91,6 @@ public class DebugEntity extends EntityBase implements CustomVisibleEntity {
 
     @Override
     public boolean doSeeEntity(Player player) {
-        return Math.random() > 0.5;
+        return Math.random() < 0.5;
     }
 }
