@@ -7,6 +7,7 @@ public enum RegionConnectionType {
 
 
     ;
+
     private final boolean isVisibleByDefault;
     RegionConnectionType(boolean isVisibleByDefault) {
         this.isVisibleByDefault = isVisibleByDefault;

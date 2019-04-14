@@ -1,7 +1,6 @@
 package com.GlitchyDev.Game.Player;
 
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
-import com.GlitchyDev.World.Entities.Effects.Abstract.EffectBase;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
@@ -19,7 +18,6 @@ public class Player {
     private final UUID playerUUID;
     private PlayerEntityBase playerEntity;
     private final ArrayList<EntityBase> controlledEntities;
-    private final ArrayList<EffectBase> effects;
 
     public Player(WorldGameState worldGameState, UUID playerUUID, PlayerEntityBase playerEntity) {
         this.worldGameState = worldGameState;
@@ -27,7 +25,6 @@ public class Player {
         this.playerEntity = playerEntity;
         this.playerEntity.setPlayer(this);
         this.controlledEntities = new ArrayList<>();
-        this.effects = new ArrayList<>();
     }
 
     public Player(WorldGameState worldGameState, InputBitUtility inputBitUtility) throws IOException {
@@ -45,14 +42,8 @@ public class Player {
         int totalControlledEntities = inputBitUtility.getNextCorrectIntByte();
         this.controlledEntities = new ArrayList<>(totalControlledEntities);
         for(int i = 0; i < totalControlledEntities; i++) {
-            // Grab and add ControlledEntities to list
-            // Controllable entites can be living or non living
-            // Spawn Entity4summon 
-        }
-        int totalEffects = inputBitUtility.getNextCorrectIntByte();
-        this.effects = new ArrayList<>(totalEffects);
-        for(int i = 0; i < totalEffects; i++) {
-            // Grab and add Effects to list
+            EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
+            controlledEntities.add(entityType.getEntityFromInput(inputBitUtility,worldGameState, worldUUID, regionUUID));
         }
     }
 
@@ -65,13 +56,7 @@ public class Player {
 
         outputBitUtility.writeNextCorrectByteInt(controlledEntities.size());
         for(int i = 0; i < controlledEntities.size(); i++) {
-            // Grab and add ControlledEntities to list
-            // Controllable entites can be living or non living
-        }
-
-        outputBitUtility.writeNextCorrectByteInt(effects.size());
-        for(int i = 0; i < effects.size(); i++) {
-            // Grab and add Effects to list
+            controlledEntities.get(i).writeData(outputBitUtility);
         }
     }
 
@@ -96,10 +81,6 @@ public class Player {
 
     public UUID getPlayerUUID() {
         return playerUUID;
-    }
-
-    public ArrayList<EffectBase> getEffects() {
-        return effects;
     }
 
     @Override

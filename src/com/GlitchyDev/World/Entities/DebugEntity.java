@@ -52,7 +52,7 @@ public class DebugEntity extends EntityBase implements CustomVisibleEntity {
     @Override
     public void tick() {
         if(tickCount % 120 == 0) {
-            ((ServerWorldGameState)worldGameState).updateEntityVisbility(this);
+            ((ServerWorldGameState)worldGameState).updateEntityViability(this);
         }
         tickCount++;
     }

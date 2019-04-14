@@ -69,30 +69,26 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
             ArrayList<RegionConnectionType> seeableConnectionTypes = new ArrayList<>();
             for(RegionConnectionType regionConnection: connections.get(getCurrentRegionUUID()).keySet()) {
                 if(regionConnection.isVisibleByDefault()) {
-                    boolean hideRegion = false;
+                    boolean hidden = false;
                     for(EffectBase effect: getEffects()) {
                         if(effect instanceof RegionHidingEffect) {
                             if(((RegionHidingEffect) effect).doHideRegionConnection(regionConnection)) {
-                               hideRegion = true;
-                            }
-                        }
-                    }
-                    if(!hideRegion) {
-                        seeableConnectionTypes.add(regionConnection);
-                    }
-
-                } else {
-                    boolean showRegion = false;
-                    for(EffectBase effect: getEffects()) {
-                        if(effect instanceof RegionRevealingEffect) {
-                            if(((RegionRevealingEffect) effect).doShowRegionConnection(regionConnection)) {
-                                showRegion = true;
+                                hidden = true;
                                 break;
                             }
                         }
                     }
-                    if(showRegion) {
+                    if(!hidden) {
                         seeableConnectionTypes.add(regionConnection);
+                    }
+                } else {
+                    for(EffectBase effect: getEffects()) {
+                        if(effect instanceof RegionRevealingEffect) {
+                            if(((RegionRevealingEffect) effect).doShowRegionConnection(regionConnection)) {
+                                seeableConnectionTypes.add(regionConnection);
+                                break;
+                            }
+                        }
                     }
                 }
             }

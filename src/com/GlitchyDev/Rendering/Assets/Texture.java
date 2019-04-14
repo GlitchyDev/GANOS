@@ -86,17 +86,15 @@ public class Texture {
         this.id = renderBuffer.getTextureID();
     }
 
-    public Texture(int id, int width, int height) {
-        this.id = id;
-        this.width = width;
-        this.height = height;
-    }
+
 
     public Texture(Texture texture) {
         this.id = texture.getId();
         this.width = texture.getWidth();
         this.height = texture.getHeight();
     }
+
+
 
 
 

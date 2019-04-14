@@ -24,6 +24,7 @@ import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugEntity;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
+import com.GlitchyDev.World.Entities.Effects.ServerDebugEffect;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
@@ -81,6 +82,7 @@ public class DebugServerGameState extends ServerWorldGameState {
             Region region1 = new Region(this,spawnWorld,10,10,10,new Location(0,0,0,spawnWorld));
             Region region2 = new Region(this,spawnWorld,10,10,10,new Location(10,0,0,spawnWorld));
             Region region3 = new Region(this,spawnWorld,10,10,10,new Location(10, 0,10,spawnWorld));
+            Region region4 = new Region(this,spawnWorld,10,10,10,new Location(10, 0,-10,spawnWorld));
 
 
             System.out.println("-------------------");
@@ -105,6 +107,13 @@ public class DebugServerGameState extends ServerWorldGameState {
                     region3.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
                 }
             }
+            for(int x = 0; x < region4.getWidth(); x++) {
+                for(int z = 0; z < region4.getLength(); z++) {
+                    BlockBase block = region4.getBlockRelative(x,0,z);
+                    Location relativeLocation = region4.getLocation().getLocationDifference(block.getLocation());
+                    region4.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
+                }
+            }
 
             region1.setBlockRelative(0,0,0,new DebugCustomRenderBlock(this,region1.getLocation().getOffsetLocation(0,0,0)));
 
@@ -112,11 +121,18 @@ public class DebugServerGameState extends ServerWorldGameState {
             addRegionToGame(region1);
             addRegionToGame(region2);
             addRegionToGame(region3);
+            addRegionToGame(region4);
             world.linkRegion(region1.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
+
             world.linkRegion(region2.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
-            world.linkRegion(region2.getRegionUUID(),region3.getRegionUUID(), RegionConnectionType.NORMAL);
+            world.linkRegion(region2.getRegionUUID(),region3.getRegionUUID(), RegionConnectionType.VISIBLE_DEBUG_1);
+            world.linkRegion(region2.getRegionUUID(),region4.getRegionUUID(), RegionConnectionType.HIDDEN_DEBUG_1);
+
             world.linkRegion(region3.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
             world.linkRegion(region3.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
+
+            world.linkRegion(region4.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
+            world.linkRegion(region4.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
 
 
             DebugEntity debugEntity = new DebugEntity(this,getRegionAtLocation(new Location(5,1,0,spawnWorld)).getRegionUUID(), new Location(5,1,0,spawnWorld), Direction.NORTH);
@@ -143,6 +159,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         this.testPlayer = new Player(this,UUID.randomUUID(),playerEntity);
         spawnEntity(playerEntity, SpawnReason.DEBUG);
         playerEntity.recalculateView();
+        playerEntity.getEffects().add(new ServerDebugEffect(this,playerEntity));
 
         camera = new Camera();
         camera.setPosition(-8.5f, 10f, -6f);

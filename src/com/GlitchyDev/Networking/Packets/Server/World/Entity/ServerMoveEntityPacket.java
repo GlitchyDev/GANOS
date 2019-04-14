@@ -34,7 +34,11 @@ public class ServerMoveEntityPacket extends WorldStateModifyingPackets {
     public void executeModification(WorldGameState worldGameState) {
         EntityBase entity = worldGameState.getEntity(entityUUID,worldUUID);
         System.out.println("Moving " + entity + " " + newLocation);
-        entity.setLocation(newLocation);
+        if(entity == null) {
+            System.out.println("ERROR: NONEXISTANT ENTITY MOVED");
+        } else {
+            entity.setLocation(newLocation);
+        }
     }
 
     @Override

@@ -99,13 +99,13 @@ public abstract class ServerWorldGameState extends WorldGameState {
      * @throws IOException
      */
     private void replicateChanges() throws IOException {
-
         for(Player player: currentPlayers.values()) {
             EntityView playerView = player.getEntityView();
 
 
             for(EntityBase entity: despawnedEntities.keySet()) {
                 if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().contains(entity)) {
+                    player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().remove(entity);
                     serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(despawnedEntities.get(entity));
                 }
             }
@@ -113,35 +113,6 @@ public abstract class ServerWorldGameState extends WorldGameState {
             for(EntityBase entity: spawnedEntities.keySet()) {
                 if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && !player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().contains(entity)) {
                     serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(spawnedEntities.get(entity));
-                }
-            }
-
-            for(EntityBase entity: entityRegionMovement.keySet()) {
-                UUID[] newAndOldRegions = entityRegionMovement.get(entity);
-
-
-                boolean containsNew = playerView.containsRegion(newAndOldRegions[0]);
-                boolean containsOld = playerView.containsRegion(newAndOldRegions[1]);
-
-                if(containsNew) {
-                    if(containsOld) {
-                        if (!(entity instanceof CustomVisibleEntity) || entity instanceof CustomVisibleEntity && ((CustomVisibleEntity) entity).doSeeEntity(player)) {
-                            serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesBoth.get(entity));
-                        }
-                    } else {
-                        serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesNew.get(entity));
-                    }
-                } else {
-                    if(containsOld) {
-                        serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesOld.get(entity));
-                    }
-                }
-            }
-
-
-            for(EntityBase entity: changedDirections.keySet()) {
-                if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().contains(entity)) {
-                    serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(changedDirections.get(entity));
                 }
             }
 
@@ -189,6 +160,37 @@ public abstract class ServerWorldGameState extends WorldGameState {
                 }
             }
 
+            for(EntityBase entity: entityRegionMovement.keySet()) {
+                UUID[] newAndOldRegions = entityRegionMovement.get(entity);
+                boolean containsNew = playerView.containsRegion(newAndOldRegions[0]);
+                boolean containsOld = playerView.containsRegion(newAndOldRegions[1]);
+
+                System.out.println("This players view, new " + containsNew + " old " + containsOld + " and in view ");
+                if(containsNew) {
+                    if(containsOld) {
+                        if (!(entity instanceof CustomVisibleEntity) ||  ((CustomVisibleEntity) entity).doSeeEntity(player)) {
+                            serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesBoth.get(entity));
+                        }
+                    } else {
+                        if (!(entity instanceof CustomVisibleEntity) || ((CustomVisibleEntity) entity).doSeeEntity(player)) {
+                            serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesNew.get(entity));
+                        }
+                    }
+                } else {
+                    if(containsOld) {
+                        if (!(entity instanceof CustomVisibleEntity) || ((CustomVisibleEntity) entity).doSeeEntity(player)) {
+                            serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesOld.get(entity));
+                        }
+                    }
+                }
+            }
+
+
+            for(EntityBase entity: changedDirections.keySet()) {
+                if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().contains(entity)) {
+                    serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(changedDirections.get(entity));
+                }
+            }
 
 
 
@@ -244,7 +246,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
      * Must be done after movement, or will potentially trigger along the wrong region lines+
      */
     private ArrayList<EntityBase> updatedEntityVisibility = new ArrayList<>();
-    public void updateEntityVisbility(EntityBase entity) {
+    public void updateEntityViability(EntityBase entity) {
         updatedEntityVisibility.add(entity);
     }
 
