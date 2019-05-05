@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.glViewport;
 
 public class DebugServerGameState extends ServerWorldGameState {
     private final ArrayList<TextItem> textItems;
@@ -51,6 +52,7 @@ public class DebugServerGameState extends ServerWorldGameState {
     private GameController controller;
 
     private final UUID spawnWorld;
+
 
     public DebugServerGameState(GlobalGameData globalGameDataBase) {
         super(globalGameDataBase, GameStateType.DEBUG_SERVER, 5000);
@@ -166,6 +168,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         camera.setRotation(5f, 122f, -0f);
         controller = new XBox360Controller(0);
 
+        globalGameDataBase.getGameWindow().setDimensions(1500,750);
 
 
 
@@ -289,20 +292,32 @@ public class DebugServerGameState extends ServerWorldGameState {
 
     @Override
     public void render() {
-        renderer.prepRender(globalGameData.getGameWindow());
+        renderer.prepWindowRender(globalGameData.getGameWindow());
+        renderer.setRenderSpace(0,0,750,750);
         for(Region region: testPlayer.getPlayerEntity().getEntityView().getViewableRegions()) {
             for(BlockBase block: region.getBlocksArray()) {
                 if(block instanceof CustomRenderBlock) {
-                    ((CustomRenderBlock) block).render(renderer,globalGameData.getGameWindow(),camera,testPlayer);
+                    ((CustomRenderBlock) block).render(renderer,camera,testPlayer);
                 }
             }
             for(EntityBase entity: region.getEntities()) {
-                entity.render(renderer,globalGameData.getGameWindow(),camera);
+                entity.render(renderer,camera);
             }
         }
-        renderer.renderHUD(globalGameData.getGameWindow(),"Default2D",textItems);
+        renderer.renderHUD(textItems, "Default2D");
 
-
+        glViewport (750, 0, 750, 750);
+        for(Region region: testPlayer.getPlayerEntity().getEntityView().getViewableRegions()) {
+            for(BlockBase block: region.getBlocksArray()) {
+                if(block instanceof CustomRenderBlock) {
+                    ((CustomRenderBlock) block).render(renderer,camera,testPlayer);
+                }
+            }
+            for(EntityBase entity: region.getEntities()) {
+                entity.render(renderer,camera);
+            }
+        }
+        renderer.renderHUD(textItems, "Default2D");
 
     }
 

@@ -1,4 +1,4 @@
-package com.GlitchyDev.Rendering.Assets;
+package com.GlitchyDev.Rendering.Assets.Texture;
 
 import org.lwjgl.opengl.GL14;
 
@@ -16,8 +16,7 @@ public class RenderBuffer {
     private final int width;
     private final int height;
 
-    public RenderBuffer(int width, int height)
-    {
+    public RenderBuffer(int width, int height) {
         this.width = width;
         this.height = height;
         framebufferID = glGenFramebuffersEXT();                                         // create a new framebuffer
@@ -41,18 +40,13 @@ public class RenderBuffer {
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
     }
 
-    public void bindToRender()
-    {
-
+    public void bindToRender() {
         glViewport (0, 0, width, height);                                    // set The Current Viewport to the fbo size
         glBindTexture(GL_TEXTURE_2D, 0);                                // unlink textures because if we dont it all is gonna fail
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, framebufferID);        // switch to rendering on our FBO
-
-
     }
 
-    public void unbindToRender(int width, int height)
-    {
+    public void unbindToRender(int width, int height) {
         glViewport (0, 0, width, height);
         glEnable(GL_TEXTURE_2D);
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);

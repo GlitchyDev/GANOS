@@ -1,4 +1,4 @@
-package com.GlitchyDev.Rendering.Assets;
+package com.GlitchyDev.Rendering.Assets.Texture;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;

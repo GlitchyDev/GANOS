@@ -292,11 +292,9 @@ public class GameWindow {
         return height;
     }
 
-    public boolean isResized() {
-        return resized;
-    }
+    public boolean hasBeenResized() { return resized; }
 
-    public void setResized(boolean resized) {
+    public void setIfResized(boolean resized) {
         this.resized = resized;
     }
 
@@ -306,5 +304,13 @@ public class GameWindow {
 
     public int getTargetFPS() {
         return targetFPS;
+    }
+
+    public void setDimensions(int width, int height) {
+        glfwSetWindowSize(windowHandle,width,height);
+        glViewport(0, 0, width, height);
+        this.width = width;
+        this.height = height;
+
     }
 }

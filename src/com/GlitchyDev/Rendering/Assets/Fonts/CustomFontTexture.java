@@ -1,6 +1,6 @@
 package com.GlitchyDev.Rendering.Assets.Fonts;
 
-import com.GlitchyDev.Rendering.Assets.Texture;
+import com.GlitchyDev.Rendering.Assets.Texture.Texture;
 import com.GlitchyDev.Utility.AssetLoader;
 
 

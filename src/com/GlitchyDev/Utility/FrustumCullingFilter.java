@@ -1,4 +1,4 @@
-package com.GlitchyDev.Rendering;
+package com.GlitchyDev.Utility;
 
 import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;

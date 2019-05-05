@@ -1,4 +1,4 @@
-package com.GlitchyDev.Rendering.Assets;
+package com.GlitchyDev.Utility;
 
 import org.lwjgl.BufferUtils;
 

@@ -1,8 +1,8 @@
 package com.GlitchyDev.Rendering.Assets.WorldElements;
 
-import com.GlitchyDev.Rendering.Assets.Mesh;
-import com.GlitchyDev.Rendering.Assets.Texture;
-import com.GlitchyDev.Rendering.Assets.Utils;
+import com.GlitchyDev.Rendering.Assets.Mesh.Mesh;
+import com.GlitchyDev.Rendering.Assets.Texture.Texture;
+import com.GlitchyDev.Utility.Utils;
 
 import java.util.ArrayList;
 
@@ -21,6 +21,7 @@ public class SpriteItem extends GameItem {
         super(null);
         setMesh(buildMesh(spriteTexture, width, height, loadedTexture));
     }
+
 
     public SpriteItem(Texture spriteTexture, int width, int height, boolean loadedTexture, boolean centered) {
         super(null);
@@ -261,6 +262,10 @@ public class SpriteItem extends GameItem {
             e.printStackTrace();
         }
         return mesh;
+    }
+
+    public void cleanup() {
+        getMesh().cleanUp();
     }
 
 

@@ -4,6 +4,7 @@ package com.GlitchyDev.Rendering;
 import com.GlitchyDev.Rendering.Assets.Shaders.ShaderProgram;
 import com.GlitchyDev.Rendering.Assets.WorldElements.*;
 import com.GlitchyDev.Utility.AssetLoader;
+import com.GlitchyDev.Utility.FrustumCullingFilter;
 import com.GlitchyDev.Utility.GameWindow;
 import com.GlitchyDev.World.Region.Region;
 import org.joml.Matrix4f;
@@ -23,6 +24,8 @@ public class Renderer {
     private static final float Z_FAR = 1000.f;
     private final Transformation transformation = new Transformation();
     private String previousShader = "";
+    private int renderWidth;
+    private int renderHeight;
 
     // All the currently Loaded Shaders
     private HashMap<String,ShaderProgram> loadedShaders = new HashMap<>();
@@ -44,12 +47,11 @@ public class Renderer {
      * Use when switching between different Rendering Locations and at the beginning of each frame
      * @param window
      */
-    public void prepRender(GameWindow window)
-    {
+    public void prepWindowRender(GameWindow window) {
         clear();
-        if ( window.isResized() ) {
-            glViewport(0, 0, window.getWidth(), window.getHeight());
-            window.setResized(false);
+        if ( window.hasBeenResized() ) {
+            setRenderSpace(0,0,window.getWidth(), window.getHeight());
+            window.setIfResized(false);
         }
     }
 
@@ -60,20 +62,26 @@ public class Renderer {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
+    public void setRenderSpace( int x, int y, int width, int height) {
+        glViewport(x, y, width, height);
+        renderWidth = width;
+        renderHeight = height;
+    }
 
 
 
 
 
 
-    public void render3DElements(GameWindow window, String shaderName, Camera camera, List<GameItem> gameItems) {
+
+    public void render3DElements(Camera camera, List<GameItem> gameItems, String shaderName) {
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
             shader.bind();
         }
 
         // Update projection Matrix
-        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, renderWidth, renderWidth, Z_NEAR, Z_FAR);
         shader.setUniform("projectionMatrix", projectionMatrix);
 
         // Update view Matrix
@@ -90,14 +98,14 @@ public class Renderer {
         //shader.unbind();
     }
 
-    public void render3DElement(GameWindow window, String shaderName, Camera camera, GameItem gameItem) {
+    public void render3DElement(Camera camera, GameItem gameItem, String shaderName) {
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
             shader.bind();
         }
 
         // Update projection Matrix
-        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, renderWidth, renderWidth, Z_NEAR, Z_FAR);
         shader.setUniform("projectionMatrix", projectionMatrix);
 
         // Update view Matrix
@@ -185,14 +193,14 @@ public class Renderer {
     */
 
 
-    public void renderHUD(GameWindow window, String shaderName, List<TextItem> hudItems)
+    public void renderHUD(List<TextItem> hudItems, String shaderName)
     {
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
             shader.bind();
         }
 
-        Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, window.getWidth(), window.getHeight(), 0);
+        Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, renderWidth, renderHeight, 0);
 
         shader.setUniform("texture_sampler", 0);
 
@@ -210,13 +218,13 @@ public class Renderer {
 
 
 
-    public void render2DSprites(GameWindow window, String shaderName, List<SpriteItem> spriteItems) {
+    public void render2DSprites(List<SpriteItem> spriteItems, String shaderName) {
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
             shader.bind();
         }
 
-        Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, window.getWidth(), window.getHeight(), 0);
+        Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, renderWidth, renderHeight, 0);
 
         shader.setUniform("texture_sampler", 0);
         for (GameItem gameItem : spriteItems) {
@@ -229,14 +237,13 @@ public class Renderer {
         shader.unbind();
     }
 
-    public void render2DSprite(GameWindow window, String shaderName, SpriteItem spriteItem)
-    {
+    public void render2DSprite(SpriteItem spriteItem, String shaderName) {
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
             shader.bind();
         }
 
-        Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, window.getWidth(), window.getHeight(), 0);
+        Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, renderWidth, renderHeight, 0);
 
         shader.setUniform("texture_sampler", 0);
 

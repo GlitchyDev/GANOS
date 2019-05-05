@@ -1,4 +1,4 @@
-package com.GlitchyDev.Rendering.Assets;
+package com.GlitchyDev.Rendering.Assets.Texture;
 
 public class InstancedGridTexture extends Texture {
     private final int texWidth;

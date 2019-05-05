@@ -1,11 +1,10 @@
 package com.GlitchyDev.Utility;
 
-import com.GlitchyDev.Rendering.Assets.InstancedGridTexture;
-import com.GlitchyDev.Rendering.Assets.Mesh;
+import com.GlitchyDev.Rendering.Assets.Mesh.Mesh;
 import com.GlitchyDev.Rendering.Assets.Sounds.SoundBuffer;
 import com.GlitchyDev.Rendering.Assets.Sounds.SoundManager;
-import com.GlitchyDev.Rendering.Assets.Texture;
-import com.GlitchyDev.Rendering.Assets.Utils;
+import com.GlitchyDev.Rendering.Assets.Texture.InstancedGridTexture;
+import com.GlitchyDev.Rendering.Assets.Texture.Texture;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -22,7 +21,7 @@ public class AssetLoader {
     private static SoundManager soundManager = new SoundManager();
     private static HashMap<String,String> allAssets = new HashMap<>();
     private static HashMap<String,Texture> textureAssets = new HashMap<>();
-    private static HashMap<String,InstancedGridTexture> instancedGridTextures = new HashMap<>();
+    private static HashMap<String, InstancedGridTexture> instancedGridTextures = new HashMap<>();
     private static HashMap<String,SoundBuffer> soundAssets = new HashMap<>();
     private static HashMap<String,Mesh> meshAssets = new HashMap<>();
     private static HashMap<String,String> vertexShaderAssets = new HashMap<>();

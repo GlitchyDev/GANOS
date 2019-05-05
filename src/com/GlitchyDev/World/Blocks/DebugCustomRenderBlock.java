@@ -7,7 +7,6 @@ import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
 import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.AssetLoader;
-import com.GlitchyDev.Utility.GameWindow;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
@@ -53,8 +52,8 @@ public class DebugCustomRenderBlock extends BlockBase implements CustomRenderBlo
     }
 
     @Override
-    public void render(Renderer renderer, GameWindow gameWindow, Camera camera, Player player) {
-        renderer.render3DElement(gameWindow,"Default3D", camera, mesh);
+    public void render(Renderer renderer, Camera camera, Player player) {
+        renderer.render3DElement(camera, mesh, "Default3D");
     }
 
     @Override

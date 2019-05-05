@@ -1,5 +1,6 @@
-package com.GlitchyDev.Rendering.Assets;
+package com.GlitchyDev.Rendering.Assets.Mesh;
 
+import com.GlitchyDev.Rendering.Assets.Texture.Texture;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;

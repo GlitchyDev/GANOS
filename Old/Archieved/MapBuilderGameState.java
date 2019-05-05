@@ -46,7 +46,7 @@ public class MapBuilderGameState extends EnvironmentGameState {
     // Show off the camera switching feature
     private Camera camera;
     private Camera camera2;
-    // Used to render Camera 2 to texture for viewing ( Camera screens, mirrors, ect )
+    // Used to renderToScreen Camera 2 to texture for viewing ( Camera screens, mirrors, ect )
     private Texture renderTexture;
     private RenderBuffer renderBuffer;
     // Game Items held

@@ -1,6 +1,6 @@
 package com.GlitchyDev.Rendering.Assets.WorldElements;
 
-import com.GlitchyDev.Rendering.Assets.Mesh;
+import com.GlitchyDev.Rendering.Assets.Mesh.Mesh;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 

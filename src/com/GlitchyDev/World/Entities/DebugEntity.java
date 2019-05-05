@@ -7,7 +7,6 @@ import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
 import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.AssetLoader;
-import com.GlitchyDev.Utility.GameWindow;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
@@ -58,8 +57,8 @@ public class DebugEntity extends EntityBase implements CustomVisibleEntity {
     }
 
     @Override
-    public void render(Renderer renderer, GameWindow gameWindow, Camera camera) {
-        renderer.render3DElement(gameWindow,"Default3D",camera,spriteItem);
+    public void render(Renderer renderer, Camera camera) {
+        renderer.render3DElement(camera,spriteItem, "Default3D");
     }
 
     @Override

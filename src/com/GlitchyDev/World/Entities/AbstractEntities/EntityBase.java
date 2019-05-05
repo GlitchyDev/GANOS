@@ -4,7 +4,6 @@ import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Renderer;
-import com.GlitchyDev.Utility.GameWindow;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
@@ -107,7 +106,7 @@ public abstract class EntityBase {
 
     public abstract void tick();
 
-    public abstract void render(Renderer renderer, GameWindow gameWindow, Camera camera);
+    public abstract void render(Renderer renderer, Camera camera);
 
     public abstract void onDespawn(DespawnReason despawnReason);
 

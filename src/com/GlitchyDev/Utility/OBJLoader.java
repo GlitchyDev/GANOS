@@ -1,7 +1,6 @@
 package com.GlitchyDev.Utility;
 
-import com.GlitchyDev.Rendering.Assets.Mesh;
-import com.GlitchyDev.Rendering.Assets.Utils;
+import com.GlitchyDev.Rendering.Assets.Mesh.Mesh;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 

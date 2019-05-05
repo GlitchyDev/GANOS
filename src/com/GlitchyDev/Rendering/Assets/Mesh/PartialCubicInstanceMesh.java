@@ -1,6 +1,7 @@
-package com.GlitchyDev.Rendering.Assets;
+package com.GlitchyDev.Rendering.Assets.Mesh;
 
 
+import com.GlitchyDev.Rendering.Assets.Texture.InstancedGridTexture;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;

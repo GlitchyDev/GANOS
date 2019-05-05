@@ -4,7 +4,6 @@ package com.GlitchyDev.GameInput.Controllers;
 import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
 import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.AssetLoader;
-import com.GlitchyDev.Utility.GameWindow;
 import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
@@ -190,7 +189,7 @@ public abstract class GameController {
 
     }
 
-    public void render(Renderer renderer, GameWindow gameWindow, String shader)
+    public void render(Renderer renderer, String shader)
     {
         ArrayList<SpriteItem> items = new ArrayList<>();
 
@@ -250,7 +249,7 @@ public abstract class GameController {
         int southWestDirectionId = getDirectionPad() == ControllerDirectionPad.SOUTH_WEST ? (getToggleDirectionPad() == ControllerDirectionPad.SOUTH_WEST ? 1 : 2) : 0;
         items.add(buttonSprites.get("SouthWest" + southWestDirectionId));
 
-        renderer.render2DSprites(gameWindow,shader,items);
+        renderer.render2DSprites(items, shader);
     }
 
     public boolean getToggleSouthButton() {

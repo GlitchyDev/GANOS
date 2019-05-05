@@ -1,7 +1,7 @@
 package com.GlitchyDev.Rendering.Assets.Sounds;
 
 
-import com.GlitchyDev.Rendering.Assets.Utils;
+import com.GlitchyDev.Utility.Utils;
 import org.lwjgl.stb.STBVorbisInfo;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;

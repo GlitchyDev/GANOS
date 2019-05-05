@@ -158,8 +158,8 @@ public class DebugClientGameState extends ClientWorldGameState {
 
     @Override
     public void render() {
-        renderer.prepRender(globalGameData.getGameWindow());
-        renderer.renderHUD(globalGameData.getGameWindow(),"Default2D",textItems);
+        renderer.prepWindowRender(globalGameData.getGameWindow());
+        renderer.renderHUD(textItems, "Default2D");
 
         if(getWorlds().size() == 1) {
             World world = null;
@@ -169,11 +169,11 @@ public class DebugClientGameState extends ClientWorldGameState {
             for(Region region: world.getRegions().values()) {
                 for (BlockBase block : region.getBlocksArray()) {
                     if (block instanceof CustomRenderBlock) {
-                        ((CustomRenderBlock) block).render(renderer, globalGameData.getGameWindow(), camera, null);
+                        ((CustomRenderBlock) block).render(renderer, camera, null);
                     }
                 }
                 for(EntityBase entity: region.getEntities()) {
-                    entity.render(renderer, globalGameData.getGameWindow(), camera);
+                    entity.render(renderer, camera);
                 }
             }
         }
