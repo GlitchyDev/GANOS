@@ -19,8 +19,8 @@ GameAssets\Shaders\Default\Default3D.vs
 GameAssets\Shaders\Default\Instance3D.fs
 GameAssets\Shaders\Default\Instance3D.vs
 GameAssets\Shaders\Shaders.configList
-GameAssets\Shaders\Special\DebugShader3D.fs
-GameAssets\Shaders\Special\DebugShader3D.vs
+GameAssets\Shaders\Special\DebugShader2D.fs
+GameAssets\Shaders\Special\DebugShader2D.vs
 GameAssets\Sounds\Debug\SoundDebug.ogg
 GameAssets\Textures\Cursors\Selector.png
 GameAssets\Textures\Debug\DefaultTexture.png

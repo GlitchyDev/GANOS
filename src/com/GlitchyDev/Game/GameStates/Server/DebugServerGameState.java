@@ -12,6 +12,7 @@ import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
+import com.GlitchyDev.Rendering.Assets.Texture.Texture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
@@ -45,15 +46,21 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL13.*;
 
 public class DebugServerGameState extends ServerWorldGameState {
     private final ArrayList<TextItem> textItems;
-    private final SpriteItem shaderTest;
     private final Player testPlayer;
     private final Camera camera;
     private GameController controller;
 
     private final UUID spawnWorld;
+
+    private final SpriteItem shaderTest;
+    private final Texture shaderTex;
+
 
 
     public DebugServerGameState(GlobalGameData globalGameDataBase) {
@@ -170,8 +177,9 @@ public class DebugServerGameState extends ServerWorldGameState {
         camera.setRotation(5f, 122f, -0f);
         controller = new XBox360Controller(0);
 
-        shaderTest = new SpriteItem(AssetLoader.getTextureAsset("Standing_Mirror"),1,1, true);
+        shaderTest = new SpriteItem(AssetLoader.getTextureAsset("Standing_Mirror"),true);
         shaderTest.setPosition(0,0,0);
+        shaderTex = AssetLoader.getTextureAsset("Standing_Mirror_Bitmap");
 
         globalGameDataBase.getGameWindow().setDimensions(500,500);
         globalGameDataBase.getGameWindow().centerWindow();
@@ -299,7 +307,7 @@ public class DebugServerGameState extends ServerWorldGameState {
     @Override
     public void render() {
         renderer.prepWindowRender(globalGameData.getGameWindow());
-        renderer.setRenderSpace(0,0,750,750);
+        renderer.setRenderSpace(0,0,500,500);
         for(Region region: testPlayer.getPlayerEntity().getEntityView().getViewableRegions()) {
             for(BlockBase block: region.getBlocksArray()) {
                 if(block instanceof CustomRenderBlock) {
@@ -311,8 +319,15 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
         }
         renderer.renderHUD(textItems, "Default2D");
-        //renderer.getShader("DebugShader3D")
-        renderer.render2DSprite(shaderTest, "DebugShader3D");
+
+
+        renderer.getShader("DebugShader2D").bind();
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, shaderTex.getId());
+        renderer.getShader("DebugShader2D").setUniform("test_texture", 1);
+        shaderTest.setPosition((float)gameInput.getMouseX(),(float)gameInput.getMouseY(),0);
+        renderer.render2DSprite(shaderTest, "DebugShader2D");
 
 
 

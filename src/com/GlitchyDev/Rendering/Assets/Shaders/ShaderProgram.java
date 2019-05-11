@@ -66,24 +66,28 @@ public class ShaderProgram {
     }
 
     public void setUniform(String uniformName, int value) {
-        if(!uniforms.containsKey(uniformName))
-        {
+        if(!uniforms.containsKey(uniformName)) {
             createUniform(uniformName);
         }
         glUniform1i(uniforms.get(uniformName), value);
     }
 
+    public void setUniform(String uniformName, float value) {
+        if(!uniforms.containsKey(uniformName)) {
+            createUniform(uniformName);
+        }
+        glUniform1f(uniforms.get(uniformName), value);
+    }
+
     public void setUniform(String uniformName, Vector3f value) {
-        if(!uniforms.containsKey(uniformName))
-        {
+        if(!uniforms.containsKey(uniformName)) {
             createUniform(uniformName);
         }
         glUniform3f(uniforms.get(uniformName), value.x, value.y, value.z);
     }
 
     public void setUniform(String uniformName, Vector2f value) {
-        if(!uniforms.containsKey(uniformName))
-        {
+        if(!uniforms.containsKey(uniformName)) {
             createUniform(uniformName);
         }
         glUniform2f(uniforms.get(uniformName), value.x, value.y);
