@@ -1,4 +1,4 @@
-package com.GlitchyDev.Utility;
+package com.GlitchyDev.Game;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
@@ -67,19 +67,16 @@ public class GameWindow {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
-
         //glfwWindowHint(GLFW_AUTO_ICONIFY, GL_FALSE);
 
 
         // Get the resolution of the primary monitor
-        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
 
-        System.out.println("WINDOW WIDTH " + width + " HEIGHT " + height);
+        System.out.println("GameWindow: Create Window of WIDTH " + width + " HEIGHT " + height);
 
         // Create the window
         windowHandle = glfwCreateWindow(width, height, title, NULL, NULL);
-       //windowHandle = glfwCreateWindow(width, height, title, glfwGetPrimaryMonitor(), NULL);
         if (windowHandle == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
         }
@@ -88,17 +85,13 @@ public class GameWindow {
 
 
         // Setup resize callback
-        /*
-        glfwSetFramebufferSizeCallback(windowHandle, (window, width, height) -> {
-            this.width = width;
-            this.height = height;
-            this.setResized(true);
-        });
-        */
+
+
 
 
 
         // Center our window
+        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         glfwSetWindowPos(windowHandle, (vidmode.width() - width) / 2, (vidmode.height() - height) / 2);
 
         // Make the OpenGL context current
@@ -199,8 +192,7 @@ public class GameWindow {
         //glfwSetCursor(getWindowHandle(), glfwCreateStandardCursor(GLFW_HAND_CURSOR));
     }
 
-    public void setDefaultCursor(int glfwCursor)
-    {
+    public void setDefaultCursor(int glfwCursor){
         glfwSetCursor(getWindowHandle(), glfwCreateStandardCursor(glfwCursor));
     }
 
@@ -256,6 +248,22 @@ public class GameWindow {
         return bb;
     }
 
+    public void centerWindow() {
+        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        glfwSetWindowPos(windowHandle, (vidmode.width() - width) / 2, (vidmode.height() - height) / 2);
+    }
+
+    public void setWindowPosition(int x, int y) {
+        glfwSetWindowPos(windowHandle,x,y);
+    }
+
+    public GLFWVidMode getVideoMode() {
+        return glfwGetVideoMode(glfwGetPrimaryMonitor());
+    }
+
+    public void setTitle(String title) {
+        glfwSetWindowTitle(windowHandle, title);
+    }
 
 
     // Getter and Setters

@@ -14,7 +14,7 @@ import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerDespawnRegion
 import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerSpawnRegionPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Networking.ServerNetworkManager;
-import com.GlitchyDev.Utility.GlobalGameData;
+import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisableBlock;
 import com.GlitchyDev.World.Direction;

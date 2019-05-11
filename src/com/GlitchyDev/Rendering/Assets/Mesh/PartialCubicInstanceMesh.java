@@ -50,7 +50,7 @@ public class PartialCubicInstanceMesh extends InstancedMesh {
 
     @Override
     public void postRender() {
-        super.preRender();
+        super.postRender();
         glDisableVertexAttribArray(6);
     }
 

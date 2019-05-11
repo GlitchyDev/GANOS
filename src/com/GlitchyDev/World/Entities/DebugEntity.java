@@ -45,6 +45,8 @@ public class DebugEntity extends EntityBase implements CustomVisibleEntity {
     public void onSpawn(SpawnReason spawnReason) {
         spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Icon32x32"),1,1, true);
         spriteItem.setPosition(getLocation().getNormalizedPosition());
+
+
     }
 
     int tickCount = 0;
@@ -58,6 +60,7 @@ public class DebugEntity extends EntityBase implements CustomVisibleEntity {
 
     @Override
     public void render(Renderer renderer, Camera camera) {
+
         renderer.render3DElement(camera,spriteItem, "Default3D");
     }
 

@@ -2,7 +2,7 @@ package com.GlitchyDev.Game.GameStates.Abstract;
 
 import com.GlitchyDev.Game.GameStates.GameStateType;
 import com.GlitchyDev.Rendering.Renderer;
-import com.GlitchyDev.Utility.GlobalGameData;
+import com.GlitchyDev.Game.GlobalGameData;
 
 /**
  * The Basic GameState for separating district states of the Game into distinct computational units

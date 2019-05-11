@@ -1,7 +1,4 @@
 Default2D
 Default3D
-FlipDefault3D
 Instance3D
-Cursor
-Glitchy2D
-Glitchy3D
+DebugShader3D

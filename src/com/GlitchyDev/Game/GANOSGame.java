@@ -4,8 +4,6 @@ import com.GlitchyDev.Game.GameStates.Abstract.GameStateBase;
 import com.GlitchyDev.Game.GameStates.Client.DebugClientGameState;
 import com.GlitchyDev.Game.GameStates.Server.DebugServerGameState;
 import com.GlitchyDev.Utility.AssetLoader;
-import com.GlitchyDev.Utility.GameWindow;
-import com.GlitchyDev.Utility.GlobalGameData;
 
 /**
  * The Base Wrapper for the Game

@@ -13,7 +13,7 @@ import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnec
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
-import com.GlitchyDev.Utility.GlobalGameData;
+import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Direction;

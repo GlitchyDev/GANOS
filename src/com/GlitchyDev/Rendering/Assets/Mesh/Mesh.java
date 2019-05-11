@@ -14,7 +14,6 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL31C.glDrawElementsInstanced;
 
 public class Mesh implements Cloneable {
 
@@ -125,17 +124,7 @@ public class Mesh implements Cloneable {
         postRender();
     }
 
-    public void Irender(int size) {
-        preRender();
-
-        glDrawElementsInstanced(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0, size);
-
-        postRender();
-    }
-
-
-    public void preRender()
-    {
+    public void preRender() {
         // Activate firs texture bank
         // Bind the texture
 
@@ -148,8 +137,7 @@ public class Mesh implements Cloneable {
 
     }
 
-    public void postRender()
-    {
+    public void postRender() {
         // Restore state
 
     }

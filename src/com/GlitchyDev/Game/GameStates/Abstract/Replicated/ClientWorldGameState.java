@@ -5,7 +5,7 @@ import com.GlitchyDev.Game.GameStates.GameStateType;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Sockets.ClientGameSocket;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
-import com.GlitchyDev.Utility.GlobalGameData;
+import com.GlitchyDev.Game.GlobalGameData;
 
 import java.io.IOException;
 import java.net.InetAddress;

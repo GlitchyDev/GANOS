@@ -2,6 +2,7 @@ package com.GlitchyDev.Game.GameStates.Server;
 
 import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.Game.GameStates.GameStateType;
+import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.Game.Player.Player;
 import com.GlitchyDev.GameInput.Controllers.ControllerDirectionPad;
 import com.GlitchyDev.GameInput.Controllers.GameController;
@@ -12,8 +13,9 @@ import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnec
 import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
+import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
-import com.GlitchyDev.Utility.GlobalGameData;
+import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
@@ -43,10 +45,10 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.glViewport;
 
 public class DebugServerGameState extends ServerWorldGameState {
     private final ArrayList<TextItem> textItems;
+    private final SpriteItem shaderTest;
     private final Player testPlayer;
     private final Camera camera;
     private GameController controller;
@@ -168,8 +170,12 @@ public class DebugServerGameState extends ServerWorldGameState {
         camera.setRotation(5f, 122f, -0f);
         controller = new XBox360Controller(0);
 
-        globalGameDataBase.getGameWindow().setDimensions(1500,750);
+        shaderTest = new SpriteItem(AssetLoader.getTextureAsset("Standing_Mirror"),1,1, true);
+        shaderTest.setPosition(0,0,0);
 
+        globalGameDataBase.getGameWindow().setDimensions(500,500);
+        globalGameDataBase.getGameWindow().centerWindow();
+        globalGameDataBase.getGameWindow().setTitle("Blackout Server");
 
 
 
@@ -305,19 +311,10 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
         }
         renderer.renderHUD(textItems, "Default2D");
+        //renderer.getShader("DebugShader3D")
+        renderer.render2DSprite(shaderTest, "DebugShader3D");
 
-        glViewport (750, 0, 750, 750);
-        for(Region region: testPlayer.getPlayerEntity().getEntityView().getViewableRegions()) {
-            for(BlockBase block: region.getBlocksArray()) {
-                if(block instanceof CustomRenderBlock) {
-                    ((CustomRenderBlock) block).render(renderer,camera,testPlayer);
-                }
-            }
-            for(EntityBase entity: region.getEntities()) {
-                entity.render(renderer,camera);
-            }
-        }
-        renderer.renderHUD(textItems, "Default2D");
+
 
     }
 

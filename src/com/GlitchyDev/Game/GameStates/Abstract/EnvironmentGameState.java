@@ -3,13 +3,11 @@ package com.GlitchyDev.Game.GameStates.Abstract;
 import com.GlitchyDev.Game.GameStates.GameStateType;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
-import com.GlitchyDev.Utility.GameWindow;
-import com.GlitchyDev.Utility.GlobalGameData;
+import com.GlitchyDev.Game.GameWindow;
+import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
-import com.GlitchyDev.World.World;
 import org.joml.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**

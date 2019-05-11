@@ -47,7 +47,7 @@ public class ShaderProgram {
     }
 
 
-    public void createUniform(String uniformName) {
+    private void createUniform(String uniformName) {
         int uniformLocation = glGetUniformLocation(programId, uniformName);
         uniforms.put(uniformName, uniformLocation);
     }
