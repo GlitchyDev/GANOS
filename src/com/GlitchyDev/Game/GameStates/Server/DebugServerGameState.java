@@ -46,9 +46,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL13.*;
 
 public class DebugServerGameState extends ServerWorldGameState {
     private final ArrayList<TextItem> textItems;
@@ -59,16 +56,20 @@ public class DebugServerGameState extends ServerWorldGameState {
     private final UUID spawnWorld;
 
     private final SpriteItem shaderTest;
-    private final Texture shaderTex;
+    private final Texture shaderTestPrimary;
+    private final Texture shaderTestBitmap;
+    private final Texture shaderTestEffect1;
+    private final Texture shaderTestEffect2;
+    private final Texture shaderTestEffect3;
 
 
 
-    public DebugServerGameState(GlobalGameData globalGameDataBase) {
-        super(globalGameDataBase, GameStateType.DEBUG_SERVER, 5000);
+    public DebugServerGameState(GlobalGameData globalGameData) {
+        super(globalGameData, GameStateType.DEBUG_SERVER, 5000);
 
         CustomFontTexture customTexture = new CustomFontTexture("DebugFont");
         textItems = new ArrayList<>();
-        final int NUM_TEX_ITEMS = 16;
+        final int NUM_TEX_ITEMS = 20;
         final int XOffset = 0;
         final int YOffset = 0;
         for(int i = 0; i < NUM_TEX_ITEMS; i++) {
@@ -177,13 +178,21 @@ public class DebugServerGameState extends ServerWorldGameState {
         camera.setRotation(5f, 122f, -0f);
         controller = new XBox360Controller(0);
 
-        shaderTest = new SpriteItem(AssetLoader.getTextureAsset("Standing_Mirror"),true);
-        shaderTest.setPosition(0,0,0);
-        shaderTex = AssetLoader.getTextureAsset("Standing_Mirror_Bitmap");
 
-        globalGameDataBase.getGameWindow().setDimensions(500,500);
-        globalGameDataBase.getGameWindow().centerWindow();
-        globalGameDataBase.getGameWindow().setTitle("Blackout Server");
+        shaderTestPrimary = AssetLoader.getTextureAsset("Terrob");
+        shaderTestBitmap = AssetLoader.getTextureAsset("Terrob_Effect_Bitmap");
+        shaderTestEffect1 = AssetLoader.getTextureAsset("GlitchEffect");
+        shaderTestEffect2 = AssetLoader.getTextureAsset("Noise");
+        shaderTestEffect3 = AssetLoader.getTextureAsset("DefaultTexture");
+
+        shaderTest = new SpriteItem(shaderTestPrimary,true);
+        shaderTest.setPosition(0,0,0);
+        shaderTest.setScale(2);
+
+
+        globalGameData.getGameWindow().setDimensions(1000,500);
+        globalGameData.getGameWindow().centerWindow();
+        globalGameData.getGameWindow().setTitle("Blackout Server");
 
 
 
@@ -227,7 +236,16 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
         }
 
+        int valueCount = 0;
+        if(currentPlayers.size() > 0) {
+            valueCount = currentPlayers.get(currentPlayers.keySet().toArray()[0]).getEntityView().countEntities();
+        }
+
+        textItems.get(11).setText("Client Entity Count " + valueCount);
+
+
         testPlayer.getPlayerEntity().tick();
+
     }
 
 
@@ -321,17 +339,49 @@ public class DebugServerGameState extends ServerWorldGameState {
         renderer.renderHUD(textItems, "Default2D");
 
 
-        renderer.getShader("DebugShader2D").bind();
+        if(currentPlayers.size() > 0) {
+            renderer.setRenderSpace(500,0,500,500);
+            for(Region region: currentPlayers.get(currentPlayers.keySet().toArray()[0]).getEntityView().getViewableRegions()) {
+                for(BlockBase block: region.getBlocksArray()) {
+                    if(block instanceof CustomRenderBlock) {
+                        ((CustomRenderBlock) block).render(renderer,camera,testPlayer);
+                    }
+                }
+                for(EntityBase entity: region.getEntities()) {
+                    entity.render(renderer,camera);
+                }
+            }
+        }
 
+
+        /*
+        renderer.getShader("DebugShader2D").bind();
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, shaderTex.getId());
-        renderer.getShader("DebugShader2D").setUniform("test_texture", 1);
+        glBindTexture(GL_TEXTURE_2D, shaderTestBitmap.getId());
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, shaderTestEffect1.getId());
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, shaderTestEffect2.getId());
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, shaderTestEffect3.getId());
+        renderer.getShader("DebugShader2D").setUniform("bitmap", 1);
+        renderer.getShader("DebugShader2D").setUniform("effect1", 2);
+        renderer.getShader("DebugShader2D").setUniform("effect2", 3);
+        renderer.getShader("DebugShader2D").setUniform("effect3", 4);
+        i++;
+        i %= 600;
+        float framePercent = i / 600.0f;
+        renderer.getShader("DebugShader2D").setUniform("frame", framePercent);
+        System.out.println(i);
         shaderTest.setPosition((float)gameInput.getMouseX(),(float)gameInput.getMouseY(),0);
         renderer.render2DSprite(shaderTest, "DebugShader2D");
+        */
 
 
 
     }
+
+    //int i = 0;
 
     @Override
     public void processPacket(UUID playerUUID, PacketBase packet) {

@@ -24,8 +24,12 @@ GameAssets\Shaders\Special\DebugShader2D.vs
 GameAssets\Sounds\Debug\SoundDebug.ogg
 GameAssets\Textures\Cursors\Selector.png
 GameAssets\Textures\Debug\DefaultTexture.png
+GameAssets\Textures\Debug\GlitchEffect.png
+GameAssets\Textures\Debug\Noise.png
 GameAssets\Textures\Debug\Standing_Mirror.png
 GameAssets\Textures\Debug\Standing_Mirror_Bitmap.png
+GameAssets\Textures\Debug\Terrob.png
+GameAssets\Textures\Debug\Terrob_Effect_Bitmap.png
 GameAssets\Textures\Icon\Cursor.png
 GameAssets\Textures\Icon\Cursor_Click.png
 GameAssets\Textures\Icon\Icon16x16.png

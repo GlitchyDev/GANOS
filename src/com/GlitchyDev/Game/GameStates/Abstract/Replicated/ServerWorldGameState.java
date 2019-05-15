@@ -165,6 +165,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
                 boolean containsNew = playerView.containsRegion(newAndOldRegions[0]);
                 boolean containsOld = playerView.containsRegion(newAndOldRegions[1]);
 
+
                 System.out.println("This players view, new " + containsNew + " old " + containsOld + " and in view ");
                 if(containsNew) {
                     if(containsOld) {

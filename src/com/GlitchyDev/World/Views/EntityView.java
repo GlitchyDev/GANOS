@@ -44,4 +44,21 @@ public class EntityView {
         }
         return null;
     }
+
+    public boolean containsEntity(UUID entityUUID) {
+        for(Region region: viewableRegions) {
+            if(region.containsEntity(entityUUID)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int countEntities() {
+        int count = 0;
+        for(Region region: viewableRegions) {
+            count += region.getEntities().size();
+        }
+        return count;
+    }
 }

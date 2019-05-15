@@ -12,7 +12,9 @@ import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 
 /**
@@ -300,6 +302,15 @@ public class Region {
             }
         }
         return blockArray;
+    }
+
+    public boolean containsEntity(UUID entityUUID) {
+        for(EntityBase entity: entities) {
+            if(entity.getUUID() == entityUUID) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

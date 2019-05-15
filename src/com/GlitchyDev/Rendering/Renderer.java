@@ -49,10 +49,6 @@ public class Renderer {
      */
     public void prepWindowRender(GameWindow window) {
         clear();
-        if ( window.hasBeenResized() ) {
-            setRenderSpace(0,0,window.getWidth(), window.getHeight());
-            window.setIfResized(false);
-        }
     }
 
     /**

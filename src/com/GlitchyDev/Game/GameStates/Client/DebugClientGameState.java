@@ -57,6 +57,9 @@ public class DebugClientGameState extends ClientWorldGameState {
         camera.setPosition(-8.5f, 7f, -6f);
         camera.setRotation(5f, 122f, -0f);
 
+        globalGameData.getGameWindow().setDimensions(500,500);
+        globalGameData.getGameWindow().centerWindow();
+        globalGameData.getGameWindow().setTitle("Blackout Client");
     }
 
 
@@ -89,6 +92,20 @@ public class DebugClientGameState extends ClientWorldGameState {
                 }
             }
         }
+
+
+        int entityCount = 0;
+        if(getWorlds().size() == 1) {
+            World world = null;
+            for(UUID worldUUID: getWorlds()) {
+                world = getWorld(worldUUID);
+            }
+            for(Region region: world.getRegions().values()) {
+                entityCount += region.getEntities().size();
+            }
+        }
+        textItems.get(7).setText("Entity count " + entityCount);
+
 
     }
 
@@ -159,6 +176,7 @@ public class DebugClientGameState extends ClientWorldGameState {
     @Override
     public void render() {
         renderer.prepWindowRender(globalGameData.getGameWindow());
+        renderer.setRenderSpace(0,0,500,500);
         renderer.renderHUD(textItems, "Default2D");
 
         if(getWorlds().size() == 1) {
@@ -184,9 +202,7 @@ public class DebugClientGameState extends ClientWorldGameState {
 
     @Override
     public void processPacket(PacketBase packet) {
-        System.out.println();
         System.out.println("Received Packet @ " + packet);
-        System.out.println();
         if(packet instanceof WorldStateModifyingPackets) {
             ((WorldStateModifyingPackets) packet).executeModification(this);
         } else {
