@@ -176,7 +176,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
                 System.out.println("This players view, new " + containsNew + " old " + containsOld + " and in view ");
                 if(containsNew) {
                     if(playerView.containsEntity(entity.getUUID())) {
-                        if (!(entity instanceof CustomVisibleEntity) ||  ((CustomVisibleEntity) entity).doSeeEntity(player)) {
+                        if (!(entity instanceof CustomVisibleEntity) || ((CustomVisibleEntity) entity).doSeeEntity(player)) {
                             serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesBoth.get(entity));
                         }
                     } else {
@@ -186,11 +186,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
                         }
                     }
                 } else {
-                    if(containsOld) {
-                        if (!(entity instanceof CustomVisibleEntity) || ((CustomVisibleEntity) entity).doSeeEntity(player)) {
-                            serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesOld.get(entity));
-                            playerView.clearEntity(entity.getUUID());
-                        }
+                    if ((playerView.containsEntity(entity.getUUID()))) {
+                        serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesOld.get(entity));
+                        playerView.clearEntity(entity.getUUID());
                     }
                 }
             }

@@ -174,7 +174,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         playerEntity.getEffects().add(new ServerDebugEffect(this,playerEntity));
 
         camera = new Camera();
-        camera.setPosition(-8.5f, 10f, -6f);
+        camera.setPosition(-8.5f, 7f, -6f);
         camera.setRotation(5f, 122f, -0f);
         controller = new XBox360Controller(0);
 
