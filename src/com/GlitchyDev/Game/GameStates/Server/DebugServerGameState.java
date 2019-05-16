@@ -48,7 +48,8 @@ import java.util.UUID;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class DebugServerGameState extends ServerWorldGameState {
-    private final ArrayList<TextItem> textItems;
+    private final ArrayList<TextItem> hudItems;
+    private final ArrayList<TextItem> debugItems;
     private final Player testPlayer;
     private final Camera camera;
     private GameController controller;
@@ -68,14 +69,26 @@ public class DebugServerGameState extends ServerWorldGameState {
         super(globalGameData, GameStateType.DEBUG_SERVER, 5000);
 
         CustomFontTexture customTexture = new CustomFontTexture("DebugFont");
-        textItems = new ArrayList<>();
-        final int NUM_TEX_ITEMS = 20;
-        final int XOffset = 0;
-        final int YOffset = 0;
-        for(int i = 0; i < NUM_TEX_ITEMS; i++) {
+        final int NUM_HUD_ITEMS = 20;
+        hudItems = new ArrayList<>(NUM_HUD_ITEMS);
+        final int hudXOffset = 0;
+        final int hudYOffset = 0;
+        final int hudTextYOffset = 12;
+        for(int i = 0; i < NUM_HUD_ITEMS; i++) {
             TextItem item = new TextItem("",customTexture);
-            item.setPosition(XOffset,YOffset + i*12,0);
-            textItems.add(item);
+            item.setPosition(hudXOffset,hudYOffset + i*hudTextYOffset,0);
+            hudItems.add(item);
+        }
+
+        final int NUM_DEBUG_ITEMS = 20;
+        debugItems = new ArrayList<>(NUM_DEBUG_ITEMS);
+        final int debugXOffset = 0;
+        final int debugYOffset = 0;
+        final int debugTextYOffset = 12;
+        for(int i = 0; i < NUM_DEBUG_ITEMS; i++) {
+            TextItem item = new TextItem("",customTexture);
+            item.setPosition(debugXOffset,debugYOffset + i*debugTextYOffset,0);
+            debugItems.add(item);
         }
 
 
@@ -190,8 +203,9 @@ public class DebugServerGameState extends ServerWorldGameState {
         shaderTest.setScale(2);
 
 
-        globalGameData.getGameWindow().setDimensions(1000,500);
+        globalGameData.getGameWindow().setDimensions(1280,500);
         globalGameData.getGameWindow().centerWindow();
+        globalGameData.getGameWindow().adjustWindowPosition(0,-240);
         globalGameData.getGameWindow().setTitle("Blackout Server");
 
 
@@ -209,25 +223,25 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         cameraControlsLogic();
 
-        textItems.get(0).setText("FPS: " + getCurrentFPS() + " Render: " + formatter.format(getRenderUtilization()) + " Logic: " + formatter.format(getLogicUtilization()));
-        textItems.get(1).setText("Camera Pos: " + formatter.format(camera.getPosition().x) + "," + formatter.format(camera.getPosition().y) + "," + formatter.format(camera.getPosition().z));
-        textItems.get(2).setText("Camera Rot: " + formatter.format(camera.getRotation().x) + "," + formatter.format(camera.getRotation().y) + "," + formatter.format(camera.getRotation().z));
-        textItems.get(3).setText("P: " + getRegionAtLocation(testPlayer.getPlayerEntity().getLocation()).getEntities().size());
-        textItems.get(4).setText("BlockType " + getBlockAtLocation(testPlayer.getPlayerEntity().getLocation()).getBlockType());
+        debugItems.get(0).setText("FPS: " + getCurrentFPS() + " Render: " + formatter.format(getRenderUtilization()) + " Logic: " + formatter.format(getLogicUtilization()));
+        debugItems.get(1).setText("Camera Pos: " + formatter.format(camera.getPosition().x) + "," + formatter.format(camera.getPosition().y) + "," + formatter.format(camera.getPosition().z));
+        debugItems.get(2).setText("Camera Rot: " + formatter.format(camera.getRotation().x) + "," + formatter.format(camera.getRotation().y) + "," + formatter.format(camera.getRotation().z));
+        debugItems.get(3).setText("P: " + getRegionAtLocation(testPlayer.getPlayerEntity().getLocation()).getEntities().size());
+        debugItems.get(4).setText("BlockType " + getBlockAtLocation(testPlayer.getPlayerEntity().getLocation()).getBlockType());
 
         int startServerInfo = 6;
         if(isRunning) {
-            textItems.get(startServerInfo).setText("Connected Players");
-            for(int i = startServerInfo + 1; i < textItems.size(); i++) {
-                textItems.get(i).setText("");
+            debugItems.get(startServerInfo).setText("Connected Players");
+            for(int i = startServerInfo + 1; i < debugItems.size(); i++) {
+                debugItems.get(i).setText("");
             }
             int i = startServerInfo;
             for (UUID uuid : serverNetworkManager.getConnectedUsers()) {
-                textItems.get(i).setText("Player " + i + ": " + uuid);
+                debugItems.get(i).setText("Player " + i + ": " + uuid);
                 i++;
             }
         } else {
-            textItems.get(startServerInfo).setText("Not Online");
+            debugItems.get(startServerInfo).setText("Not Online");
             if(controller.isCurrentlyActive() && controller.getToggleLeftHomeButton() || gameInput.getKeyValue(GLFW_KEY_C) >= 1) {
                 System.out.println("Starting up Server");
                 serverNetworkManager.enableAcceptingClients(813);
@@ -241,7 +255,7 @@ public class DebugServerGameState extends ServerWorldGameState {
             valueCount = currentPlayers.get(currentPlayers.keySet().toArray()[0]).getEntityView().countEntities();
         }
 
-        textItems.get(11).setText("Client Entity Count " + valueCount);
+        debugItems.get(11).setText("Client Entity Count " + valueCount);
 
 
         testPlayer.getPlayerEntity().tick();
@@ -336,8 +350,9 @@ public class DebugServerGameState extends ServerWorldGameState {
                 entity.render(renderer,camera);
             }
         }
-        renderer.renderHUD(textItems, "Default2D");
-
+        renderer.renderHUD(hudItems, "Default2D");
+        renderer.setRenderSpace(1000,0,500,500);
+        renderer.renderHUD(debugItems, "Default2D");
 
         if(currentPlayers.size() > 0) {
             renderer.setRenderSpace(500,0,500,500);

@@ -257,6 +257,27 @@ public class GameWindow {
         glfwSetWindowPos(windowHandle,x,y);
     }
 
+    public void adjustWindowPosition(int x, int y) {
+        int[] xPos = new int[1];
+        int[] yPos = new int[1];
+        glfwGetWindowPos(windowHandle,xPos,yPos);
+        glfwSetWindowPos(windowHandle,xPos[0] + x, yPos[0] + y);
+    }
+
+    public int getWindowXPos() {
+        int[] xPos = new int[1];
+        int[] yPos = new int[1];
+        glfwGetWindowPos(windowHandle,xPos,yPos);
+        return xPos[0];
+    }
+
+    public int getWindowYPos() {
+        int[] xPos = new int[1];
+        int[] yPos = new int[1];
+        glfwGetWindowPos(windowHandle,xPos,yPos);
+        return yPos[0];
+    }
+
     public GLFWVidMode getVideoMode() {
         return glfwGetVideoMode(glfwGetPrimaryMonitor());
     }
@@ -280,7 +301,7 @@ public class GameWindow {
         glClearColor(r, g, b, alpha);
     }
 
-    public boolean getWindowShouldClose() {
+    public boolean shouldWindowClose() {
         return glfwWindowShouldClose(windowHandle);
     }
 
@@ -316,7 +337,6 @@ public class GameWindow {
 
     public void setDimensions(int width, int height) {
         glfwSetWindowSize(windowHandle,width,height);
-        glViewport(0, 0, width, height);
         this.width = width;
         this.height = height;
 

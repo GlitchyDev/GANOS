@@ -60,7 +60,7 @@ public class GANOSGame {
     public void run()
     {
         GameStateBase currentGameState;
-        while(!globalGameData.getGameWindow().getWindowShouldClose()) {
+        while(!globalGameData.getGameWindow().shouldWindowClose()) {
             gameWindow.update();
 
             currentGameState = globalGameData.getCurrentGameState();
@@ -68,7 +68,7 @@ public class GANOSGame {
             currentGameState.doLogic();
             currentGameState.doRender();
 
-            if(gameWindow.getWindowShouldClose())
+            if(gameWindow.shouldWindowClose())
             {
                 currentGameState.windowClose();
             }
