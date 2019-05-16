@@ -42,4 +42,8 @@ public class ServerChangeBlockPacket extends WorldStateModifyingPackets {
         outputBitUtility.writeNextInteger(changedBlock.getLocation().getY());
         outputBitUtility.writeNextInteger(changedBlock.getLocation().getZ());
     }
+
+    public BlockBase getChangedBlock() {
+        return changedBlock;
+    }
 }

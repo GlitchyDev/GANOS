@@ -104,15 +104,18 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
 
             for(EntityBase entity: despawnedEntities.keySet()) {
-                if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().contains(entity)) {
-                    player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().remove(entity);
-                    serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(despawnedEntities.get(entity));
+                if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID())) {
+                    if(player.getEntityView().containsEntity(entity.getUUID())) {
+                        player.getEntityView().clearEntity(entity.getUUID());
+                        serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(despawnedEntities.get(entity));
+                    }
                 }
             }
 
             for(EntityBase entity: spawnedEntities.keySet()) {
-                if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && !player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().contains(entity)) {
+                if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && (!(entity instanceof CustomVisibleEntity) || ((CustomVisibleEntity)entity).doSeeEntity(player))) {
                     serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(spawnedEntities.get(entity));
+                    player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().add(entity);
                 }
             }
 
@@ -120,6 +123,10 @@ public abstract class ServerWorldGameState extends WorldGameState {
                 if(playerView.containsRegion(regionUUID)) {
                     for(PacketBase packet: changedBlocks.get(regionUUID)) {
                         serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(packet);
+                        BlockBase block = ((ServerChangeBlockPacket)packet).getChangedBlock();
+                        Location relativeLocation = block.getLocation().getLocationDifference(player.getEntityView().getRegion(regionUUID).getLocation());
+                        player.getEntityView().getRegion(regionUUID).setBlockRelative(relativeLocation, block);
+
                     }
                 }
             }
@@ -144,7 +151,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
                 UUID regionUUID = entity.getCurrentRegionUUID();
                 if(playerView.containsRegion(regionUUID)) {
                     if(entity instanceof CustomVisibleEntity) {
-                        boolean entityCurrentlyInView = playerView.getRegion(regionUUID).getEntities().contains(entity);
+                        boolean entityCurrentlyInView = playerView.containsEntity(entity.getUUID());
                         boolean isCurrentlyVisible = ((CustomVisibleEntity) entity).doSeeEntity(player);
 
                         if(entityCurrentlyInView != isCurrentlyVisible) {
@@ -168,19 +175,21 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
                 System.out.println("This players view, new " + containsNew + " old " + containsOld + " and in view ");
                 if(containsNew) {
-                    if(containsOld) {
+                    if(playerView.containsEntity(entity.getUUID())) {
                         if (!(entity instanceof CustomVisibleEntity) ||  ((CustomVisibleEntity) entity).doSeeEntity(player)) {
                             serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesBoth.get(entity));
                         }
                     } else {
                         if (!(entity instanceof CustomVisibleEntity) || ((CustomVisibleEntity) entity).doSeeEntity(player)) {
                             serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesNew.get(entity));
+                            playerView.getRegion(newAndOldRegions[0]).getEntities().add(entity);
                         }
                     }
                 } else {
                     if(containsOld) {
                         if (!(entity instanceof CustomVisibleEntity) || ((CustomVisibleEntity) entity).doSeeEntity(player)) {
                             serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(movedEntitiesOld.get(entity));
+                            playerView.clearEntity(entity.getUUID());
                         }
                     }
                 }

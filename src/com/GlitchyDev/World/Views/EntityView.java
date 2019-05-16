@@ -54,6 +54,12 @@ public class EntityView {
         return false;
     }
 
+    public void clearEntity(UUID entityUUID) {
+        for(Region region: viewableRegions) {
+            region.removeEntity(entityUUID);
+        }
+    }
+
     public int countEntities() {
         int count = 0;
         for(Region region: viewableRegions) {

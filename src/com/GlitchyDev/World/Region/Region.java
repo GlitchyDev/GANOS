@@ -313,6 +313,21 @@ public class Region {
         return false;
     }
 
+    public EntityBase getEntity(UUID entityUUID) {
+        for(EntityBase entity: entities) {
+            if(entity.getUUID() == entityUUID) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
+    public void removeEntity(UUID entityUUID) {
+        if(containsEntity(entityUUID)) {
+            entities.remove(getEntity(entityUUID));
+        }
+    }
+
     @Override
     public String toString() {
         return "R@" + regionUUID + "," + getLocation();
