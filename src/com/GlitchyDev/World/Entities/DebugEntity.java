@@ -87,7 +87,6 @@ public class DebugEntity extends EntityBase implements CustomVisibleEntity {
     @Override
     public void setLocation(Location location) {
         super.setLocation(location);
-        System.out.println(spriteItem);
         spriteItem.setPosition(getLocation().getNormalizedPosition());
     }
 

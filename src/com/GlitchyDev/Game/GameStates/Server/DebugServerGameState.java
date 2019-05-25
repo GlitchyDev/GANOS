@@ -12,11 +12,8 @@ import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
-import com.GlitchyDev.Rendering.Assets.Texture.Texture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
-import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
-import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
@@ -24,6 +21,7 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
 import com.GlitchyDev.World.Direction;
+import com.GlitchyDev.World.Elements.WalkieTalkie;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugEntity;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
@@ -56,12 +54,17 @@ public class DebugServerGameState extends ServerWorldGameState {
 
     private final UUID spawnWorld;
 
+
+    private final WalkieTalkie walkieTalkie;
+
+    /*
     private final SpriteItem shaderTest;
     private final Texture shaderTestPrimary;
     private final Texture shaderTestBitmap;
     private final Texture shaderTestEffect1;
     private final Texture shaderTestEffect2;
     private final Texture shaderTestEffect3;
+    */
 
 
 
@@ -192,15 +195,16 @@ public class DebugServerGameState extends ServerWorldGameState {
         controller = new XBox360Controller(0);
 
 
-        shaderTestPrimary = AssetLoader.getTextureAsset("Terrob");
+        /*
+        shaderTestPrimary = AssetLoader.getTextureAsset("WalkieTalkie_Body");
         shaderTestBitmap = AssetLoader.getTextureAsset("Terrob_Effect_Bitmap");
         shaderTestEffect1 = AssetLoader.getTextureAsset("GlitchEffect");
         shaderTestEffect2 = AssetLoader.getTextureAsset("Noise");
         shaderTestEffect3 = AssetLoader.getTextureAsset("DefaultTexture");
-
         shaderTest = new SpriteItem(shaderTestPrimary,true);
         shaderTest.setPosition(0,0,0);
         shaderTest.setScale(2);
+        */
 
 
         globalGameData.getGameWindow().setDimensions(1280,500);
@@ -208,6 +212,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         globalGameData.getGameWindow().adjustWindowPosition(0,-240);
         globalGameData.getGameWindow().setTitle("Blackout Server");
 
+        walkieTalkie = new WalkieTalkie();
 
 
 
@@ -259,6 +264,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
         testPlayer.getPlayerEntity().tick();
+        walkieTalkie.tick();
 
     }
 
@@ -351,8 +357,7 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
         }
         renderer.renderHUD(hudItems, "Default2D");
-        renderer.setRenderSpace(1000,0,500,500);
-        renderer.renderHUD(debugItems, "Default2D");
+        walkieTalkie.render(renderer,500);
 
         if(currentPlayers.size() > 0) {
             renderer.setRenderSpace(500,0,500,500);
@@ -367,6 +372,9 @@ public class DebugServerGameState extends ServerWorldGameState {
                 }
             }
         }
+
+        renderer.setRenderSpace(1000,0,500,500);
+        renderer.renderHUD(debugItems, "Default2D");
 
 
         /*
@@ -401,7 +409,7 @@ public class DebugServerGameState extends ServerWorldGameState {
     @Override
     public void processPacket(UUID playerUUID, PacketBase packet) {
         System.out.println();
-        System.out.println("Recieved packet " + packet);
+        System.out.println("Received packet " + packet);
         System.out.println();
         if(packet instanceof ClientSendInputPacket) {
             Direction direction = ((ClientSendInputPacket) packet).getClientInputType().getDirection();

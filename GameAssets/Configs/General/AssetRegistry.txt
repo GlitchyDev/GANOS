@@ -21,6 +21,8 @@ GameAssets\Shaders\Default\Instance3D.vs
 GameAssets\Shaders\Shaders.configList
 GameAssets\Shaders\Special\DebugShader2D.fs
 GameAssets\Shaders\Special\DebugShader2D.vs
+GameAssets\Shaders\Special\TextureGrid2D.fs
+GameAssets\Shaders\Special\TextureGrid2D.vs
 GameAssets\Sounds\Debug\SoundDebug.ogg
 GameAssets\Textures\Cursors\Selector.png
 GameAssets\Textures\Debug\DefaultTexture.png
@@ -94,3 +96,6 @@ GameAssets\Textures\UI\Controller\Vertical1.png
 GameAssets\Textures\UI\Controller\Vertical2.png
 GameAssets\Textures\UI\DebugFont.png
 GameAssets\Textures\UI\DebugFontConfig.configList
+GameAssets\Textures\UI\WalkieTalkie\WalkieTalkie_Body.png
+GameAssets\Textures\UI\WalkieTalkie\WalkieTalkie_Screen.png
+GameAssets\Textures\UI\WalkieTalkie\WalkieTalkie_Signal.png
