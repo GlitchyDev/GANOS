@@ -21,7 +21,8 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Elements.WalkieTalkie;
+import com.GlitchyDev.World.Elements.WalkieTalkie.Enums.WalkieTalkieScreenDisplay;
+import com.GlitchyDev.World.Elements.WalkieTalkie.WalkieTalkieBase;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugEntity;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
@@ -55,7 +56,7 @@ public class DebugServerGameState extends ServerWorldGameState {
     private final UUID spawnWorld;
 
 
-    private final WalkieTalkie walkieTalkie;
+    private final WalkieTalkieBase walkieTalkie;
 
     /*
     private final SpriteItem shaderTest;
@@ -212,7 +213,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         globalGameData.getGameWindow().adjustWindowPosition(0,-240);
         globalGameData.getGameWindow().setTitle("Blackout Server");
 
-        walkieTalkie = new WalkieTalkie();
+        walkieTalkie = new WalkieTalkieBase();
 
 
 
@@ -261,9 +262,68 @@ public class DebugServerGameState extends ServerWorldGameState {
         }
 
         debugItems.get(11).setText("Client Entity Count " + valueCount);
+        debugItems.get(12).setText("WalkieTalkie State " + walkieTalkie.getCurrentWalkieTalkieState());
+        debugItems.get(13).setText("WalkieTalkie Progress " + walkieTalkie.getStateProgress());
+        debugItems.get(14).setText("WalkieTalkie Channel " + walkieTalkie.getCurrentChannel());
+        debugItems.get(15).setText("WalkieTalkie Volume " + walkieTalkie.isMuted());
+        debugItems.get(16).setText("WalkieTalkie Volume " + walkieTalkie.getCurrentVolume());
+        debugItems.get(17).setText("WalkieTalkie Battery " + walkieTalkie.getCurrentBatteryLevel());
 
 
         testPlayer.getPlayerEntity().tick();
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_0) == 1) {
+            walkieTalkie.triggerSpeaker(WalkieTalkieScreenDisplay.CALLSIGN_CROWN, false,false);
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_1) == 1) {
+            walkieTalkie.endSpeaker();
+        }
+
+
+
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_ENTER) == 1) {
+            walkieTalkie.toggleMute();
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_ADD) == 1) {
+            walkieTalkie.increaseVolume();
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_SUBTRACT) == 1) {
+            walkieTalkie.decreaseVolume();
+        }
+
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_0) == 1) {
+            walkieTalkie.changeChannel(0);
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_1) == 1) {
+            walkieTalkie.changeChannel(1);
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_2) == 1) {
+            walkieTalkie.changeChannel(2);
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_3) == 1) {
+            walkieTalkie.changeChannel(3);
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_4) == 1) {
+            walkieTalkie.changeChannel(4);
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_5) == 1) {
+            walkieTalkie.changeChannel(5);
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_6) == 1) {
+            walkieTalkie.changeChannel(6);
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_7) == 1) {
+            walkieTalkie.changeChannel(7);
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_8) == 1) {
+            walkieTalkie.changeChannel(8);
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_9) == 1) {
+            walkieTalkie.changeChannel(9);
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_DECIMAL) == 1) {
+            walkieTalkie.changeChannel(-13);
+        }
+
         walkieTalkie.tick();
 
     }
