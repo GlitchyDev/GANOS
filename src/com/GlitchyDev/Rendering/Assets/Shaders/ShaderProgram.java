@@ -93,6 +93,13 @@ public class ShaderProgram {
         glUniform2f(uniforms.get(uniformName), value.x, value.y);
     }
 
+    public void setUniform(String uniformName, boolean b) {
+        if(!uniforms.containsKey(uniformName)) {
+            createUniform(uniformName);
+        }
+        glUniform1i(uniforms.get(uniformName), (b ? 1 : 0) );
+    }
+
     public void createVertexShader(String shaderCode) throws Exception {
         vertexShaderId = createShader(shaderCode, GL_VERTEX_SHADER);
     }

@@ -4,8 +4,9 @@ import com.GlitchyDev.Rendering.Assets.Texture.Texture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
 import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.AssetLoader;
-import com.GlitchyDev.World.Elements.WalkieTalkie.Enums.WalkieTalkieScreenDisplay;
+import com.GlitchyDev.World.Elements.WalkieTalkie.Enums.WalkieTalkieDisplay;
 import com.GlitchyDev.World.Elements.WalkieTalkie.Enums.WalkieTalkieState;
+import com.GlitchyDev.World.Elements.WalkieTalkie.Enums.WalkieTalkieStatePosition;
 import com.GlitchyDev.World.Elements.WalkieTalkie.Enums.WalkieTalkieStateTransition;
 import org.joml.Vector2f;
 
@@ -18,20 +19,23 @@ public class WalkieTalkieBase {
     private final Texture walkieTalkie_Body_Texture;
     private final Texture walkieTalkie_Screen_Texture;
     private final Texture walkieTalkie_Signal_Texture;
+
     // States and Transitions
     private WalkieTalkieState currentWalkieTalkieState;
-    private WalkieTalkieScreenDisplay currentWalkieTalkieDisplay;
+    private WalkieTalkieDisplay currentWalkieTalkieDisplay;
     private long stateStartTime;
     private boolean usingTransition = false;
     private WalkieTalkieStateTransition currentWalkieTalkieStateTransition = WalkieTalkieStateTransition.NONE;
     private long transitionStartTime = 0;
     private WalkieTalkieState nextWalkieTalkieState; // Used when moving out of transition
+
     // Attributes
-    private final WalkieTalkieScreenDisplay assignedSpeakingIcon = WalkieTalkieScreenDisplay.CALLSIGN_UNITY; // How they appear to other users
+    private final WalkieTalkieDisplay assignedSpeakingIcon = WalkieTalkieDisplay.CALLSIGN_UNITY; // How they appear to other users
     private int currentVolume = 3; // Volume 3 ( Speaker ), Volume 2 ( Nearby ), Volume 1 ( Self ), Volume 0 ( Light up only )
     private int currentBatteryLevel = 4; // 4-0, 0 being dead
     private int currentChannel = 0; // Channels 0-9 and also Unknown
     private boolean isMuted = false; // If muted, calls won't be received or displayed,
+
     // In the moment stuff
     private int verticalOffset = 0;
 
@@ -51,10 +55,8 @@ public class WalkieTalkieBase {
         walkieTalkie_Screen.setScale(WALKIE_TALKIE_SCALE);
         walkieTalkie_Signal.setScale(WALKIE_TALKIE_SCALE);
 
-        currentWalkieTalkieState = WalkieTalkieState.USE_ACTIVE;
+        currentWalkieTalkieState = WalkieTalkieState.ON_IDLE;
         stateStartTime = System.currentTimeMillis();
-        currentWalkieTalkieDisplay = assignedSpeakingIcon;
-
     }
 
 
@@ -87,10 +89,44 @@ public class WalkieTalkieBase {
         setPosition((int) (4 * WALKIE_TALKIE_SCALE), windowHeight - verticalOffset);
         renderer.render2DSprite(walkieTalkie_Body,"Default2D");
 
-        renderer.getShader("TextureGrid2D").bind();
-        renderer.getShader("TextureGrid2D").setUniform("gridSize",new Vector2f(19,10));
-        renderer.getShader("TextureGrid2D").setUniform("selectedTexture",new Vector2f(currentWalkieTalkieDisplay.getX(),currentWalkieTalkieDisplay.getY()));
-        renderer.render2DSprite(walkieTalkie_Screen,"TextureGrid2D");
+
+        if(!currentWalkieTalkieState.isHasCustomScreen()) {
+            currentWalkieTalkieDisplay = currentWalkieTalkieState.getStateScreenDisplay();
+        } else {
+            switch(currentWalkieTalkieState) {
+                case USE_ACTIVE:
+                    currentWalkieTalkieDisplay = assignedSpeakingIcon;
+                    break;
+                case BOOTING_ACTIVE:
+                    currentWalkieTalkieDisplay = WalkieTalkieDisplay.getProgressDisplay((int)(getStateProgress() * 6));
+                    break;
+                case SHOW_VOLUME_ACTIVE:
+                    if(!isMuted()){
+                        currentWalkieTalkieDisplay = WalkieTalkieDisplay.getVolumeDisplay(currentVolume);
+                    } else {
+                        currentWalkieTalkieDisplay = WalkieTalkieDisplay.VOLUME_MUTE;
+                    }
+                    break;
+                case SHOW_CHANNEL_ACTIVE:
+                    currentWalkieTalkieDisplay = WalkieTalkieDisplay.getChannelDisplay(currentChannel);
+                    break;
+                case SHOW_BATTERY_ACTIVE:
+                    currentWalkieTalkieDisplay = WalkieTalkieDisplay.getBatteryDisplay(currentBatteryLevel);
+                    break;
+                case SPEAKER_VIEW:
+                    // Current Speaker
+                case MESSAGE_VIEW:
+                    // Current Message
+                case INHABITANT_VIEW:
+                    // Current Inhabitant
+            }
+        }
+        renderer.getShader("WalkieTalkieScreen2D").bind();
+        renderer.getShader("WalkieTalkieScreen2D").setUniform("gridSize",new Vector2f(WalkieTalkieDisplay.getGridWidth(),WalkieTalkieDisplay.getGridHeight()));
+        renderer.getShader("WalkieTalkieScreen2D").setUniform("selectedTexture",new Vector2f(currentWalkieTalkieDisplay.getX(),currentWalkieTalkieDisplay.getY()));
+        renderer.getShader("WalkieTalkieScreen2D").setUniform("selectedTexture",new Vector2f(currentWalkieTalkieDisplay.getX(),currentWalkieTalkieDisplay.getY()));
+        renderer.getShader("WalkieTalkieScreen2D").setUniform("dimScreen", currentWalkieTalkieState.usesDimScreen());
+        renderer.render2DSprite(walkieTalkie_Screen,"WalkieTalkieScreen2D");
 
         if(currentWalkieTalkieState == WalkieTalkieState.SPEAKER_VIEW || currentWalkieTalkieState == WalkieTalkieState.TALKING_ACTIVE) {
             renderer.getShader("TextureGrid2D").bind();
@@ -103,17 +139,89 @@ public class WalkieTalkieBase {
     }
 
 
+
+
+
+    public boolean togglePower() {
+        if (currentWalkieTalkieState.isPowered() && !currentWalkieTalkieState.isDominatingState()) {
+            if(enterState(WalkieTalkieState.OFF_ACTIVE)) {
+                // Play a power down sound
+                return true;
+            }
+        } else {
+            if (!currentWalkieTalkieState.isPowered() && !currentWalkieTalkieState.isDominatingState()) {
+                if(enterState(WalkieTalkieState.BOOTING_ACTIVE)) {
+                    // Play a booting sound
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean togglePullUpWalkieTalkie() {
+        if (currentWalkieTalkieState.getPosition() == WalkieTalkieStatePosition.IDLE) {
+            if(currentWalkieTalkieState.isPowered()) {
+                if(enterState(WalkieTalkieState.USE_ACTIVE)) {
+                    // Play a swipe up sound
+                    return true;
+                }
+            } else {
+                if(getCurrentBatteryLevel() > 0) {
+                    if(enterState(WalkieTalkieState.OFF_ACTIVE)) {
+                        // Play a swipe up sound
+                        return true;
+                    }
+                } else {
+                    if(enterState(WalkieTalkieState.DEAD_ACTIVE)) {
+                        // Play a empty dead sound??
+                        return true;
+                    }
+                }
+
+            }
+        } else {
+            if(currentWalkieTalkieState.getPosition() == WalkieTalkieStatePosition.ACTIVE) {
+                if(!currentWalkieTalkieState.isDominatingState()) {
+                    if(currentWalkieTalkieState.isPowered()) {
+                        if(enterState(WalkieTalkieState.ON_IDLE)) {
+                            // Play a swipe up sound
+                            return true;
+                        }
+                    } else {
+                        if(getCurrentBatteryLevel() > 0) {
+                            if(enterState(WalkieTalkieState.OFF_IDLE)) {
+                                // Play a swipe up sound
+                                return true;
+                            }
+                        } else {
+                            if(enterState(WalkieTalkieState.DEAD_IDLE)) {
+                                // Play a empty dead sound??
+                                return true;
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+
     /**
      *
      * @param speaker The Speakers Icon
-     * @param overrideBattery If this trigger should override a dead battery
+     * @param overridePower If this trigger should override a dead battery
      * @param overrideMute If this trigger should override a mute
      * @return If Speaker properly engaged
      */
-    public boolean triggerSpeaker(WalkieTalkieScreenDisplay speaker, boolean overrideBattery, boolean overrideMute) {
-        if((currentBatteryLevel > 0 || overrideBattery) && (!isMuted || overrideMute) ) {
+    // COME BACK ADD CUSTOM SPEAKER SUPPORT
+    public boolean triggerSpeaker(WalkieTalkieDisplay speaker, boolean overridePower, boolean overrideMute) {
+        if(((currentWalkieTalkieState.isPowered() && currentBatteryLevel > 0) || overridePower) && (!isMuted || overrideMute) ) {
+            // Play intro speaker noise at volume level
             if (enterState(WalkieTalkieState.SPEAKER_VIEW)) {
-                currentWalkieTalkieDisplay = speaker;
                 return true;
             }
         }
@@ -139,17 +247,17 @@ public class WalkieTalkieBase {
      * @return If mute has been toggled properly
      */
     public boolean toggleMute() {
-        if(!currentWalkieTalkieState.isDominatingState()) {
+        if(currentWalkieTalkieState.isPowered() && !currentWalkieTalkieState.isDominatingState()) {
             isMuted = !isMuted;
             if(isMuted) {
                 if(enterState(WalkieTalkieState.SHOW_VOLUME_ACTIVE)) {
-                    currentWalkieTalkieDisplay = WalkieTalkieScreenDisplay.VOLUME_MUTE;
                     return true;
+                    // play a click sound no volume
                 }
             } else {
                 if(enterState(WalkieTalkieState.SHOW_VOLUME_ACTIVE)) {
-                    currentWalkieTalkieDisplay = WalkieTalkieScreenDisplay.getVolumeDisplay(currentVolume);
                     return true;
+                    // Play flat volume change at correct volume
                 }
             }
         }
@@ -161,19 +269,19 @@ public class WalkieTalkieBase {
      * @return If a volume Increase attempt was successful ( Volume may already be max )
      */
     public boolean increaseVolume() {
-        if(!currentWalkieTalkieState.isDominatingState()) {
+        if(currentWalkieTalkieState.isPowered() && !currentWalkieTalkieState.isDominatingState()) {
             if(isMuted) {
                 if(enterState(WalkieTalkieState.SHOW_VOLUME_ACTIVE)) {
-                    currentWalkieTalkieDisplay = WalkieTalkieScreenDisplay.VOLUME_MUTE;
+                    // Play "Error" Sound
                     return true;
                 }
             } else {
 
                 if(enterState(WalkieTalkieState.SHOW_VOLUME_ACTIVE)) {
+                    // Play acceding sound if works, some other "Stagnant volume" if not
                     if(currentVolume != 3) {
                         currentVolume++;
                     }
-                    currentWalkieTalkieDisplay = WalkieTalkieScreenDisplay.getVolumeDisplay(currentVolume);
                     return true;
                 }
             }
@@ -186,18 +294,18 @@ public class WalkieTalkieBase {
      * @return
      */
     public boolean decreaseVolume() {
-        if(!currentWalkieTalkieState.isDominatingState()) {
+        if(currentWalkieTalkieState.isPowered() && !currentWalkieTalkieState.isDominatingState()) {
             if(isMuted) {
                 if(enterState(WalkieTalkieState.SHOW_VOLUME_ACTIVE)) {
-                    currentWalkieTalkieDisplay = WalkieTalkieScreenDisplay.VOLUME_MUTE;
+                    // Play error sound
                 }
             } else {
 
                 if(enterState(WalkieTalkieState.SHOW_VOLUME_ACTIVE)) {
+                    // Play Descending sound if works, some other "Stagnant volume" if not
                     if(currentVolume != 0) {
                         currentVolume--;
                     }
-                    currentWalkieTalkieDisplay = WalkieTalkieScreenDisplay.getVolumeDisplay(currentVolume);
                 }
             }
             return true;
@@ -212,23 +320,26 @@ public class WalkieTalkieBase {
      * @return
      */
     public boolean changeChannel(int channel) {
-        if(!currentWalkieTalkieState.isDominatingState()) {
+        if(currentWalkieTalkieState.isPowered() && !currentWalkieTalkieState.isDominatingState()) {
+            // Play some sort of channel change sound
             if(enterState(WalkieTalkieState.SHOW_CHANNEL_ACTIVE)) {
                 currentChannel = channel;
-                currentWalkieTalkieDisplay = WalkieTalkieScreenDisplay.getChannelDisplay(currentChannel);
                 return true;
             }
          }
         return false;
     }
 
-
-
-    private void setPosition(int x, int y) {
-        walkieTalkie_Body.setPosition(x,y,0);
-        walkieTalkie_Screen.setPosition(x+(5*WALKIE_TALKIE_SCALE),y+(27*WALKIE_TALKIE_SCALE),0.3f);
-        walkieTalkie_Signal.setPosition(x-(4*WALKIE_TALKIE_SCALE),y-(5*WALKIE_TALKIE_SCALE),0.5f);
+    public boolean showBattery() {
+        if(currentWalkieTalkieState.isPowered() && !currentWalkieTalkieState.isDominatingState()) {
+            // Play some sort of channel change sound
+            if(enterState(WalkieTalkieState.SHOW_BATTERY_ACTIVE)) {
+                return true;
+            }
+        }
+        return false;
     }
+
 
     /**
      *
@@ -253,6 +364,13 @@ public class WalkieTalkieBase {
             return false;
         }
     }
+
+    private void setPosition(int x, int y) {
+        walkieTalkie_Body.setPosition(x,y,0);
+        walkieTalkie_Screen.setPosition(x+(5*WALKIE_TALKIE_SCALE),y+(27*WALKIE_TALKIE_SCALE),0.3f);
+        walkieTalkie_Signal.setPosition(x-(4*WALKIE_TALKIE_SCALE),y-(5*WALKIE_TALKIE_SCALE),0.5f);
+    }
+
 
     public double getStateProgress() {
         if(currentWalkieTalkieState.hasSetTimeLimit()) {
@@ -288,7 +406,7 @@ public class WalkieTalkieBase {
         return currentWalkieTalkieState;
     }
 
-    public WalkieTalkieScreenDisplay getAssignedSpeakingIcon() {
+    public WalkieTalkieDisplay getAssignedSpeakingIcon() {
         return assignedSpeakingIcon;
     }
 }

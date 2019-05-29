@@ -3,13 +3,13 @@ package com.GlitchyDev.World.Elements.WalkieTalkie.Enums;
 public enum WalkieTalkieStateTransition {
     NONE(0.0),
 
-    IDLE_TO_VIEW(0.5),
+    IDLE_TO_VIEW(0.4),
     VIEW_TO_IDLE(0.2),
 
     VIEW_TO_ACTIVE(0.2),
     ACTIVE_TO_VIEW(0.2),
 
-    IDLE_TO_ACTIVE(0.5),
+    IDLE_TO_ACTIVE(0.4),
     ACTIVE_TO_IDLE(0.2);
 
     private final double length;

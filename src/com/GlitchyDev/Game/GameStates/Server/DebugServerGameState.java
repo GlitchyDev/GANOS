@@ -21,7 +21,7 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Elements.WalkieTalkie.Enums.WalkieTalkieScreenDisplay;
+import com.GlitchyDev.World.Elements.WalkieTalkie.Enums.WalkieTalkieDisplay;
 import com.GlitchyDev.World.Elements.WalkieTalkie.WalkieTalkieBase;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugEntity;
@@ -265,14 +265,17 @@ public class DebugServerGameState extends ServerWorldGameState {
         debugItems.get(12).setText("WalkieTalkie State " + walkieTalkie.getCurrentWalkieTalkieState());
         debugItems.get(13).setText("WalkieTalkie Progress " + walkieTalkie.getStateProgress());
         debugItems.get(14).setText("WalkieTalkie Channel " + walkieTalkie.getCurrentChannel());
-        debugItems.get(15).setText("WalkieTalkie Volume " + walkieTalkie.isMuted());
+        debugItems.get(15).setText("WalkieTalkie Muted " + walkieTalkie.isMuted());
         debugItems.get(16).setText("WalkieTalkie Volume " + walkieTalkie.getCurrentVolume());
         debugItems.get(17).setText("WalkieTalkie Battery " + walkieTalkie.getCurrentBatteryLevel());
+        debugItems.get(18).setText("WalkieTalkie Powered " + walkieTalkie.getCurrentWalkieTalkieState().isPowered());
+        debugItems.get(19).setText("WalkieTalkie Transition " + walkieTalkie.getTransitionProgress());
+
 
 
         testPlayer.getPlayerEntity().tick();
         if(gameInputTimings.getActiveKeyTime(GLFW_KEY_0) == 1) {
-            walkieTalkie.triggerSpeaker(WalkieTalkieScreenDisplay.CALLSIGN_CROWN, false,false);
+            walkieTalkie.triggerSpeaker(WalkieTalkieDisplay.CALLSIGN_CROWN, false,false);
         }
         if(gameInputTimings.getActiveKeyTime(GLFW_KEY_1) == 1) {
             walkieTalkie.endSpeaker();
@@ -288,6 +291,16 @@ public class DebugServerGameState extends ServerWorldGameState {
         }
         if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_SUBTRACT) == 1) {
             walkieTalkie.decreaseVolume();
+        }
+
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_DIVIDE) == 1) {
+            walkieTalkie.togglePower();
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_MULTIPLY) == 1) {
+            walkieTalkie.showBattery();
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_NUM_LOCK) == 1) {
+            walkieTalkie.togglePullUpWalkieTalkie();
         }
 
         if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_0) == 1) {

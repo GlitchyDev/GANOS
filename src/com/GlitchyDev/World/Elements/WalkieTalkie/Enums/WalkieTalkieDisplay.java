@@ -2,7 +2,8 @@ package com.GlitchyDev.World.Elements.WalkieTalkie.Enums;
 
 import java.util.ArrayList;
 
-public enum WalkieTalkieScreenDisplay {
+public enum WalkieTalkieDisplay {
+
     // Menu Items
     BATTERY_4(0,0),
     BATTERY_3(0,1),
@@ -10,13 +11,23 @@ public enum WalkieTalkieScreenDisplay {
     BATTERY_1(0,3),
     BATTERY_0(0,4),
 
+
+    PROGRESS_0(0,5),
+    PROGRESS_1(0,6),
+    PROGRESS_2(0,7),
+    PROGRESS_3(0,8),
+    PROGRESS_4(0,9),
+
+    PROGRESS_5(1,5),
+    BLANK(1,6),
+
+
+
     VOLUME_3(1,0),
     VOLUME_2(1,1),
     VOLUME_1(1,2),
     VOLUME_0(1,3),
     VOLUME_MUTE(1,4),
-    VOLUME_ADD(1,5),
-    VOLUME_SUB(1,6),
 
     CHANNEL_0(2,0),
     CHANNEL_1(2,1),
@@ -167,7 +178,9 @@ public enum WalkieTalkieScreenDisplay {
     INHABITANT_DRAWING_ALRIGHT(17,5),
     ;
 
-    public static WalkieTalkieScreenDisplay getLetter(char letter) {
+    private static final int GRID_WIDTH = 19;
+    private static final int GRID_HEIGHT = 10;
+    public static WalkieTalkieDisplay getLetter(char letter) {
         switch(letter) {
             case 'A':
                 return A;
@@ -259,47 +272,47 @@ public enum WalkieTalkieScreenDisplay {
         return SPACE;
     }
 
-    public ArrayList<WalkieTalkieScreenDisplay> getScreenDisplays(String line) {
-        ArrayList<WalkieTalkieScreenDisplay> list = new ArrayList<>(line.length());
+    public ArrayList<WalkieTalkieDisplay> getScreenDisplays(String line) {
+        ArrayList<WalkieTalkieDisplay> list = new ArrayList<>(line.length());
         for(char c: line.toUpperCase().toCharArray()) {
             list.add(getLetter(c));
         }
         return list;
     }
 
-    public static WalkieTalkieScreenDisplay getVolumeDisplay(int volumeLevel) {
+    public static WalkieTalkieDisplay getVolumeDisplay(int volumeLevel) {
         switch(volumeLevel) {
             case 3:
-                return WalkieTalkieScreenDisplay.VOLUME_3;
+                return WalkieTalkieDisplay.VOLUME_3;
             case 2:
-                return WalkieTalkieScreenDisplay.VOLUME_2;
+                return WalkieTalkieDisplay.VOLUME_2;
             case 1:
-                return WalkieTalkieScreenDisplay.VOLUME_1;
+                return WalkieTalkieDisplay.VOLUME_1;
             case 0:
-                return WalkieTalkieScreenDisplay.VOLUME_0;
+                return WalkieTalkieDisplay.VOLUME_0;
             default:
-                return WalkieTalkieScreenDisplay.VOLUME_0;
+                return WalkieTalkieDisplay.VOLUME_0;
         }
     }
 
-    public static WalkieTalkieScreenDisplay getBatteryDisplay(int batteryLevel) {
+    public static WalkieTalkieDisplay getBatteryDisplay(int batteryLevel) {
         switch(batteryLevel) {
             case 4:
-                return WalkieTalkieScreenDisplay.BATTERY_4;
+                return WalkieTalkieDisplay.BATTERY_4;
             case 3:
-                return WalkieTalkieScreenDisplay.BATTERY_3;
+                return WalkieTalkieDisplay.BATTERY_3;
             case 2:
-                return WalkieTalkieScreenDisplay.BATTERY_2;
+                return WalkieTalkieDisplay.BATTERY_2;
             case 1:
-                return WalkieTalkieScreenDisplay.BATTERY_1;
+                return WalkieTalkieDisplay.BATTERY_1;
             case 0:
-                return WalkieTalkieScreenDisplay.BATTERY_0;
+                return WalkieTalkieDisplay.BATTERY_0;
             default:
-                return WalkieTalkieScreenDisplay.BATTERY_0;
+                return WalkieTalkieDisplay.BATTERY_0;
         }
     }
 
-    public static WalkieTalkieScreenDisplay getChannelDisplay(int channel) {
+    public static WalkieTalkieDisplay getChannelDisplay(int channel) {
         switch(channel) {
             case 0:
                 return CHANNEL_0;
@@ -326,9 +339,28 @@ public enum WalkieTalkieScreenDisplay {
         }
     }
 
+    public static WalkieTalkieDisplay getProgressDisplay(int channel) {
+        switch(channel) {
+            case 0:
+                return PROGRESS_0;
+            case 1:
+                return PROGRESS_1;
+            case 2:
+                return PROGRESS_2;
+            case 3:
+                return PROGRESS_3;
+            case 4:
+                return PROGRESS_4;
+            case 5:
+                return PROGRESS_5;
+            default:
+                return PROGRESS_5;
+        }
+    }
+
     private final int x;
     private final int y;
-    WalkieTalkieScreenDisplay(int x, int y) {
+    WalkieTalkieDisplay(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -339,5 +371,13 @@ public enum WalkieTalkieScreenDisplay {
 
     public int getY() {
         return y;
+    }
+
+    public static int getGridWidth() {
+        return GRID_WIDTH;
+    }
+
+    public static int getGridHeight() {
+        return GRID_HEIGHT;
     }
 }
