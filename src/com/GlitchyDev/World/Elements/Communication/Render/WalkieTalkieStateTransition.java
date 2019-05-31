@@ -1,4 +1,4 @@
-package com.GlitchyDev.World.Elements.WalkieTalkie.Enums;
+package com.GlitchyDev.World.Elements.Communication.Render;
 
 public enum WalkieTalkieStateTransition {
     NONE(0.0),

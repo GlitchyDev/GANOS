@@ -21,8 +21,8 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Elements.WalkieTalkie.Enums.WalkieTalkieDisplay;
-import com.GlitchyDev.World.Elements.WalkieTalkie.WalkieTalkieBase;
+import com.GlitchyDev.World.Elements.Communication.Network.Enums.Render.WalkieTalkieDisplay;
+import com.GlitchyDev.World.Elements.Communication.Render.WalkieTalkieBase;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugEntity;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
@@ -262,14 +262,14 @@ public class DebugServerGameState extends ServerWorldGameState {
         }
 
         debugItems.get(11).setText("Client Entity Count " + valueCount);
-        debugItems.get(12).setText("WalkieTalkie State " + walkieTalkie.getCurrentWalkieTalkieState());
-        debugItems.get(13).setText("WalkieTalkie Progress " + walkieTalkie.getStateProgress());
-        debugItems.get(14).setText("WalkieTalkie Channel " + walkieTalkie.getCurrentChannel());
-        debugItems.get(15).setText("WalkieTalkie Muted " + walkieTalkie.isMuted());
-        debugItems.get(16).setText("WalkieTalkie Volume " + walkieTalkie.getCurrentVolume());
-        debugItems.get(17).setText("WalkieTalkie Battery " + walkieTalkie.getCurrentBatteryLevel());
-        debugItems.get(18).setText("WalkieTalkie Powered " + walkieTalkie.getCurrentWalkieTalkieState().isPowered());
-        debugItems.get(19).setText("WalkieTalkie Transition " + walkieTalkie.getTransitionProgress());
+        debugItems.get(12).setText("Communication State " + walkieTalkie.getCurrentWalkieTalkieState());
+        debugItems.get(13).setText("Communication Progress " + walkieTalkie.getStateProgress());
+        debugItems.get(14).setText("Communication Channel " + walkieTalkie.getCurrentChannel());
+        debugItems.get(15).setText("Communication Muted " + walkieTalkie.isMuted());
+        debugItems.get(16).setText("Communication Volume " + walkieTalkie.getCurrentVolume());
+        debugItems.get(17).setText("Communication Battery " + walkieTalkie.getCurrentBatteryLevel());
+        debugItems.get(18).setText("Communication Powered " + walkieTalkie.getCurrentWalkieTalkieState().isPowered());
+        debugItems.get(19).setText("Communication Transition " + walkieTalkie.getTransitionProgress());
 
 
 

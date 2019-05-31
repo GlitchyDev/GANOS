@@ -1,16 +1,14 @@
-package com.GlitchyDev.World.Elements.WalkieTalkie;
+package com.GlitchyDev.World.Elements.Communication.Render;
+
 
 import com.GlitchyDev.Rendering.Assets.Texture.Texture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
 import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.AssetLoader;
-import com.GlitchyDev.World.Elements.WalkieTalkie.Enums.WalkieTalkieDisplay;
-import com.GlitchyDev.World.Elements.WalkieTalkie.Enums.WalkieTalkieState;
-import com.GlitchyDev.World.Elements.WalkieTalkie.Enums.WalkieTalkieStatePosition;
-import com.GlitchyDev.World.Elements.WalkieTalkie.Enums.WalkieTalkieStateTransition;
 import org.joml.Vector2f;
 
 public class WalkieTalkieBase {
+
     // Sprites and Rendering
     private final float WALKIE_TALKIE_SCALE = 3.0f;
     private final SpriteItem walkieTalkie_Body;
@@ -326,7 +324,7 @@ public class WalkieTalkieBase {
                 currentChannel = channel;
                 return true;
             }
-         }
+        }
         return false;
     }
 

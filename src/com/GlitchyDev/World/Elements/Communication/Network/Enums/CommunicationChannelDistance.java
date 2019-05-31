@@ -1,4 +1,4 @@
-package com.GlitchyDev.World.Elements.WalkieTalkie.Enums;
+package com.GlitchyDev.World.Elements.Communication.Network.Enums;
 
 public enum CommunicationChannelDistance {
     SHORT_RANGE(500),
