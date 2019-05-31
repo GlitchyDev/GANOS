@@ -16,7 +16,7 @@ import static org.lwjgl.stb.STBVorbis.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
- * A Sound File that can be played through a Source
+ * A Transmission File that can be played through a Source
  */
 public class SoundBuffer {
 
