@@ -3,7 +3,7 @@ package com.GlitchyDev.World;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Region.Region;
-import com.GlitchyDev.World.Region.RegionConnectionType;
+import com.GlitchyDev.World.Region.RegionConnection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +15,7 @@ public class World {
     private HashMap<UUID,EntityBase> entities;
     private HashMap<Location,TickableBlock> tickableBlocks;
     // A File loaded with the world that would contain the connections between regions
-    private HashMap<UUID, HashMap<RegionConnectionType, ArrayList<UUID>>> regionConnections;
+    private HashMap<UUID, HashMap<RegionConnection, ArrayList<UUID>>> regionConnections;
     // A File loaded with the world with the configuration of the regions connections
 
     public static final String FILETYPE = "worldInfo";
@@ -87,19 +87,19 @@ public class World {
         return new Location(0,0,0, getWorldUUID());
     }
 
-    public void linkRegion(UUID regionUUID, UUID linkedRegion, RegionConnectionType regionConnectionType) {
+    public void linkRegion(UUID regionUUID, UUID linkedRegion, RegionConnection regionConnection) {
         if(!regionConnections.containsKey(regionUUID)) {
             regionConnections.put(regionUUID,new HashMap<>());
         }
-        if(!regionConnections.get(regionUUID).containsKey(regionConnectionType)) {
-            regionConnections.get(regionUUID).put(regionConnectionType,new ArrayList<>());
+        if(!regionConnections.get(regionUUID).containsKey(regionConnection)) {
+            regionConnections.get(regionUUID).put(regionConnection,new ArrayList<>());
         }
-        regionConnections.get(regionUUID).get(regionConnectionType).add(linkedRegion);
+        regionConnections.get(regionUUID).get(regionConnection).add(linkedRegion);
     }
 
-    public void unlinkRegion(UUID regionUUID, UUID linkedRegion, RegionConnectionType regionConnectionType) {
+    public void unlinkRegion(UUID regionUUID, UUID linkedRegion, RegionConnection regionConnection) {
 
-        regionConnections.get(regionUUID).get(regionConnectionType).remove(linkedRegion);
+        regionConnections.get(regionUUID).get(regionConnection).remove(linkedRegion);
     }
 
     // Getters
@@ -116,9 +116,11 @@ public class World {
         return entities;
     }
 
-    public HashMap<UUID, HashMap<RegionConnectionType, ArrayList<UUID>>> getRegionConnections() {
+    public HashMap<UUID, HashMap<RegionConnection, ArrayList<UUID>>> getRegionConnections() {
         return regionConnections;
     }
+
+
 
     @Override
     public String toString() {

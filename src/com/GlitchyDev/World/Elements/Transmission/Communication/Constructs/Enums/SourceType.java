@@ -2,5 +2,6 @@ package com.GlitchyDev.World.Elements.Transmission.Communication.Constructs.Enum
 
 public enum SourceType {
     ENTITY,
-    BLOCK
+    BLOCK,
+    SERVER
 }

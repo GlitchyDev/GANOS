@@ -11,7 +11,7 @@ import com.GlitchyDev.World.Entities.Effects.Abstract.RegionRevealingEffect;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Region;
-import com.GlitchyDev.World.Region.RegionConnectionType;
+import com.GlitchyDev.World.Region.RegionConnection;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
             ArrayList<Region> newlyConnected = new ArrayList<>();
             ArrayList<Region> newlyRemoved = new ArrayList<>();
 
-            HashMap<UUID, HashMap<RegionConnectionType, ArrayList<UUID>>> connections = worldGameState.getRegionConnections(getWorldUUID());
+            HashMap<UUID, HashMap<RegionConnection, ArrayList<UUID>>> connections = worldGameState.getRegionConnections(getWorldUUID());
 
 
 
@@ -66,8 +66,8 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
 
 
 
-            ArrayList<RegionConnectionType> seeableConnectionTypes = new ArrayList<>();
-            for(RegionConnectionType regionConnection: connections.get(getCurrentRegionUUID()).keySet()) {
+            ArrayList<RegionConnection> seeableConnectionTypes = new ArrayList<>();
+            for(RegionConnection regionConnection: connections.get(getCurrentRegionUUID()).keySet()) {
                 if(regionConnection.isVisibleByDefault()) {
                     boolean hidden = false;
                     for(EffectBase effect: getEffects()) {
@@ -93,8 +93,8 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
                 }
             }
 
-            for(RegionConnectionType regionConnectionType: seeableConnectionTypes) {
-                for(UUID regionUUID: connections.get(getCurrentRegionUUID()).get(regionConnectionType)) {
+            for(RegionConnection regionConnection : seeableConnectionTypes) {
+                for(UUID regionUUID: connections.get(getCurrentRegionUUID()).get(regionConnection)) {
                     Region region = worldGameState.getRegion(regionUUID, getWorldUUID());
                     connectedRegions.add(region);
                     if(!previouslyConnectedRegions.contains(region)) {

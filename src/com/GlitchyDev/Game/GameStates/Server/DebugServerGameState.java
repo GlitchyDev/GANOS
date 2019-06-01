@@ -21,9 +21,13 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Elements.Transmission.Network.Enums.Render.WalkieTalkieDisplay;
+import com.GlitchyDev.World.Elements.Transmission.Communication.Constructs.Enums.LanguageType;
+import com.GlitchyDev.World.Elements.Transmission.Communication.Constructs.Messages.CommunicationMessage;
+import com.GlitchyDev.World.Elements.Transmission.Communication.Constructs.Source.CommunicationServerSource;
 import com.GlitchyDev.World.Elements.Transmission.Render.WalkieTalkieBase;
+import com.GlitchyDev.World.Elements.Transmission.Render.WalkieTalkieDisplay;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.DebugCommunicationEntity;
 import com.GlitchyDev.World.Entities.DebugEntity;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
 import com.GlitchyDev.World.Entities.Effects.ServerDebugEffect;
@@ -32,7 +36,7 @@ import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Region;
-import com.GlitchyDev.World.Region.RegionConnectionType;
+import com.GlitchyDev.World.Region.RegionConnection;
 import com.GlitchyDev.World.World;
 import com.GlitchyDev.World.WorldFileType;
 
@@ -151,21 +155,24 @@ public class DebugServerGameState extends ServerWorldGameState {
             addRegionToGame(region2);
             addRegionToGame(region3);
             addRegionToGame(region4);
-            world.linkRegion(region1.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
+            world.linkRegion(region1.getRegionUUID(),region2.getRegionUUID(), RegionConnection.NORMAL);
 
-            world.linkRegion(region2.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
-            world.linkRegion(region2.getRegionUUID(),region3.getRegionUUID(), RegionConnectionType.VISIBLE_DEBUG_1);
-            world.linkRegion(region2.getRegionUUID(),region4.getRegionUUID(), RegionConnectionType.HIDDEN_DEBUG_1);
+            world.linkRegion(region2.getRegionUUID(),region1.getRegionUUID(), RegionConnection.NORMAL);
+            world.linkRegion(region2.getRegionUUID(),region3.getRegionUUID(), RegionConnection.VISIBLE_DEBUG_1);
+            world.linkRegion(region2.getRegionUUID(),region4.getRegionUUID(), RegionConnection.HIDDEN_DEBUG_1);
 
-            world.linkRegion(region3.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
-            world.linkRegion(region3.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
+            world.linkRegion(region3.getRegionUUID(),region2.getRegionUUID(), RegionConnection.NORMAL);
+            world.linkRegion(region3.getRegionUUID(),region1.getRegionUUID(), RegionConnection.NORMAL);
 
-            world.linkRegion(region4.getRegionUUID(),region2.getRegionUUID(), RegionConnectionType.NORMAL);
-            world.linkRegion(region4.getRegionUUID(),region1.getRegionUUID(), RegionConnectionType.NORMAL);
+            world.linkRegion(region4.getRegionUUID(),region2.getRegionUUID(), RegionConnection.NORMAL);
+            world.linkRegion(region4.getRegionUUID(),region1.getRegionUUID(), RegionConnection.NORMAL);
 
 
             DebugEntity debugEntity = new DebugEntity(this,getRegionAtLocation(new Location(5,1,0,spawnWorld)).getRegionUUID(), new Location(5,1,0,spawnWorld), Direction.NORTH);
             spawnEntity(debugEntity, SpawnReason.DEBUG);
+
+            DebugCommunicationEntity debugCommunicationEntity = new DebugCommunicationEntity(this,getRegionAtLocation(new Location(3,1,0,spawnWorld)).getRegionUUID(), new Location(3,1,0,spawnWorld), Direction.NORTH);
+            spawnEntity(debugCommunicationEntity, SpawnReason.DEBUG);
             try {
                 saveWorld(file, world);
             } catch (IOException e) {
@@ -281,6 +288,21 @@ public class DebugServerGameState extends ServerWorldGameState {
             walkieTalkie.endSpeaker();
         }
 
+
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_H) == 1) {
+            System.out.println("Broadcast Message");
+            CommunicationMessage message = new CommunicationMessage(0, LanguageType.English,"Soma");
+            getCommunicationManager().transmitMessage(message,new Location(0,0,0,spawnWorld),new CommunicationServerSource());
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_I) == 1) {
+            System.out.println("Check Connectedness");
+            World world = getWorld(spawnWorld);
+            for(UUID region: world.getRegions().keySet()) {
+                for(RegionConnection types: world.getRegionConnections().get(region).keySet()) {
+                    System.out.println(types);
+                }
+            }
+        }
 
 
         if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_ENTER) == 1) {
@@ -562,11 +584,11 @@ public class DebugServerGameState extends ServerWorldGameState {
         for(int i = 0; i < numRegions; i++) { // For Each Region
             int connectionTypeCount = inputBitUtility.getNextCorrectIntByte(); // Num Connection Types
             for(int c = 0; c < connectionTypeCount; c++) {
-                RegionConnectionType regionConnectionType = RegionConnectionType.values()[inputBitUtility.getNextCorrectIntByte()]; // Type
+                RegionConnection regionConnection = RegionConnection.values()[inputBitUtility.getNextCorrectIntByte()]; // Type
                 int regionsConnected = inputBitUtility.getNextCorrectIntByte(); // Regions Held
                 for(int r = 0; r < regionsConnected; r++) {
                     UUID region = inputBitUtility.getNextUUID(); // UUID of Region
-                    world.linkRegion(regionUUIDs[i],region, regionConnectionType);
+                    world.linkRegion(regionUUIDs[i],region, regionConnection);
                 }
 
             }
@@ -597,12 +619,12 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
         for(UUID regionUUID: world.getRegionConnections().keySet()) { // For each Region
-            HashMap<RegionConnectionType,ArrayList<UUID>> regionConnections = world.getRegionConnections().get(regionUUID);
+            HashMap<RegionConnection,ArrayList<UUID>> regionConnections = world.getRegionConnections().get(regionUUID);
             outputBitUtility.writeNextCorrectByteInt(regionConnections.size()); // Write num connection types
 
-            for(RegionConnectionType regionConnectionType: regionConnections.keySet()) {
-                outputBitUtility.writeNextCorrectByteInt(regionConnectionType.ordinal()); // Write Type
-                ArrayList<UUID> regionsConnections = regionConnections.get(regionConnectionType);
+            for(RegionConnection regionConnection : regionConnections.keySet()) {
+                outputBitUtility.writeNextCorrectByteInt(regionConnection.ordinal()); // Write Type
+                ArrayList<UUID> regionsConnections = regionConnections.get(regionConnection);
                 outputBitUtility.writeNextCorrectByteInt(regionsConnections.size()); // Write Size
                 for(UUID uuid: regionsConnections) { // Write UUIDs
                     outputBitUtility.writeNextUUID(uuid);

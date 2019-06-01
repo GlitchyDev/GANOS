@@ -110,60 +110,27 @@ public abstract class EntityBase {
 
     public abstract void onDespawn(DespawnReason despawnReason);
 
-    /**
-     *
-     * @param newLocation
-     * @param movementType
-     * @return If successful
-     */
-    public boolean attemptMove(Location newLocation, EntityMovementType movementType) {
-        BlockBase currentBlock = worldGameState.getBlockAtLocation(getLocation());
-        if(currentBlock instanceof TriggerableBlock) {
-            if(!((TriggerableBlock) currentBlock).attemptExitBlock(movementType,this)) {
-                return false;
-            }
-        }
-        BlockBase nextBlock = worldGameState.getBlockAtLocation(newLocation);
-        if(nextBlock instanceof TriggerableBlock) {
-            if(!((TriggerableBlock) nextBlock).attemptExitBlock(movementType,this)) {
-                return false;
-            }
-        }
-        move(newLocation, movementType);
-        return true;
-    }
 
-    /**
-     *
-     * @param newLocation
-     * @param movementType
-     */
-    public void move(Location newLocation, EntityMovementType movementType) {
-        // Find our TRIGGER WARNINGS,
-        BlockBase currentBlock = worldGameState.getBlockAtLocation(getLocation());
-        if(worldGameState.isARegionAtLocation(newLocation)) {
-            if (currentBlock instanceof TriggerableBlock) {
-                ((TriggerableBlock) currentBlock).exitBlockSuccessfully(movementType, this);
-            }
-            BlockBase nextBlock = worldGameState.getBlockAtLocation(newLocation);
-            if (nextBlock instanceof TriggerableBlock) {
-                ((TriggerableBlock) newLocation).enterBlockSccessfully(movementType, this);
-            }
+    public void teleport(Location newLocation, UUID newRegionUUID, UUID worldUUID) {
+        Region oldRegion = worldGameState.getRegion(getCurrentRegionUUID(),getWorldUUID());
+        Region newRegion = worldGameState.getRegion(newRegionUUID,worldUUID);
 
-            Location oldLocation = getLocation();
-            worldGameState.getRegion(currentRegionUUID, getWorldUUID()).getEntities().remove(this);
-            setLocation(newLocation);
-            setCurrentRegionUUID(worldGameState.getRegionAtLocation(getLocation()).getRegionUUID());
-            worldGameState.getRegion(currentRegionUUID, getWorldUUID()).getEntities().add(this);
+        Location oldOffset = oldRegion.getLocation().getLocationDifference(getLocation());
+        Location newOffset = newRegion.getLocation().getLocationDifference(newLocation);
 
-            if (worldGameState instanceof ServerWorldGameState) {
-                ((ServerWorldGameState) worldGameState).replicateMoveEntity(getUUID(), oldLocation, newLocation);
-            }
-        } else {
-            System.out.println("EntityBase: No Valid region at " + newLocation);
+        BlockBase startingBlock = worldGameState.getRegionAtLocation(getLocation()).getBlockRelative(oldOffset);
+        BlockBase endingBlock = worldGameState.getRegionAtLocation(newLocation).getBlockRelative(newOffset);
+
+        if (startingBlock instanceof TriggerableBlock) {
+            ((TriggerableBlock) startingBlock).exitBlockSuccessfully(EntityMovementType.TELEPORT, this);
         }
 
+        if (endingBlock instanceof TriggerableBlock) {
+            ((TriggerableBlock) endingBlock).enterBlockSccessfully(EntityMovementType.TELEPORT, this);
+        }
 
+        setLocation(newLocation);
+        currentRegionUUID = newRegionUUID;
     }
 
     public void setDirection(Direction newDirection) {
@@ -192,7 +159,7 @@ public abstract class EntityBase {
 
         outputBitUtility.writeNextCorrectByteInt(effects.size());
         for(int i = 0; i < effects.size(); i++) {
-            effects.get(0).writeData(outputBitUtility);
+            effects.get(i).writeData(outputBitUtility);
         }
 
     }

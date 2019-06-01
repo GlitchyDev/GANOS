@@ -18,6 +18,8 @@ import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisableBlock;
 import com.GlitchyDev.World.Direction;
+import com.GlitchyDev.World.Elements.Transmission.Communication.CommunicationManager;
+import com.GlitchyDev.World.Elements.Transmission.Network.CommunicationNetworkManager;
 import com.GlitchyDev.World.Entities.AbstractEntities.CustomVisibleEntity;
 import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
 import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
@@ -36,11 +38,16 @@ import java.util.UUID;
 public abstract class ServerWorldGameState extends WorldGameState {
     protected final ServerNetworkManager serverNetworkManager;
     protected final HashMap<UUID,Player> currentPlayers;
+    private final CommunicationNetworkManager communicationNetworkManager;
+    private final CommunicationManager communicationManager;
 
     public ServerWorldGameState(GlobalGameData globalGameDataBase, GameStateType gameStateType, int assignedPort) {
         super(globalGameDataBase, gameStateType);
         serverNetworkManager = new ServerNetworkManager(this, assignedPort);
         currentPlayers = new HashMap<>();
+
+        this.communicationNetworkManager = new CommunicationNetworkManager();
+        this.communicationManager = new CommunicationManager();
     }
 
     @Override
@@ -357,5 +364,13 @@ public abstract class ServerWorldGameState extends WorldGameState {
         }
     }
 
+
+    public CommunicationNetworkManager getCommunicationNetworkManager() {
+        return communicationNetworkManager;
+    }
+
+    public CommunicationManager getCommunicationManager() {
+        return communicationManager;
+    }
 
 }

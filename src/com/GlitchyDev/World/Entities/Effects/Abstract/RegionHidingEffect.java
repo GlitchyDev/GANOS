@@ -1,8 +1,8 @@
 package com.GlitchyDev.World.Entities.Effects.Abstract;
 
-import com.GlitchyDev.World.Region.RegionConnectionType;
+import com.GlitchyDev.World.Region.RegionConnection;
 
 public interface RegionHidingEffect {
 
-    boolean doHideRegionConnection(RegionConnectionType regionConnectionType);
+    boolean doHideRegionConnection(RegionConnection regionConnection);
 }

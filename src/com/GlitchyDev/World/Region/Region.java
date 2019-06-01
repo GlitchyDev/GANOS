@@ -106,7 +106,6 @@ public class Region {
         for(int i = 0; i < blockPaletteSize; i++) {
             BlockType blockType = BlockType.values()[inputBitUtility.getNextCorrectIntByte()];
             palette[i] = blockType.getBlockFromInput(worldGameState, inputBitUtility);
-            System.out.println("Block type " + blockType);
         }
 
 

@@ -1,6 +1,6 @@
 package com.GlitchyDev.World.Region;
 
-public enum RegionConnectionType {
+public enum RegionConnection {
     NORMAL(true),
     HIDDEN_DEBUG_1(false),
     VISIBLE_DEBUG_1(true),
@@ -9,7 +9,7 @@ public enum RegionConnectionType {
     ;
 
     private final boolean isVisibleByDefault;
-    RegionConnectionType(boolean isVisibleByDefault) {
+    RegionConnection(boolean isVisibleByDefault) {
         this.isVisibleByDefault = isVisibleByDefault;
     }
 
