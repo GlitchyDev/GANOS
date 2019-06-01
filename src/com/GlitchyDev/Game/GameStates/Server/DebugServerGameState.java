@@ -107,7 +107,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
 
-        File file = new File(System.getProperty("user.home") + "/Desktop/WorldData.crp");
+        File file = new File(System.getProperty("user.home") + "/Desktop/WorldData.world");
 
         if(!file.exists()) {
             World world = new World(spawnWorld);
@@ -289,7 +289,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         }
 
 
-        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_H) == 1) {
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_U) == 1) {
             System.out.println("Broadcast Message");
             CommunicationMessage message = new CommunicationMessage(0, LanguageType.English,"Soma");
             getCommunicationManager().transmitMessage(message,new Location(0,0,0,spawnWorld),new CommunicationServerSource());
@@ -297,9 +297,21 @@ public class DebugServerGameState extends ServerWorldGameState {
         if(gameInputTimings.getActiveKeyTime(GLFW_KEY_I) == 1) {
             System.out.println("Check Connectedness");
             World world = getWorld(spawnWorld);
+
+            System.out.println("Current Region " + getTestPlayer().getPlayerEntity().getCurrentRegionUUID());
+            for(UUID region: world.getRegions().keySet()) {
+                System.out.println("Checking Region " + region);
+                System.out.println(testPlayer.getPlayerEntity().canRegionBeVisiblyConnected(region));
+            }
+        }
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_O) == 1) {
+            System.out.println("Check Connectedness");
+            World world = getWorld(spawnWorld);
             for(UUID region: world.getRegions().keySet()) {
                 for(RegionConnection types: world.getRegionConnections().get(region).keySet()) {
-                    System.out.println(types);
+                    for(UUID connectedRegion: world.getRegionConnections().get(region).get(types)) {
+                        System.out.println(region + " " + types + " " + connectedRegion);
+                    }
                 }
             }
         }

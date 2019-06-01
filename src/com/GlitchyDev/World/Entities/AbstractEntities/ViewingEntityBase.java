@@ -171,23 +171,22 @@ public abstract class ViewingEntityBase extends EntityBase {
         }
     }
 
-    public boolean canRegionBeVisiblyConnected(ViewingEntityBase viewingEntityBase, UUID targetRegion) {
-
-        if(viewingEntityBase.getCurrentRegionUUID() == targetRegion) {
+    public boolean canRegionBeVisiblyConnected(UUID targetRegion) {
+        if(getCurrentRegionUUID() == targetRegion) {
             return true;
         }
         World currentWorld = worldGameState.getWorld(getWorldUUID());
 
         ArrayList<RegionConnection> visibleRegionConnections = new ArrayList<>();
         for(RegionConnection connection: RegionConnection.values()) {
-            if(viewingEntityBase.regionConnectionVisible(connection)) {
+            if(regionConnectionVisible(connection)) {
                 visibleRegionConnections.add(connection);
             }
         }
 
         ArrayList<UUID> checkedRegions = new ArrayList<>();
         ArrayList<UUID> connectedRegions = new ArrayList<>();
-        connectedRegions.add(viewingEntityBase.getCurrentRegionUUID());
+        connectedRegions.add(getCurrentRegionUUID());
 
         while(connectedRegions.size() != 0) {
             UUID checkRegion = connectedRegions.get(0);
@@ -201,7 +200,7 @@ public abstract class ViewingEntityBase extends EntityBase {
                                 //System.out.println("Found Region " + foundRegion + " from connection " + validConnection);
 
                                 connectedRegions.add(foundRegion);
-                                if(foundRegion == targetRegion) {
+                                if(foundRegion.equals(targetRegion)) {
                                     return true;
                                 }
                             }
