@@ -198,8 +198,8 @@ public class DebugServerGameState extends ServerWorldGameState {
         playerEntity.getEffects().add(new ServerDebugEffect(this,playerEntity));
 
         camera = new Camera();
-        camera.setPosition(-8.5f, 7f, -6f);
-        camera.setRotation(5f, 122f, -0f);
+        camera.setPosition(-10, 7, 30);
+        camera.setRotation(0, 45, -7);
         controller = new XBox360Controller(0);
 
 
@@ -294,31 +294,10 @@ public class DebugServerGameState extends ServerWorldGameState {
             CommunicationMessage message = new CommunicationMessage(0, LanguageType.English,"Soma");
             getCommunicationManager().transmitMessage(message,new Location(0,0,0,spawnWorld),new CommunicationServerSource());
         }
-        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_I) == 1) {
-            System.out.println("Check Connectedness");
-            World world = getWorld(spawnWorld);
-
-            System.out.println("Current Region " + getTestPlayer().getPlayerEntity().getCurrentRegionUUID());
-            for(UUID region: world.getRegions().keySet()) {
-                System.out.println("Checking Region " + region);
-                System.out.println(testPlayer.getPlayerEntity().canRegionBeVisiblyConnected(region));
-            }
-        }
-        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_O) == 1) {
-            System.out.println("Check Connectedness");
-            World world = getWorld(spawnWorld);
-            for(UUID region: world.getRegions().keySet()) {
-                for(RegionConnection types: world.getRegionConnections().get(region).keySet()) {
-                    for(UUID connectedRegion: world.getRegionConnections().get(region).get(types)) {
-                        System.out.println(region + " " + types + " " + connectedRegion);
-                    }
-                }
-            }
-        }
 
 
         if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_ENTER) == 1) {
-            walkieTalkie.toggleMute();
+            walkieTalkie.toggleTalking();
         }
         if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_ADD) == 1) {
             walkieTalkie.increaseVolume();
@@ -333,9 +312,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_MULTIPLY) == 1) {
             walkieTalkie.showBattery();
         }
-        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_NUM_LOCK) == 1) {
-            walkieTalkie.togglePullUpWalkieTalkie();
-        }
+
 
         if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_0) == 1) {
             walkieTalkie.changeChannel(0);
@@ -368,12 +345,13 @@ public class DebugServerGameState extends ServerWorldGameState {
             walkieTalkie.changeChannel(9);
         }
         if(gameInputTimings.getActiveKeyTime(GLFW_KEY_KP_DECIMAL) == 1) {
-            walkieTalkie.changeChannel(-13);
+            walkieTalkie.toggleMute();
         }
 
         walkieTalkie.tick();
 
     }
+
 
 
     private void cameraControlsLogic() {
@@ -426,13 +404,13 @@ public class DebugServerGameState extends ServerWorldGameState {
                 testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.NORTH),EntityMovementType.WALKING);
             }
             if(gameInput.getKeyValue(GLFW_KEY_LEFT) >= 1) {
-                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.EAST),EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.WEST),EntityMovementType.WALKING);
             }
             if(gameInput.getKeyValue(GLFW_KEY_DOWN) >= 1) {
                 testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.SOUTH),EntityMovementType.WALKING);
             }
             if(gameInput.getKeyValue(GLFW_KEY_RIGHT) >= 1) {
-                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.WEST),EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.EAST),EntityMovementType.WALKING);
             }
 
             if(gameInput.getKeyValue(GLFW_KEY_SPACE) >= 1) {
@@ -440,6 +418,32 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
             if(gameInput.getKeyValue(GLFW_KEY_RIGHT_SHIFT) >= 1) {
                 testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.BELOW),EntityMovementType.WALKING);
+            }
+
+            if(gameInput.getKeyValue(GLFW_KEY_Q) >= 1) {
+                camera.moveRotation(0,-1,0);
+            }
+            if(gameInput.getKeyValue(GLFW_KEY_E) >= 1) {
+                camera.moveRotation(0,1,0);
+            }
+
+            if(gameInput.getKeyValue(GLFW_KEY_W) >= 1) {
+                camera.moveForward(1);
+            }
+            if(gameInput.getKeyValue(GLFW_KEY_S) >= 1) {
+                camera.moveBackwards(1);
+            }
+            if(gameInput.getKeyValue(GLFW_KEY_D) >= 1) {
+                camera.moveRight(1);
+            }
+            if(gameInput.getKeyValue(GLFW_KEY_A) >= 1) {
+                camera.moveLeft(1);
+            }
+            if(gameInput.getKeyValue(GLFW_KEY_TAB) >= 1) {
+                camera.moveUp(1);
+            }
+            if(gameInput.getKeyValue(GLFW_KEY_LEFT_SHIFT) >= 1) {
+                camera.moveDown(1);
             }
         }
 

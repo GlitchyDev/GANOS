@@ -172,7 +172,7 @@ public abstract class ViewingEntityBase extends EntityBase {
     }
 
     public boolean canRegionBeVisiblyConnected(UUID targetRegion) {
-        if(getCurrentRegionUUID() == targetRegion) {
+        if(getCurrentRegionUUID().equals(targetRegion)) {
             return true;
         }
         World currentWorld = worldGameState.getWorld(getWorldUUID());

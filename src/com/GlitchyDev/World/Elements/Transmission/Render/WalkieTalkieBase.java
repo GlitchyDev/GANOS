@@ -36,6 +36,7 @@ public class WalkieTalkieBase {
 
     // In the moment stuff
     private int verticalOffset = 0;
+    private WalkieTalkieDisplay lastSpeaker;
 
 
 
@@ -111,8 +112,11 @@ public class WalkieTalkieBase {
                 case SHOW_BATTERY_ACTIVE:
                     currentWalkieTalkieDisplay = WalkieTalkieDisplay.getBatteryDisplay(currentBatteryLevel);
                     break;
+                case TALKING_ACTIVE:
+                    currentWalkieTalkieDisplay = assignedSpeakingIcon;
+                    break;
                 case SPEAKER_VIEW:
-                    // Current Speaker
+                    currentWalkieTalkieDisplay = lastSpeaker;
                 case MESSAGE_VIEW:
                     // Current Message
                 case INHABITANT_VIEW:
@@ -150,6 +154,25 @@ public class WalkieTalkieBase {
             if (!currentWalkieTalkieState.isPowered() && !currentWalkieTalkieState.isDominatingState()) {
                 if(enterState(WalkieTalkieState.BOOTING_ACTIVE)) {
                     // Play a booting sound
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean toggleTalking() {
+        if (currentWalkieTalkieState.isPowered()) {
+            if (currentWalkieTalkieState != WalkieTalkieState.TALKING_ACTIVE) {
+                if(!currentWalkieTalkieState.isDominatingState()) {
+                    if (enterState(WalkieTalkieState.TALKING_ACTIVE)) {
+                        // Play taking static
+                        return true;
+                    }
+                }
+            } else {
+                if (enterState(WalkieTalkieState.USE_ACTIVE)) {
+                    // Play static cease
                     return true;
                 }
             }
@@ -220,6 +243,7 @@ public class WalkieTalkieBase {
         if(((currentWalkieTalkieState.isPowered() && currentBatteryLevel > 0) || overridePower) && (!isMuted || overrideMute) ) {
             // Play intro speaker noise at volume level
             if (enterState(WalkieTalkieState.SPEAKER_VIEW)) {
+                lastSpeaker = speaker;
                 return true;
             }
         }
