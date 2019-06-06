@@ -15,7 +15,7 @@ import com.GlitchyDev.World.Elements.Transmission.Communication.Constructs.Messa
 import com.GlitchyDev.World.Elements.Transmission.Communication.Constructs.Messages.CommunicationNoise;
 import com.GlitchyDev.World.Elements.Transmission.Communication.Constructs.Source.CommunicationSource;
 import com.GlitchyDev.World.Elements.Transmission.DetectionType;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
@@ -25,7 +25,7 @@ import com.GlitchyDev.World.Region.Region;
 import java.io.IOException;
 import java.util.UUID;
 
-public class DebugCommunicationEntity extends EntityBase implements CommunicationListener {
+public class DebugCommunicationEntity extends Entity implements CommunicationListener {
     private SpriteItem spriteItem;
     private TextItem textItem;
 

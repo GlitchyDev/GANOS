@@ -4,7 +4,7 @@ import com.GlitchyDev.Game.GameStates.GameStateType;
 import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
@@ -60,7 +60,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
     public boolean isEntityAtLocation(Location location) {
-        for (EntityBase entity : getWorld(location.getWorldUUID()).getRegionAtLocation(location).getEntities()) {
+        for (Entity entity : getWorld(location.getWorldUUID()).getRegionAtLocation(location).getEntities()) {
             if (entity.getLocation().equals(location)) {
                 return true;
             }
@@ -68,8 +68,8 @@ public abstract class WorldGameState extends EnvironmentGameState {
         return false;
     }
 
-    public EntityBase getEntityAtLocation(Location location) {
-        for (EntityBase entity : getWorld(location.getWorldUUID()).getRegionAtLocation(location).getEntities()) {
+    public Entity getEntityAtLocation(Location location) {
+        for (Entity entity : getWorld(location.getWorldUUID()).getRegionAtLocation(location).getEntities()) {
             if (entity.getLocation().equals(location)) {
                 return entity;
             }
@@ -119,7 +119,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
             System.out.println("W Oopsie! " + region.getWorldUUID() + " " + getWorlds().size());
         }
         world.getRegions().put(region.getRegionUUID(), region);
-        for (EntityBase entity : region.getEntities()) {
+        for (Entity entity : region.getEntities()) {
             world.getEntities().put(entity.getUUID(), entity);
             entity.onSpawn(SpawnReason.REGION_MANUALLY_ADDED);
         }
@@ -133,7 +133,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
     public void removeRegionFromGame(UUID regionUUID, UUID worldUUID) {
         World world = new World(worldUUID);
         Region region = getWorld(worldUUID).getRegions().get(regionUUID);
-        for (EntityBase entity : region.getEntities()) {
+        for (Entity entity : region.getEntities()) {
             world.getEntities().remove(entity.getUUID());
         }
         for (BlockBase block : region.getBlocksArray()) {
@@ -146,7 +146,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
 
     // Replicate Functions
 
-    public void spawnEntity(EntityBase entity, SpawnReason spawnReason) {
+    public void spawnEntity(Entity entity, SpawnReason spawnReason) {
         entity.onSpawn(spawnReason);
 
         World world = getWorld(entity.getLocation().getWorldUUID());
@@ -160,7 +160,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
     public void despawnEntity(UUID entityUUID, UUID worldUUID, DespawnReason despawnReason) {
-        EntityBase entity = getWorld(worldUUID).getEntities().get(entityUUID);
+        Entity entity = getWorld(worldUUID).getEntities().get(entityUUID);
         Region hostRegion = getRegion(entity.getCurrentRegionUUID(), worldUUID);
         hostRegion.getEntities().remove(entity);
         getWorld(worldUUID).getRegionAtLocation(entity.getLocation()).getEntities().remove(entityUUID);
@@ -169,7 +169,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
 
     }
 
-    public EntityBase getEntity(UUID entityUUID, UUID worldUUID) {
+    public Entity getEntity(UUID entityUUID, UUID worldUUID) {
         return getWorld(worldUUID).getEntities().get(entityUUID);
     }
 

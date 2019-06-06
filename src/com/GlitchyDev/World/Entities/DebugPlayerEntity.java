@@ -8,7 +8,7 @@ import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Entities.AbstractEntities.PlayerEntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.PlayerEntity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
@@ -18,20 +18,20 @@ import com.GlitchyDev.World.Region.Region;
 import java.io.IOException;
 import java.util.UUID;
 
-public class DebugPlayerEntityBase extends PlayerEntityBase {
+public class DebugPlayerEntity extends PlayerEntity {
     private GameItem gameItem;
 
-    public DebugPlayerEntityBase(WorldGameState worldGameState, UUID currentRegionUUID, Location location, Direction direction) {
+    public DebugPlayerEntity(WorldGameState worldGameState, UUID currentRegionUUID, Location location, Direction direction) {
         super(worldGameState, currentRegionUUID, EntityType.DEBUG_PLAYER, location, direction);
 
     }
 
-    public DebugPlayerEntityBase(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility) throws IOException {
+    public DebugPlayerEntity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility) throws IOException {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, EntityType.DEBUG_PLAYER);
 
     }
 
-    public DebugPlayerEntityBase(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility) throws IOException {
+    public DebugPlayerEntity(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility) throws IOException {
         super(worldGameState, worldUUID, region, inputBitUtility, EntityType.DEBUG_PLAYER);
 
     }

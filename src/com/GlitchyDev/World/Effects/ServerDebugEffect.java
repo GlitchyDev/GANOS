@@ -1,20 +1,20 @@
-package com.GlitchyDev.World.Entities.Effects;
+package com.GlitchyDev.World.Effects;
 
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Entities.Effects.Abstract.EffectBase;
-import com.GlitchyDev.World.Entities.Effects.Abstract.RegionHidingEffect;
-import com.GlitchyDev.World.Entities.Effects.Abstract.RegionRevealingEffect;
-import com.GlitchyDev.World.Entities.Effects.Enums.EffectType;
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
+import com.GlitchyDev.World.Effects.Abstract.Effect;
+import com.GlitchyDev.World.Effects.Abstract.RegionHidingEffect;
+import com.GlitchyDev.World.Effects.Abstract.RegionRevealingEffect;
+import com.GlitchyDev.World.Effects.Enums.EffectType;
 import com.GlitchyDev.World.Region.RegionConnection;
 
-public class ServerDebugEffect extends EffectBase implements RegionRevealingEffect, RegionHidingEffect {
-    public ServerDebugEffect(WorldGameState worldGameState, EntityBase entity) {
+public class ServerDebugEffect extends Effect implements RegionRevealingEffect, RegionHidingEffect {
+    public ServerDebugEffect(WorldGameState worldGameState, Entity entity) {
         super(EffectType.SERVER_DEBUG_EFFECT, worldGameState, entity);
     }
 
-    public ServerDebugEffect(WorldGameState worldGameState, EntityBase entity, InputBitUtility inputBitUtility) {
+    public ServerDebugEffect(WorldGameState worldGameState, Entity entity, InputBitUtility inputBitUtility) {
         super(EffectType.SERVER_DEBUG_EFFECT, worldGameState, entity, inputBitUtility);
     }
 

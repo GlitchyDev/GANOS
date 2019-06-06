@@ -51,7 +51,7 @@ public class Location {
      * @param direction
      * @return Outputs the location one unit in the cardinal direction
      */
-    public Location getDirectionLocation(Direction direction) {
+    public Location getOffsetDirectionLocation(Direction direction) {
         switch (direction) {
             case ABOVE:
                 return getAbove();
@@ -75,10 +75,10 @@ public class Location {
      * @param distance
      * @return Outputs the location X units in the cardinal direction
      */
-    public Location getDirectionLocation(Direction direction, int distance) {
+    public Location getOffsetDirectionLocation(Direction direction, int distance) {
         Location output = this;
         for(int i = 0; i < distance; i++) {
-            output = output.getDirectionLocation(direction);
+            output = output.getOffsetDirectionLocation(direction);
         }
         return output;
     }
@@ -123,7 +123,11 @@ public class Location {
      * @return The distance between the current and the provided Location
      */
     public double getDistance(Location location) {
-        return Math.sqrt(Math.pow(location.getX() - getX(),2) + Math.pow(location.getY() - getY(),2) + Math.pow(location.getZ() - getZ(),2));
+        if(worldUUID == location.getWorldUUID()) {
+            return Math.sqrt(Math.pow(location.getX() - getX(), 2) + Math.pow(location.getY() - getY(), 2) + Math.pow(location.getZ() - getZ(), 2));
+        } else {
+            return Double.MAX_VALUE;
+        }
     }
 
     @Override
@@ -160,9 +164,5 @@ public class Location {
 
     public UUID getWorldUUID() {
         return worldUUID;
-    }
-
-    public boolean hasWorldUUID() {
-        return worldUUID != null;
     }
 }

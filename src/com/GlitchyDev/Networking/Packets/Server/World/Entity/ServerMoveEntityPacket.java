@@ -5,7 +5,7 @@ import com.GlitchyDev.Networking.Packets.AbstractPackets.WorldStateModifyingPack
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class ServerMoveEntityPacket extends WorldStateModifyingPackets {
 
     @Override
     public void executeModification(WorldGameState worldGameState) {
-        EntityBase entity = worldGameState.getEntity(entityUUID,worldUUID);
+        Entity entity = worldGameState.getEntity(entityUUID,worldUUID);
         System.out.println("Moving " + entity + " " + newLocation);
         if(entity == null) {
             System.out.println("ERROR: NONEXISTANT ENTITY MOVED");

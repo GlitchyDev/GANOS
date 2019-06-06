@@ -7,7 +7,7 @@ import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AirBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
 
@@ -30,7 +30,7 @@ public class Region {
 
     private final UUID regionUUID; // Identifies the region as UNIQUE
     private final BlockBase[][][] blocks;
-    private final ArrayList<EntityBase> entities;
+    private final ArrayList<Entity> entities;
     private Location location;     // Placement of the bottom upper right hand corner of the region
 
 
@@ -133,7 +133,7 @@ public class Region {
         this.entities = new ArrayList<>(totalEntities);
         for(int i = 0; i < totalEntities; i++) {
             EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
-            EntityBase entity = entityType.getEntityFromInput(inputBitUtility, worldGameState, worldUUID, this );
+            Entity entity = entityType.getEntityFromInput(inputBitUtility, worldGameState, worldUUID, this );
             getEntities().add(entity);
         }
 
@@ -212,8 +212,8 @@ public class Region {
 
         outputBitUtility.writeNextCorrectByteInt(getEntities().size());
         if(entities.size() != 0) {
-            for (EntityBase entityBase : getEntities()) {
-                entityBase.writeData(outputBitUtility);
+            for (Entity entity : getEntities()) {
+                entity.writeData(outputBitUtility);
             }
         }
 
@@ -259,7 +259,7 @@ public class Region {
 
     public void setLocation(Location newLocation) {
         Location oldLocation = getLocation();
-        for(EntityBase entity: entities) {
+        for(Entity entity: entities) {
             Location difference = oldLocation.getLocationDifference(entity.getLocation());
             entity.setLocation(newLocation.getOffsetLocation(difference));
         }
@@ -304,7 +304,7 @@ public class Region {
     }
 
     public boolean containsEntity(UUID entityUUID) {
-        for(EntityBase entity: entities) {
+        for(Entity entity: entities) {
             if(entity.getUUID() == entityUUID) {
                 return true;
             }
@@ -312,8 +312,8 @@ public class Region {
         return false;
     }
 
-    public EntityBase getEntity(UUID entityUUID) {
-        for(EntityBase entity: entities) {
+    public Entity getEntity(UUID entityUUID) {
+        for(Entity entity: entities) {
             if(entity.getUUID() == entityUUID) {
                 return entity;
             }
@@ -346,7 +346,7 @@ public class Region {
         return blocks;
     }
 
-    public ArrayList<EntityBase> getEntities() {
+    public ArrayList<Entity> getEntities() {
         return entities;
     }
 

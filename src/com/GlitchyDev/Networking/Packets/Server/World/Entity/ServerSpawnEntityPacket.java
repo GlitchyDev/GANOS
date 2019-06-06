@@ -5,7 +5,7 @@ import com.GlitchyDev.Networking.Packets.AbstractPackets.WorldStateModifyingPack
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 
@@ -13,11 +13,11 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class ServerSpawnEntityPacket extends WorldStateModifyingPackets {
-    private final EntityBase entityBase;
+    private final Entity entity;
 
-    public ServerSpawnEntityPacket(EntityBase entityBase) {
+    public ServerSpawnEntityPacket(Entity entity) {
         super(PacketType.SERVER_SPAWN_ENTITY);
-        this.entityBase = entityBase;
+        this.entity = entity;
     }
 
     // PacketType | WorldUUID | RegionUUID | EntityData
@@ -26,25 +26,25 @@ public class ServerSpawnEntityPacket extends WorldStateModifyingPackets {
         UUID worldUUID = inputBitUtility.getNextUUID();
         UUID regionUUID = inputBitUtility.getNextUUID();
         EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
-        this.entityBase = entityType.getEntityFromInput(inputBitUtility,worldGameState,worldUUID, regionUUID);
+        this.entity = entityType.getEntityFromInput(inputBitUtility,worldGameState,worldUUID, regionUUID);
         inputBitUtility.complete();
     }
 
     @Override
     public void executeModification(WorldGameState worldGameState) {
-        worldGameState.spawnEntity(entityBase, SpawnReason.PACKET_SPAWN);
+        worldGameState.spawnEntity(entity, SpawnReason.PACKET_SPAWN);
     }
 
     @Override
     protected void transmitPacketBody(OutputBitUtility outputBitUtility) throws IOException {
-        outputBitUtility.writeNextUUID(entityBase.getLocation().getWorldUUID());
-        outputBitUtility.writeNextUUID(entityBase.getCurrentRegionUUID());
-        entityBase.writeData(outputBitUtility);
+        outputBitUtility.writeNextUUID(entity.getLocation().getWorldUUID());
+        outputBitUtility.writeNextUUID(entity.getCurrentRegionUUID());
+        entity.writeData(outputBitUtility);
         //entityBase.writeData(outputBitUtility);
     }
 
     @Override
     public String toString() {
-        return super.toString() + "," + entityBase;
+        return super.toString() + "," + entity;
     }
 }

@@ -9,8 +9,8 @@ import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TriggerableBlock;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Entities.Effects.Abstract.EffectBase;
-import com.GlitchyDev.World.Entities.Effects.Enums.EffectType;
+import com.GlitchyDev.World.Effects.Abstract.Effect;
+import com.GlitchyDev.World.Effects.Enums.EffectType;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public abstract class EntityBase {
+public abstract class Entity {
     // Utill
     protected WorldGameState worldGameState;
     private UUID currentRegionUUID;
@@ -31,7 +31,7 @@ public abstract class EntityBase {
     private final UUID uuid;
     private Location location;
     private Direction direction;
-    private final ArrayList<EffectBase> effects;
+    private final ArrayList<Effect> effects;
 
 
     /**
@@ -42,7 +42,7 @@ public abstract class EntityBase {
      * @param location
      * @param direction
      */
-    public EntityBase(WorldGameState worldGameState, UUID currentRegionUUID, EntityType entityType, Location location, Direction direction) {
+    public Entity(WorldGameState worldGameState, UUID currentRegionUUID, EntityType entityType, Location location, Direction direction) {
         this.worldGameState = worldGameState;
         this.currentRegionUUID = currentRegionUUID;
         this.entityType = entityType;
@@ -63,7 +63,7 @@ public abstract class EntityBase {
      */
 
     // This particular constructor is used to retrieve a single entity from file, or from a spawn packet
-    public EntityBase(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+    public Entity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
         this.worldGameState = worldGameState;
         this.currentRegionUUID = currentRegionUUID;
         this.entityType = entityType;
@@ -76,13 +76,13 @@ public abstract class EntityBase {
         this.effects = new ArrayList<>(totalEffects);
         for(int i = 0; i < totalEffects; i++) {
             EffectType effectType = EffectType.values()[inputBitUtility.getNextCorrectIntByte()];
-            EffectBase effect = effectType.getEffectFromInput(inputBitUtility, worldGameState, this);
+            Effect effect = effectType.getEffectFromInput(inputBitUtility, worldGameState, this);
             effects.add(effect);
         }
     }
 
     // Exclusively from reading from a Region File
-    public EntityBase(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+    public Entity(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
         this.worldGameState = worldGameState;
         this.currentRegionUUID = region.getRegionUUID();
         this.entityType = entityType;
@@ -95,7 +95,7 @@ public abstract class EntityBase {
         this.effects = new ArrayList<>(totalEffects);
         for(int i = 0; i < totalEffects; i++) {
             EffectType effectType = EffectType.values()[inputBitUtility.getNextCorrectIntByte()];
-            EffectBase effect = effectType.getEffectFromInput(inputBitUtility, worldGameState, this);
+            Effect effect = effectType.getEffectFromInput(inputBitUtility, worldGameState, this);
             effects.add(effect);
         }
     }
@@ -200,7 +200,7 @@ public abstract class EntityBase {
         return entityType;
     }
 
-    public ArrayList<EffectBase> getEffects() {
+    public ArrayList<Effect> getEffects() {
         return effects;
     }
 

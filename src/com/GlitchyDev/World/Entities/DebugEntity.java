@@ -11,7 +11,7 @@ import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.CustomVisibleEntity;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
@@ -21,7 +21,7 @@ import com.GlitchyDev.World.Region.Region;
 import java.io.IOException;
 import java.util.UUID;
 
-public class DebugEntity extends EntityBase implements CustomVisibleEntity {
+public class DebugEntity extends Entity implements CustomVisibleEntity {
     private SpriteItem spriteItem;
 
 

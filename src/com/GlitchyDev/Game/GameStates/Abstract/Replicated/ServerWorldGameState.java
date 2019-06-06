@@ -21,8 +21,8 @@ import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Elements.Transmission.Communication.CommunicationManager;
 import com.GlitchyDev.World.Elements.Transmission.Network.CommunicationNetworkManager;
 import com.GlitchyDev.World.Entities.AbstractEntities.CustomVisibleEntity;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
+import com.GlitchyDev.World.Entities.DebugPlayerEntity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
@@ -83,7 +83,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
         Location spawnLocation = world.getOriginLocation();
         UUID regionUUID = getRegionAtLocation(spawnLocation).getRegionUUID();
 
-        DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,regionUUID,spawnLocation,Direction.NORTH);
+        DebugPlayerEntity playerEntity = new DebugPlayerEntity(this,regionUUID,spawnLocation,Direction.NORTH);
         Player player = new Player(this,playerUUID,playerEntity);
         try {
             serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnWorldPacket(world.getWorldUUID()));
@@ -110,7 +110,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
             EntityView playerView = player.getEntityView();
 
 
-            for(EntityBase entity: despawnedEntities.keySet()) {
+            for(Entity entity: despawnedEntities.keySet()) {
                 if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID())) {
                     if(player.getEntityView().containsEntity(entity.getUUID())) {
                         player.getEntityView().clearEntity(entity.getUUID());
@@ -119,7 +119,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
                 }
             }
 
-            for(EntityBase entity: spawnedEntities.keySet()) {
+            for(Entity entity: spawnedEntities.keySet()) {
                 if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && (!(entity instanceof CustomVisibleEntity) || ((CustomVisibleEntity)entity).doSeeEntity(player))) {
                     serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(spawnedEntities.get(entity));
                     player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().add(entity);
@@ -154,7 +154,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
                 }
             }
 
-            for(EntityBase entity: updatedEntityVisibility) {
+            for(Entity entity: updatedEntityVisibility) {
                 UUID regionUUID = entity.getCurrentRegionUUID();
                 if(playerView.containsRegion(regionUUID)) {
                     if(entity instanceof CustomVisibleEntity) {
@@ -174,7 +174,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
                 }
             }
 
-            for(EntityBase entity: entityRegionMovement.keySet()) {
+            for(Entity entity: entityRegionMovement.keySet()) {
                 UUID[] newAndOldRegions = entityRegionMovement.get(entity);
                 boolean containsNew = playerView.containsRegion(newAndOldRegions[0]);
                 boolean containsOld = playerView.containsRegion(newAndOldRegions[1]);
@@ -199,7 +199,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
             }
 
 
-            for(EntityBase entity: changedDirections.keySet()) {
+            for(Entity entity: changedDirections.keySet()) {
                 if(player.getEntityView().containsRegion(entity.getCurrentRegionUUID()) && player.getEntityView().getRegion(entity.getCurrentRegionUUID()).getEntities().contains(entity)) {
                     serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(changedDirections.get(entity));
                 }
@@ -258,16 +258,16 @@ public abstract class ServerWorldGameState extends WorldGameState {
     /**
      * Must be done after movement, or will potentially trigger along the wrong region lines+
      */
-    private ArrayList<EntityBase> updatedEntityVisibility = new ArrayList<>();
-    public void updateEntityViability(EntityBase entity) {
+    private ArrayList<Entity> updatedEntityVisibility = new ArrayList<>();
+    public void updateEntityViability(Entity entity) {
         updatedEntityVisibility.add(entity);
     }
 
 
     // Spawning entities triggers an viewcheck on EVERY Player in the world, the Server View should already show an update
-    private HashMap<EntityBase, ServerSpawnEntityPacket> spawnedEntities = new HashMap<>();
+    private HashMap<Entity, ServerSpawnEntityPacket> spawnedEntities = new HashMap<>();
     @Override
-    public void spawnEntity(EntityBase entity, SpawnReason spawnReason) {
+    public void spawnEntity(Entity entity, SpawnReason spawnReason) {
         // This is replicated, mark for Entities who can view its region
         super.spawnEntity(entity, spawnReason);
         spawnedEntities.put(entity,new ServerSpawnEntityPacket(entity));
@@ -275,27 +275,27 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
 
     // Despawning entities triggers an viewcheck on EVERY Player in the world, the Server View should already show an update
-    private HashMap<EntityBase, ServerDespawnEntityPacket> despawnedEntities = new HashMap<>();
+    private HashMap<Entity, ServerDespawnEntityPacket> despawnedEntities = new HashMap<>();
     @Override
     public void despawnEntity(UUID entityUUID, UUID worldUUID, DespawnReason despawnReason) {
         super.despawnEntity(entityUUID, worldUUID, despawnReason);
-        EntityBase entity = getEntity(entityUUID,worldUUID);
+        Entity entity = getEntity(entityUUID,worldUUID);
         despawnedEntities.put(entity,new ServerDespawnEntityPacket(entityUUID, worldUUID));
     }
 
 
 
     // Entities who move between regions
-    private HashMap<EntityBase,UUID[]> entityRegionMovement = new HashMap<>();
-    private HashMap<EntityBase, ServerMoveEntityPacket> movedEntitiesBoth = new HashMap<>();
-    private HashMap<EntityBase, ServerDespawnEntityPacket> movedEntitiesOld = new HashMap<>();
-    private HashMap<EntityBase, ServerSpawnEntityPacket> movedEntitiesNew = new HashMap<>();
+    private HashMap<Entity,UUID[]> entityRegionMovement = new HashMap<>();
+    private HashMap<Entity, ServerMoveEntityPacket> movedEntitiesBoth = new HashMap<>();
+    private HashMap<Entity, ServerDespawnEntityPacket> movedEntitiesOld = new HashMap<>();
+    private HashMap<Entity, ServerSpawnEntityPacket> movedEntitiesNew = new HashMap<>();
     // Every Player in the world will get checked if they personally have access to t
     public void replicateMoveEntity(UUID entityUUID, Location oldLocation, Location newLocation) {
         // This is replicated, mark for entities who can view its region
         // Also mark if it enters and or exits Regions, update viewing
 
-        EntityBase entity = getEntity(entityUUID, newLocation.getWorldUUID());
+        Entity entity = getEntity(entityUUID, newLocation.getWorldUUID());
         UUID previousRegion = getRegionAtLocation(oldLocation).getRegionUUID();
         UUID newRegion = getRegionAtLocation(newLocation).getRegionUUID();
 
@@ -309,10 +309,10 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
 
     // Replicate to players with this in its view
-    private HashMap<EntityBase, ServerChangeDirectionEntityPacket> changedDirections = new HashMap<>();
+    private HashMap<Entity, ServerChangeDirectionEntityPacket> changedDirections = new HashMap<>();
     public void replicateChangeDirectionEntity(UUID entityUUID, UUID worldUUID, Direction direction) {
         // This is replicated, mark for entities who can view its region
-        EntityBase entity = getEntity(entityUUID, worldUUID);
+        Entity entity = getEntity(entityUUID, worldUUID);
         changedDirections.put(entity,new ServerChangeDirectionEntityPacket(entityUUID, worldUUID, direction));
     }
 
@@ -343,7 +343,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
                 }
             }
 
-            for(EntityBase entity: region.getEntities()) {
+            for(Entity entity: region.getEntities()) {
                 if(entity instanceof CustomVisibleEntity) {
                     if(!((CustomVisibleEntity) entity).doSeeEntity(currentPlayers.get(playerUUID))) {
                         regionCopy.getEntities().remove(entity);

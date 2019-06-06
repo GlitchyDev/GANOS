@@ -17,7 +17,7 @@ import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.World;
 
@@ -190,7 +190,7 @@ public class DebugClientGameState extends ClientWorldGameState {
                         ((CustomRenderBlock) block).render(renderer, camera, null);
                     }
                 }
-                for(EntityBase entity: region.getEntities()) {
+                for(Entity entity: region.getEntities()) {
                     entity.render(renderer, camera);
                 }
             }

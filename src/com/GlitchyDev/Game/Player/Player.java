@@ -3,8 +3,8 @@ package com.GlitchyDev.Game.Player;
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Entities.AbstractEntities.PlayerEntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
+import com.GlitchyDev.World.Entities.AbstractEntities.PlayerEntity;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Views.EntityView;
@@ -16,10 +16,10 @@ import java.util.UUID;
 public class Player {
     private final WorldGameState worldGameState;
     private final UUID playerUUID;
-    private PlayerEntityBase playerEntity;
-    private final ArrayList<EntityBase> controlledEntities;
+    private PlayerEntity playerEntity;
+    private final ArrayList<Entity> controlledEntities;
 
-    public Player(WorldGameState worldGameState, UUID playerUUID, PlayerEntityBase playerEntity) {
+    public Player(WorldGameState worldGameState, UUID playerUUID, PlayerEntity playerEntity) {
         this.worldGameState = worldGameState;
         this.playerUUID = playerUUID;
         this.playerEntity = playerEntity;
@@ -34,7 +34,7 @@ public class Player {
         UUID worldUUID = inputBitUtility.getNextUUID();
         UUID regionUUID = inputBitUtility.getNextUUID();
         EntityType playerEntityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
-        this.playerEntity = (PlayerEntityBase) playerEntityType.getEntityFromInput(inputBitUtility,worldGameState, worldUUID, regionUUID);
+        this.playerEntity = (PlayerEntity) playerEntityType.getEntityFromInput(inputBitUtility,worldGameState, worldUUID, regionUUID);
         this.playerEntity.setPlayer(this);
         // Place into world as loaded
         worldGameState.spawnEntity(playerEntity, SpawnReason.READ_FILE);
@@ -63,15 +63,15 @@ public class Player {
 
 
 
-    public void setPlayerEntity(PlayerEntityBase playerEntity) {
+    public void setPlayerEntity(PlayerEntity playerEntity) {
         this.playerEntity = playerEntity;
     }
 
-    public PlayerEntityBase getPlayerEntity() {
+    public PlayerEntity getPlayerEntity() {
         return playerEntity;
     }
 
-    public ArrayList<EntityBase> getControlledEntities() {
+    public ArrayList<Entity> getControlledEntities() {
         return controlledEntities;
     }
 

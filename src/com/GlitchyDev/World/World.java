@@ -1,7 +1,7 @@
 package com.GlitchyDev.World;
 
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Region.RegionConnection;
 
@@ -12,7 +12,7 @@ import java.util.UUID;
 public class World {
     // Loaded Regions for this world, probably loaded from a WorldRegionList
     private HashMap<UUID, Region> regions;
-    private HashMap<UUID,EntityBase> entities;
+    private HashMap<UUID, Entity> entities;
     private HashMap<Location,TickableBlock> tickableBlocks;
     // A File loaded with the world that would contain the connections between regions
     private HashMap<UUID, HashMap<RegionConnection, ArrayList<UUID>>> regionConnections;
@@ -35,8 +35,8 @@ public class World {
         for(TickableBlock tickableBlock: tickableBlocks.values()) {
             tickableBlock.tick();
         }
-        for(EntityBase entityBase: entities.values()) {
-            entityBase.tick();
+        for(Entity entity : entities.values()) {
+            entity.tick();
         }
     }
 
@@ -112,7 +112,7 @@ public class World {
         return tickableBlocks;
     }
 
-    public HashMap<UUID, EntityBase> getEntities() {
+    public HashMap<UUID, Entity> getEntities() {
         return entities;
     }
 

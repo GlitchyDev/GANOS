@@ -6,9 +6,9 @@ import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TriggerableBlock;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Entities.Effects.Abstract.EffectBase;
-import com.GlitchyDev.World.Entities.Effects.Abstract.RegionHidingEffect;
-import com.GlitchyDev.World.Entities.Effects.Abstract.RegionRevealingEffect;
+import com.GlitchyDev.World.Effects.Abstract.Effect;
+import com.GlitchyDev.World.Effects.Abstract.RegionHidingEffect;
+import com.GlitchyDev.World.Effects.Abstract.RegionRevealingEffect;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
@@ -22,20 +22,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-public abstract class ViewingEntityBase extends EntityBase {
+public abstract class ViewingEntity extends Entity {
     private EntityView entityView;
 
 
-    public ViewingEntityBase(WorldGameState worldGameState, UUID currentRegionUUID, EntityType entityType, Location location, Direction direction) {
+    public ViewingEntity(WorldGameState worldGameState, UUID currentRegionUUID, EntityType entityType, Location location, Direction direction) {
         super(worldGameState, currentRegionUUID, entityType, location, direction);
         this.entityView = new EntityView();
     }
 
-    public ViewingEntityBase(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+    public ViewingEntity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, entityType);
     }
 
-    public ViewingEntityBase(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+    public ViewingEntity(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
         super(worldGameState, worldUUID, region, inputBitUtility, entityType);
     }
 
@@ -151,7 +151,7 @@ public abstract class ViewingEntityBase extends EntityBase {
 
     public boolean regionConnectionVisible(RegionConnection regionConnection) {
         if(regionConnection.isVisibleByDefault()) {
-            for(EffectBase effect: getEffects()) {
+            for(Effect effect: getEffects()) {
                 if(effect instanceof RegionHidingEffect) {
                     if(((RegionHidingEffect) effect).doHideRegionConnection(regionConnection)) {
                         return false;
@@ -160,7 +160,7 @@ public abstract class ViewingEntityBase extends EntityBase {
             }
             return true;
         } else {
-            for(EffectBase effect: getEffects()) {
+            for(Effect effect: getEffects()) {
                 if(effect instanceof RegionRevealingEffect) {
                     if(((RegionRevealingEffect) effect).doShowRegionConnection(regionConnection)) {
                         return true;

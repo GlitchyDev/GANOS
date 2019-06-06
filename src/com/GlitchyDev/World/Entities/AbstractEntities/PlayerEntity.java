@@ -5,9 +5,9 @@ import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Game.Player.Player;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Entities.Effects.Abstract.EffectBase;
-import com.GlitchyDev.World.Entities.Effects.Abstract.RegionHidingEffect;
-import com.GlitchyDev.World.Entities.Effects.Abstract.RegionRevealingEffect;
+import com.GlitchyDev.World.Effects.Abstract.Effect;
+import com.GlitchyDev.World.Effects.Abstract.RegionHidingEffect;
+import com.GlitchyDev.World.Effects.Abstract.RegionRevealingEffect;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Region;
@@ -18,18 +18,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-public abstract class PlayerEntityBase extends ViewingEntityBase {
+public abstract class PlayerEntity extends ViewingEntity {
     private Player player;
 
-    public PlayerEntityBase(WorldGameState worldGameState, UUID currentRegionUUID, EntityType entityType, Location location, Direction direction) {
+    public PlayerEntity(WorldGameState worldGameState, UUID currentRegionUUID, EntityType entityType, Location location, Direction direction) {
         super(worldGameState, currentRegionUUID, entityType, location, direction);
     }
 
-    public PlayerEntityBase(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+    public PlayerEntity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, entityType);
     }
 
-    public PlayerEntityBase(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
+    public PlayerEntity(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
         super(worldGameState, worldUUID, region, inputBitUtility, entityType);
     }
 
@@ -70,7 +70,7 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
             for(RegionConnection regionConnection: connections.get(getCurrentRegionUUID()).keySet()) {
                 if(regionConnection.isVisibleByDefault()) {
                     boolean hidden = false;
-                    for(EffectBase effect: getEffects()) {
+                    for(Effect effect: getEffects()) {
                         if(effect instanceof RegionHidingEffect) {
                             if(((RegionHidingEffect) effect).doHideRegionConnection(regionConnection)) {
                                 hidden = true;
@@ -82,7 +82,7 @@ public abstract class PlayerEntityBase extends ViewingEntityBase {
                         seeableConnectionTypes.add(regionConnection);
                     }
                 } else {
-                    for(EffectBase effect: getEffects()) {
+                    for(Effect effect: getEffects()) {
                         if(effect instanceof RegionRevealingEffect) {
                             if(((RegionRevealingEffect) effect).doShowRegionConnection(regionConnection)) {
                                 seeableConnectionTypes.add(regionConnection);

@@ -1,4 +1,4 @@
-package com.GlitchyDev.World.Entities.Effects.Abstract;
+package com.GlitchyDev.World.Effects.Abstract;
 
 import com.GlitchyDev.World.Region.RegionConnection;
 

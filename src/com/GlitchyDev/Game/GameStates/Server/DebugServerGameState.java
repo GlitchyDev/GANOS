@@ -26,11 +26,11 @@ import com.GlitchyDev.World.Elements.Transmission.Communication.Constructs.Messa
 import com.GlitchyDev.World.Elements.Transmission.Communication.Constructs.Source.CommunicationServerSource;
 import com.GlitchyDev.World.Elements.Transmission.Render.WalkieTalkieBase;
 import com.GlitchyDev.World.Elements.Transmission.Render.WalkieTalkieDisplay;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.DebugCommunicationEntity;
 import com.GlitchyDev.World.Entities.DebugEntity;
-import com.GlitchyDev.World.Entities.DebugPlayerEntityBase;
-import com.GlitchyDev.World.Entities.Effects.ServerDebugEffect;
+import com.GlitchyDev.World.Entities.DebugPlayerEntity;
+import com.GlitchyDev.World.Effects.ServerDebugEffect;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
@@ -191,7 +191,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
 
-        DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,getRegionAtLocation(new Location(0,1,0,spawnWorld)).getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
+        DebugPlayerEntity playerEntity = new DebugPlayerEntity(this,getRegionAtLocation(new Location(0,1,0,spawnWorld)).getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
         this.testPlayer = new Player(this,UUID.randomUUID(),playerEntity);
         spawnEntity(playerEntity, SpawnReason.DEBUG);
         playerEntity.recalculateView();
@@ -391,33 +391,33 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
 
             if(controller.getToggleDirectionPad() != ControllerDirectionPad.NONE) {
-                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(controller.getDirectionPad().getDirection()), EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getOffsetDirectionLocation(controller.getDirectionPad().getDirection()), EntityMovementType.WALKING);
             }
             if(controller.getToggleNorthButton()) {
-                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.ABOVE),EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getOffsetDirectionLocation(Direction.ABOVE),EntityMovementType.WALKING);
             }
             if(controller.getToggleSouthButton()) {
-                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.BELOW),EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getOffsetDirectionLocation(Direction.BELOW),EntityMovementType.WALKING);
             }
         } else {
             if(gameInput.getKeyValue(GLFW_KEY_UP) >= 1) {
-                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.NORTH),EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getOffsetDirectionLocation(Direction.NORTH),EntityMovementType.WALKING);
             }
             if(gameInput.getKeyValue(GLFW_KEY_LEFT) >= 1) {
-                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.WEST),EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getOffsetDirectionLocation(Direction.WEST),EntityMovementType.WALKING);
             }
             if(gameInput.getKeyValue(GLFW_KEY_DOWN) >= 1) {
-                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.SOUTH),EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getOffsetDirectionLocation(Direction.SOUTH),EntityMovementType.WALKING);
             }
             if(gameInput.getKeyValue(GLFW_KEY_RIGHT) >= 1) {
-                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.EAST),EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getOffsetDirectionLocation(Direction.EAST),EntityMovementType.WALKING);
             }
 
             if(gameInput.getKeyValue(GLFW_KEY_SPACE) >= 1) {
-                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.ABOVE),EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getOffsetDirectionLocation(Direction.ABOVE),EntityMovementType.WALKING);
             }
             if(gameInput.getKeyValue(GLFW_KEY_RIGHT_SHIFT) >= 1) {
-                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getDirectionLocation(Direction.BELOW),EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getOffsetDirectionLocation(Direction.BELOW),EntityMovementType.WALKING);
             }
 
             if(gameInput.getKeyValue(GLFW_KEY_Q) >= 1) {
@@ -463,7 +463,7 @@ public class DebugServerGameState extends ServerWorldGameState {
                     ((CustomRenderBlock) block).render(renderer,camera,testPlayer);
                 }
             }
-            for(EntityBase entity: region.getEntities()) {
+            for(Entity entity: region.getEntities()) {
                 entity.render(renderer,camera);
             }
         }
@@ -478,7 +478,7 @@ public class DebugServerGameState extends ServerWorldGameState {
                         ((CustomRenderBlock) block).render(renderer,camera,testPlayer);
                     }
                 }
-                for(EntityBase entity: region.getEntities()) {
+                for(Entity entity: region.getEntities()) {
                     entity.render(renderer,camera);
                 }
             }
@@ -525,14 +525,14 @@ public class DebugServerGameState extends ServerWorldGameState {
         if(packet instanceof ClientSendInputPacket) {
             Direction direction = ((ClientSendInputPacket) packet).getClientInputType().getDirection();
             Player movingPlayer = currentPlayers.get(playerUUID);
-            movingPlayer.getPlayerEntity().move(movingPlayer.getPlayerEntity().getLocation().getDirectionLocation(direction), EntityMovementType.WALKING);
+            movingPlayer.getPlayerEntity().move(movingPlayer.getPlayerEntity().getLocation().getOffsetDirectionLocation(direction), EntityMovementType.WALKING);
         }
     }
 
     @Override
     public void onPlayerLogin(UUID playerUUID) {
         Region spawnRegion = getRegionAtLocation(getWorld(spawnWorld).getOriginLocation());
-        DebugPlayerEntityBase playerEntity = new DebugPlayerEntityBase(this,spawnRegion.getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
+        DebugPlayerEntity playerEntity = new DebugPlayerEntity(this,spawnRegion.getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
         Player loginPlayer = new Player(this,playerUUID,playerEntity);
         try {
             serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnWorldPacket(spawnWorld));

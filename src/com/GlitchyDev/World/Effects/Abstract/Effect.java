@@ -1,26 +1,25 @@
-package com.GlitchyDev.World.Entities.Effects.Abstract;
+package com.GlitchyDev.World.Effects.Abstract;
 
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.World.Entities.AbstractEntities.EntityBase;
-import com.GlitchyDev.World.Entities.Effects.Enums.EffectType;
-import com.GlitchyDev.Game.Player.Player;
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
+import com.GlitchyDev.World.Effects.Enums.EffectType;
 
 import java.io.IOException;
 
-public class EffectBase {
+public  abstract class Effect {
     private final EffectType effectType;
     private final WorldGameState worldGameState;
-    private final EntityBase entity;
+    private final Entity entity;
 
-    public EffectBase(EffectType effectType, WorldGameState worldGameState, EntityBase entity) {
+    public Effect(EffectType effectType, WorldGameState worldGameState, Entity entity) {
         this.effectType = effectType;
         this.worldGameState = worldGameState;
         this.entity = entity;
     }
 
-    public EffectBase(EffectType effectType, WorldGameState worldGameState, EntityBase entity, InputBitUtility inputBitUtility) {
+    public Effect(EffectType effectType, WorldGameState worldGameState, Entity entity, InputBitUtility inputBitUtility) {
         this.effectType = effectType;
         this.worldGameState = worldGameState;
         this.entity = entity;
@@ -30,13 +29,15 @@ public class EffectBase {
         outputBitUtility.writeNextCorrectByteInt(effectType.ordinal());
     }
 
+    public abstract void applyEffect();
+
 
 
     public EffectType getEffectType() {
         return effectType;
     }
 
-    protected EntityBase getEntity() {
+    protected Entity getEntity() {
         return entity;
     }
 }
