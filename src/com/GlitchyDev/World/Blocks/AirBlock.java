@@ -3,14 +3,14 @@ package com.GlitchyDev.World.Blocks;
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
 import java.util.Objects;
 
-public class AirBlock extends BlockBase {
+public class AirBlock extends Block {
 
 
     public AirBlock(WorldGameState worldGameState, Location location) {
@@ -30,7 +30,7 @@ public class AirBlock extends BlockBase {
     }
 
     @Override
-    public BlockBase getCopy() {
+    public Block getCopy() {
         return new AirBlock(worldGameState, getLocation().clone());
     }
 

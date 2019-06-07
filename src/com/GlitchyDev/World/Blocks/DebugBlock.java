@@ -8,7 +8,7 @@ import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Location;
@@ -16,7 +16,7 @@ import com.GlitchyDev.World.Location;
 import java.io.IOException;
 import java.util.Objects;
 
-public class DebugBlock extends BlockBase implements CustomRenderBlock {
+public class DebugBlock extends Block implements CustomRenderBlock {
     private final int testValue;
     private final GameItem mesh;
 
@@ -68,7 +68,7 @@ public class DebugBlock extends BlockBase implements CustomRenderBlock {
     }
 
     @Override
-    public BlockBase getCopy() {
+    public Block getCopy() {
         return new DebugBlock(worldGameState, getLocation().clone(), testValue);
     }
 

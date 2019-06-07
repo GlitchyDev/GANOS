@@ -5,7 +5,7 @@ import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
 import com.GlitchyDev.Game.GameWindow;
 import com.GlitchyDev.Game.GlobalGameData;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import org.joml.*;
 
 import java.util.List;
@@ -93,16 +93,16 @@ public abstract class EnvironmentGameState extends InputGameStateBase {
 
     // Block Selections
 
-    protected BlockBase selectBlock3D(List<BlockBase> blocks, Camera camera) {
+    protected Block selectBlock3D(List<Block> blocks, Camera camera) {
         dir = camera.getViewMatrix().positiveZ(dir).negate();
         return selectBlock3D(blocks, camera.getPosition(), dir);
     }
 
-    protected BlockBase selectBlock3D(List<BlockBase> blocks, Vector3f center, Vector3f dir) {
-        BlockBase selectedBlock = null;
+    protected Block selectBlock3D(List<Block> blocks, Vector3f center, Vector3f dir) {
+        Block selectedBlock = null;
         float closestDistance = Float.POSITIVE_INFINITY;
 
-        for (BlockBase block : blocks) {
+        for (Block block : blocks) {
             if (block != null) {
                 min.set(block.getLocation().getNormalizedPosition());
                 max.set(block.getLocation().getNormalizedPosition());
@@ -119,7 +119,7 @@ public abstract class EnvironmentGameState extends InputGameStateBase {
     }
 
 
-    protected BlockBase selectBlock2D(List<BlockBase> blocks, GameWindow window, Vector2d mousePos, Camera camera) {
+    protected Block selectBlock2D(List<Block> blocks, GameWindow window, Vector2d mousePos, Camera camera) {
         // Transform mouse coordinates into normalized spaze [-1, 1]
         int wdwWitdh = window.getWidth();
         int wdwHeight = window.getHeight();

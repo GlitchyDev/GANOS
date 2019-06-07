@@ -2,7 +2,7 @@ package com.GlitchyDev.World.Blocks.Enums;
 
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AirBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
@@ -19,7 +19,7 @@ public enum BlockType {
 
 
 
-    public BlockBase getBlockFromInput(WorldGameState worldGameState, InputBitUtility inputBitUtility) throws IOException {
+    public Block getBlockFromInput(WorldGameState worldGameState, InputBitUtility inputBitUtility) throws IOException {
         switch(this) {
             case DEBUG:
                 return new DebugBlock(worldGameState, inputBitUtility);

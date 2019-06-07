@@ -8,7 +8,7 @@ import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
 import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisableBlock;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
@@ -18,7 +18,7 @@ import com.GlitchyDev.World.Location;
 import java.io.IOException;
 import java.util.Objects;
 
-public class DebugCustomRenderBlock extends BlockBase implements CustomRenderBlock, CustomVisableBlock, TickableBlock {
+public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, CustomVisableBlock, TickableBlock {
     private final GameItem mesh;
     private final AirBlock replacementBlock;
 
@@ -37,7 +37,7 @@ public class DebugCustomRenderBlock extends BlockBase implements CustomRenderBlo
     }
 
     @Override
-    public BlockBase getCopy() {
+    public Block getCopy() {
         return new DebugCustomRenderBlock(worldGameState, getLocation().clone());
     }
 
@@ -57,7 +57,7 @@ public class DebugCustomRenderBlock extends BlockBase implements CustomRenderBlo
     }
 
     @Override
-    public BlockBase getVisibleBlock(Player player) {
+    public Block getVisibleBlock(Player player) {
         return Math.random() > 0.5 ? this : replacementBlock;
     }
 

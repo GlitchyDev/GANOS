@@ -4,7 +4,7 @@ import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.HuffmanTreeUtility;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AirBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
@@ -29,7 +29,7 @@ public class Region {
     private final UUID worldUUID;
 
     private final UUID regionUUID; // Identifies the region as UNIQUE
-    private final BlockBase[][][] blocks;
+    private final Block[][][] blocks;
     private final ArrayList<Entity> entities;
     private Location location;     // Placement of the bottom upper right hand corner of the region
 
@@ -40,7 +40,7 @@ public class Region {
 
         this.regionUUID = UUID.randomUUID();
         this.location = location;
-        this.blocks = new BlockBase[height][width][length];
+        this.blocks = new Block[height][width][length];
         this.entities = new ArrayList<>();
 
         populateRegions();
@@ -52,7 +52,7 @@ public class Region {
 
         this.regionUUID = regionUUID;
         this.location = location;
-        this.blocks = new BlockBase[height][width][length];
+        this.blocks = new Block[height][width][length];
         this.entities = new ArrayList<>();
 
         populateRegions();
@@ -99,10 +99,10 @@ public class Region {
         int width = inputBitUtility.getNextCorrectIntByte() + 1;
         int height = inputBitUtility.getNextCorrectIntByte() + 1;
         int length = inputBitUtility.getNextCorrectIntByte() + 1;
-        this.blocks = new BlockBase[height][width][length];
+        this.blocks = new Block[height][width][length];
 
         int blockPaletteSize = inputBitUtility.getNextCorrectIntByte();
-        BlockBase[] palette = new BlockBase[blockPaletteSize];
+        Block[] palette = new Block[blockPaletteSize];
         for(int i = 0; i < blockPaletteSize; i++) {
             BlockType blockType = BlockType.values()[inputBitUtility.getNextCorrectIntByte()];
             palette[i] = blockType.getBlockFromInput(worldGameState, inputBitUtility);
@@ -121,7 +121,7 @@ public class Region {
                     while(!huffmanMap.containsKey(currentCode)) {
                         currentCode += inputBitUtility.getNextBit() ? "1" : "0";
                     }
-                    BlockBase clone = ((BlockBase) huffmanMap.get(currentCode)).getCopy();
+                    Block clone = ((Block) huffmanMap.get(currentCode)).getCopy();
                     clone.setLocation(getLocation().getOffsetLocation(x,y,z));
                     setBlockRelative(x,y,z,clone);
                 }
@@ -152,12 +152,12 @@ public class Region {
 
         // Count number of unique blocks, like ouch
         // Counts the total number of unique blocks, stores them block, count
-        HashMap<BlockBase,Integer> countMap = new HashMap<>();
+        HashMap<Block,Integer> countMap = new HashMap<>();
         int uniques = 0;
         for(int y = 0; y < getHeight(); y++) {
             for(int x = 0; x < getWidth(); x++) {
                 for(int z = 0; z < getLength(); z++) {
-                    BlockBase blockAtSpot = getBlockRelative(x,y,z);
+                    Block blockAtSpot = getBlockRelative(x,y,z);
                     if(!countMap.containsKey(blockAtSpot)) {
                         countMap.put(blockAtSpot,1);
                         uniques++;
@@ -167,12 +167,12 @@ public class Region {
                 }
             }
         }
-        BlockBase[] palette = new BlockBase[uniques];
+        Block[] palette = new Block[uniques];
         int[] frequency = new int[uniques];
 
 
         int index = 0;
-        for(BlockBase block: countMap.keySet()) {
+        for(Block block: countMap.keySet()) {
             palette[index] = block;
             frequency[index] = countMap.get(block);
             index++;
@@ -189,7 +189,7 @@ public class Region {
         // Write Palette
 
         for(Object block: HuffmanTreeUtility.encodeObjectList(headTreeNode)) {
-            ((BlockBase)block).writeData(outputBitUtility);
+            ((Block)block).writeData(outputBitUtility);
         }
 
         // Write Huffman Tree Values
@@ -263,7 +263,7 @@ public class Region {
             Location difference = oldLocation.getLocationDifference(entity.getLocation());
             entity.setLocation(newLocation.getOffsetLocation(difference));
         }
-        for(BlockBase block: getBlocksArray()) {
+        for(Block block: getBlocksArray()) {
             Location difference = oldLocation.getLocationDifference(block.getLocation());
             block.setLocation(newLocation.getOffsetLocation(difference));
         }
@@ -273,24 +273,24 @@ public class Region {
 
     // Helper Methods
 
-    public BlockBase getBlockRelative(Location relativeLocation) {
+    public Block getBlockRelative(Location relativeLocation) {
         return getBlockRelative(relativeLocation.getX(), relativeLocation.getY(), relativeLocation.getZ());
     }
 
-    public void setBlockRelative(Location relativeLocation, BlockBase block) {
+    public void setBlockRelative(Location relativeLocation, Block block) {
         setBlockRelative(relativeLocation.getX(), relativeLocation.getY(), relativeLocation.getZ(), block);
     }
 
-    public BlockBase getBlockRelative(int relativeX, int relativeY, int relativeZ) {
+    public Block getBlockRelative(int relativeX, int relativeY, int relativeZ) {
         return blocks[relativeY][relativeX][relativeZ];
     }
 
-    public void setBlockRelative(int relativeX, int relativeY, int relativeZ, BlockBase block) {
+    public void setBlockRelative(int relativeX, int relativeY, int relativeZ, Block block) {
         blocks[relativeY][relativeX][relativeZ] = block;
     }
 
-    public BlockBase[] getBlocksArray() {
-        BlockBase[] blockArray = new BlockBase[getWidth() * getLength() * getHeight()];
+    public Block[] getBlocksArray() {
+        Block[] blockArray = new Block[getWidth() * getLength() * getHeight()];
         int i = 0;
         for(int y = 0; y < getHeight(); y++) {
             for (int x = 0; x < getWidth(); x++) {
@@ -342,7 +342,7 @@ public class Region {
 
     // Getters
 
-    public BlockBase[][][] getBlocks() {
+    public Block[][][] getBlocks() {
         return blocks;
     }
 

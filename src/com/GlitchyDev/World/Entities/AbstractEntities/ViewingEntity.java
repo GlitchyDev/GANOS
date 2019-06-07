@@ -3,7 +3,7 @@ package com.GlitchyDev.World.Entities.AbstractEntities;
 import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TriggerableBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Effects.Abstract.Effect;
@@ -72,8 +72,8 @@ public abstract class ViewingEntity extends Entity {
                 Location oldOffset = oldRegion.getLocation().getLocationDifference(getLocation());
                 Location newOffset = newRegion.getLocation().getLocationDifference(newLocation);
 
-                BlockBase startingBlock = worldGameState.getRegionAtLocation(getLocation()).getBlockRelative(oldOffset);
-                BlockBase endingBlock = worldGameState.getRegionAtLocation(newLocation).getBlockRelative(newOffset);
+                Block startingBlock = worldGameState.getRegionAtLocation(getLocation()).getBlockRelative(oldOffset);
+                Block endingBlock = worldGameState.getRegionAtLocation(newLocation).getBlockRelative(newOffset);
 
                 // Check the blocks for preventing leave triggers
                 if(!(startingBlock instanceof TriggerableBlock) || ((TriggerableBlock) startingBlock).attemptExitBlock(movementType,this)) {
@@ -126,12 +126,31 @@ public abstract class ViewingEntity extends Entity {
     public void recalculateView() {
         ArrayList<Region> connectedRegions = new ArrayList<>();
         HashMap<UUID, HashMap<RegionConnection, ArrayList<UUID>>> connections = worldGameState.getRegionConnections(getWorldUUID());
+
         ArrayList<RegionConnection> seeableConnectionTypes = new ArrayList<>();
-
-
         for(RegionConnection regionConnection: connections.get(getCurrentRegionUUID()).keySet()) {
-            if(regionConnectionVisible(regionConnection)) {
-                seeableConnectionTypes.add(regionConnection);
+            if(regionConnection.isVisibleByDefault()) {
+                boolean hidden = false;
+                for(Effect effect: getEffects()) {
+                    if(effect instanceof RegionHidingEffect) {
+                        if(((RegionHidingEffect) effect).doHideRegionConnection(regionConnection)) {
+                            hidden = true;
+                            break;
+                        }
+                    }
+                }
+                if(!hidden) {
+                    seeableConnectionTypes.add(regionConnection);
+                }
+            } else {
+                for(Effect effect: getEffects()) {
+                    if(effect instanceof RegionRevealingEffect) {
+                        if(((RegionRevealingEffect) effect).doShowRegionConnection(regionConnection)) {
+                            seeableConnectionTypes.add(regionConnection);
+                            break;
+                        }
+                    }
+                }
             }
         }
 

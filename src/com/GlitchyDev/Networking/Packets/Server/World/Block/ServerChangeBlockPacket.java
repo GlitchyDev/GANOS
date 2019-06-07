@@ -5,7 +5,7 @@ import com.GlitchyDev.Networking.Packets.AbstractPackets.WorldStateModifyingPack
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Location;
 
@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class ServerChangeBlockPacket extends WorldStateModifyingPackets {
-    private final BlockBase changedBlock;
+    private final Block changedBlock;
 
-    public ServerChangeBlockPacket(BlockBase changedBlock) {
+    public ServerChangeBlockPacket(Block changedBlock) {
         super(PacketType.SERVER_CHANGE_BLOCK);
         this.changedBlock = changedBlock;
     }
@@ -43,7 +43,7 @@ public class ServerChangeBlockPacket extends WorldStateModifyingPackets {
         outputBitUtility.writeNextInteger(changedBlock.getLocation().getZ());
     }
 
-    public BlockBase getChangedBlock() {
+    public Block getChangedBlock() {
         return changedBlock;
     }
 }

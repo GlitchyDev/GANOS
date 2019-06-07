@@ -2,7 +2,6 @@ package com.GlitchyDev.World.Entities;
 
 import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
-import com.GlitchyDev.Game.Player.Player;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
 import com.GlitchyDev.Rendering.Renderer;
@@ -50,10 +49,12 @@ public class DebugEntity extends Entity implements CustomVisibleEntity {
     }
 
     int tickCount = 0;
+    boolean isVisible = true;
     @Override
     public void tick() {
         if(tickCount % 120 == 0) {
             ((ServerWorldGameState)worldGameState).updateEntityViability(this);
+            isVisible = !isVisible;
         }
         tickCount++;
     }
@@ -91,7 +92,7 @@ public class DebugEntity extends Entity implements CustomVisibleEntity {
     }
 
     @Override
-    public boolean doSeeEntity(Player player) {
-        return Math.random() < 0.5;
+    public boolean doSeeEntity(Entity entity) {
+        return isVisible;
     }
 }

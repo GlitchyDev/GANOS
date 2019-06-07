@@ -16,16 +16,16 @@ import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Elements.Transmission.Communication.Constructs.Enums.LanguageType;
-import com.GlitchyDev.World.Elements.Transmission.Communication.Constructs.Messages.CommunicationMessage;
-import com.GlitchyDev.World.Elements.Transmission.Communication.Constructs.Source.CommunicationServerSource;
-import com.GlitchyDev.World.Elements.Transmission.Render.WalkieTalkieBase;
-import com.GlitchyDev.World.Elements.Transmission.Render.WalkieTalkieDisplay;
+import com.GlitchyDev.World.Transmission.Communication.Constructs.Enums.LanguageType;
+import com.GlitchyDev.World.Transmission.Communication.Constructs.Messages.CommunicationMessage;
+import com.GlitchyDev.World.Transmission.Communication.Constructs.Source.CommunicationServerSource;
+import com.GlitchyDev.World.Transmission.Render.WalkieTalkieBase;
+import com.GlitchyDev.World.Transmission.Render.WalkieTalkieDisplay;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.DebugCommunicationEntity;
 import com.GlitchyDev.World.Entities.DebugEntity;
@@ -121,28 +121,28 @@ public class DebugServerGameState extends ServerWorldGameState {
             System.out.println("-------------------");
             for(int x = 0; x < region1.getWidth(); x++) {
                 for(int z = 0; z < region1.getLength(); z++) {
-                    BlockBase block = region1.getBlockRelative(x,0,z);
+                    Block block = region1.getBlockRelative(x,0,z);
                     Location relativeLocation = region1.getLocation().getLocationDifference(block.getLocation());
                     region1.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
                 }
             }
             for(int x = 0; x < region2.getWidth(); x++) {
                 for(int z = 0; z < region2.getLength(); z++) {
-                    BlockBase block = region2.getBlockRelative(x,0,z);
+                    Block block = region2.getBlockRelative(x,0,z);
                     Location relativeLocation = region2.getLocation().getLocationDifference(block.getLocation());
                     region2.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
                 }
             }
             for(int x = 0; x < region3.getWidth(); x++) {
                 for(int z = 0; z < region3.getLength(); z++) {
-                    BlockBase block = region3.getBlockRelative(x,0,z);
+                    Block block = region3.getBlockRelative(x,0,z);
                     Location relativeLocation = region3.getLocation().getLocationDifference(block.getLocation());
                     region3.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
                 }
             }
             for(int x = 0; x < region4.getWidth(); x++) {
                 for(int z = 0; z < region4.getLength(); z++) {
-                    BlockBase block = region4.getBlockRelative(x,0,z);
+                    Block block = region4.getBlockRelative(x,0,z);
                     Location relativeLocation = region4.getLocation().getLocationDifference(block.getLocation());
                     region4.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
                 }
@@ -195,7 +195,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         this.testPlayer = new Player(this,UUID.randomUUID(),playerEntity);
         spawnEntity(playerEntity, SpawnReason.DEBUG);
         playerEntity.recalculateView();
-        playerEntity.getEffects().add(new ServerDebugEffect(this,playerEntity));
+        playerEntity.applyEffect(new ServerDebugEffect(this));
 
         camera = new Camera();
         camera.setPosition(-10, 7, 30);
@@ -216,8 +216,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
         globalGameData.getGameWindow().setDimensions(1280,500);
-        globalGameData.getGameWindow().centerWindow();
-        globalGameData.getGameWindow().adjustWindowPosition(0,-240);
+        globalGameData.getGameWindow().setWindowPosition(0,25);
         globalGameData.getGameWindow().setTitle("Blackout Server");
 
         walkieTalkie = new WalkieTalkieBase();
@@ -458,7 +457,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         renderer.prepWindowRender(globalGameData.getGameWindow());
         renderer.setRenderSpace(0,0,500,500);
         for(Region region: testPlayer.getPlayerEntity().getEntityView().getViewableRegions()) {
-            for(BlockBase block: region.getBlocksArray()) {
+            for(Block block: region.getBlocksArray()) {
                 if(block instanceof CustomRenderBlock) {
                     ((CustomRenderBlock) block).render(renderer,camera,testPlayer);
                 }
@@ -473,7 +472,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         if(currentPlayers.size() > 0) {
             renderer.setRenderSpace(500,0,500,500);
             for(Region region: currentPlayers.get(currentPlayers.keySet().toArray()[0]).getEntityView().getViewableRegions()) {
-                for(BlockBase block: region.getBlocksArray()) {
+                for(Block block: region.getBlocksArray()) {
                     if(block instanceof CustomRenderBlock) {
                         ((CustomRenderBlock) block).render(renderer,camera,testPlayer);
                     }

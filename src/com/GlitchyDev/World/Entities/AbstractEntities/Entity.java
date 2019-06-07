@@ -6,10 +6,10 @@ import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TriggerableBlock;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Effects.Abstract.Effect;
+import com.GlitchyDev.World.Effects.Abstract.EntityEffect;
 import com.GlitchyDev.World.Effects.Enums.EffectType;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
@@ -31,7 +31,7 @@ public abstract class Entity {
     private final UUID uuid;
     private Location location;
     private Direction direction;
-    private final ArrayList<Effect> effects;
+    private final ArrayList<EntityEffect> effects;
 
 
     /**
@@ -76,7 +76,8 @@ public abstract class Entity {
         this.effects = new ArrayList<>(totalEffects);
         for(int i = 0; i < totalEffects; i++) {
             EffectType effectType = EffectType.values()[inputBitUtility.getNextCorrectIntByte()];
-            Effect effect = effectType.getEffectFromInput(inputBitUtility, worldGameState, this);
+            EntityEffect effect = (EntityEffect) effectType.getEffectFromInput(inputBitUtility, worldGameState);
+            effect.applyEntityEffect(this);
             effects.add(effect);
         }
     }
@@ -95,7 +96,7 @@ public abstract class Entity {
         this.effects = new ArrayList<>(totalEffects);
         for(int i = 0; i < totalEffects; i++) {
             EffectType effectType = EffectType.values()[inputBitUtility.getNextCorrectIntByte()];
-            Effect effect = effectType.getEffectFromInput(inputBitUtility, worldGameState, this);
+            EntityEffect effect = (EntityEffect) effectType.getEffectFromInput(inputBitUtility, worldGameState);
             effects.add(effect);
         }
     }
@@ -118,8 +119,8 @@ public abstract class Entity {
         Location oldOffset = oldRegion.getLocation().getLocationDifference(getLocation());
         Location newOffset = newRegion.getLocation().getLocationDifference(newLocation);
 
-        BlockBase startingBlock = worldGameState.getRegionAtLocation(getLocation()).getBlockRelative(oldOffset);
-        BlockBase endingBlock = worldGameState.getRegionAtLocation(newLocation).getBlockRelative(newOffset);
+        Block startingBlock = worldGameState.getRegionAtLocation(getLocation()).getBlockRelative(oldOffset);
+        Block endingBlock = worldGameState.getRegionAtLocation(newLocation).getBlockRelative(newOffset);
 
         if (startingBlock instanceof TriggerableBlock) {
             ((TriggerableBlock) startingBlock).exitBlockSuccessfully(EntityMovementType.TELEPORT, this);
@@ -200,8 +201,18 @@ public abstract class Entity {
         return entityType;
     }
 
-    public ArrayList<Effect> getEffects() {
+    public ArrayList<EntityEffect> getEffects() {
         return effects;
+    }
+
+    public void applyEffect(EntityEffect effect) {
+        effect.applyEntityEffect(this);
+        effects.add(effect);
+    }
+
+    public void remooveffect(EntityEffect effect) {
+        effect.removeEntityEffect();
+        effects.remove(effect);
     }
 
 

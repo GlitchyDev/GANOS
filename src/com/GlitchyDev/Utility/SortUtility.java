@@ -1,13 +1,13 @@
 package com.GlitchyDev.Utility;
 
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 
 import java.util.*;
 
 public class SortUtility {
 
 
-    public static void sort(BlockBase[] blocks, int[] frequencies) {
+    public static void sort(Block[] blocks, int[] frequencies) {
         ArrayList<BlockValue> blockValues = new ArrayList<>(blocks.length);
         for(int i = 0; i < blocks.length; i++) {
             blockValues.add(new BlockValue(blocks[i],frequencies[i]));
@@ -35,15 +35,15 @@ public class SortUtility {
     }
 
     private static class BlockValue {
-        private final BlockBase block;
+        private final Block block;
         private final int frequency;
 
-        public BlockValue(BlockBase block, int frequency) {
+        public BlockValue(Block block, int frequency) {
             this.block = block;
             this.frequency = frequency;
         }
 
-        public BlockBase getBlock() {
+        public Block getBlock() {
             return block;
         }
 

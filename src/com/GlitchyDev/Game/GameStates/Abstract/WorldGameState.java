@@ -2,7 +2,7 @@ package com.GlitchyDev.Game.GameStates.Abstract;
 
 import com.GlitchyDev.Game.GameStates.GameStateType;
 import com.GlitchyDev.Game.GlobalGameData;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.BlockBase;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
@@ -81,7 +81,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
         return getWorld(location.getWorldUUID()).isARegionAtLocation(location);
     }
 
-    public BlockBase getBlockAtLocation(Location location) {
+    public Block getBlockAtLocation(Location location) {
         Location offset = getWorld(location.getWorldUUID()).getRegionAtLocation(location).getLocation().getLocationDifference(location);
         return getWorld(location.getWorldUUID()).getRegionAtLocation(location).getBlockRelative(offset);
     }
@@ -123,7 +123,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
             world.getEntities().put(entity.getUUID(), entity);
             entity.onSpawn(SpawnReason.REGION_MANUALLY_ADDED);
         }
-        for (BlockBase block : region.getBlocksArray()) {
+        for (Block block : region.getBlocksArray()) {
             if (block instanceof TickableBlock) {
                 getWorld(region.getWorldUUID()).getTickableBlocks().put(block.getLocation(), (TickableBlock) block);
             }
@@ -136,7 +136,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
         for (Entity entity : region.getEntities()) {
             world.getEntities().remove(entity.getUUID());
         }
-        for (BlockBase block : region.getBlocksArray()) {
+        for (Block block : region.getBlocksArray()) {
             if (block instanceof TickableBlock) {
                 getWorld(worldUUID).getTickableBlocks().remove(block.getLocation());
             }
@@ -173,17 +173,17 @@ public abstract class WorldGameState extends EnvironmentGameState {
         return getWorld(worldUUID).getEntities().get(entityUUID);
     }
 
-    public void setBlocks(Collection<BlockBase> blocks) {
-        for (BlockBase block : blocks) {
+    public void setBlocks(Collection<Block> blocks) {
+        for (Block block : blocks) {
             setBlock(block);
         }
     }
 
-    public void setBlock(BlockBase block) {
+    public void setBlock(Block block) {
         World world = getWorld(block.getLocation().getWorldUUID());
         Region region = world.getRegionAtLocation(block.getLocation());
         Location relativeLocation = region.getLocation().getLocationDifference(block.getLocation());
-        BlockBase previousBlock = region.getBlockRelative(relativeLocation);
+        Block previousBlock = region.getBlockRelative(relativeLocation);
         region.setBlockRelative(relativeLocation, block);
         if (block instanceof TickableBlock) {
             world.getTickableBlocks().put(block.getLocation(), (TickableBlock) block);
