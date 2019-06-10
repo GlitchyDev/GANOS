@@ -13,32 +13,34 @@ import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnec
 import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
+import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
+import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
-import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Transmission.Communication.Constructs.Enums.LanguageType;
-import com.GlitchyDev.World.Transmission.Communication.Constructs.Messages.CommunicationMessage;
-import com.GlitchyDev.World.Transmission.Communication.Constructs.Source.CommunicationServerSource;
-import com.GlitchyDev.World.Transmission.Render.WalkieTalkieBase;
-import com.GlitchyDev.World.Transmission.Render.WalkieTalkieDisplay;
+import com.GlitchyDev.World.Effects.ServerDebugEffect;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.DebugCommunicationEntity;
 import com.GlitchyDev.World.Entities.DebugEntity;
 import com.GlitchyDev.World.Entities.DebugPlayerEntity;
-import com.GlitchyDev.World.Effects.ServerDebugEffect;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Region.RegionConnection;
+import com.GlitchyDev.World.Transmission.Communication.Constructs.Enums.LanguageType;
+import com.GlitchyDev.World.Transmission.Communication.Constructs.Messages.CommunicationMessage;
+import com.GlitchyDev.World.Transmission.Communication.Constructs.Source.CommunicationServerSource;
+import com.GlitchyDev.World.Transmission.Render.WalkieTalkieBase;
+import com.GlitchyDev.World.Transmission.Render.WalkieTalkieDisplay;
 import com.GlitchyDev.World.World;
 import com.GlitchyDev.World.WorldFileType;
+import org.joml.Vector2d;
 
 import java.io.File;
 import java.io.IOException;
@@ -148,7 +150,7 @@ public class DebugServerGameState extends ServerWorldGameState {
                 }
             }
 
-            region1.setBlockRelative(0,0,0,new DebugCustomRenderBlock(this,region1.getLocation().getOffsetLocation(0,0,0)));
+            //region1.setBlockRelative(0,0,0,new DebugCustomRenderBlock(this,region1.getLocation().getOffsetLocation(0,0,0)));
 
 
             addRegionToGame(region1);
@@ -349,6 +351,30 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         walkieTalkie.tick();
 
+        Vector2d mousePos = new Vector2d();
+        mousePos.x = gameInput.getMouseX();
+        mousePos.y = gameInput.getMouseY();
+
+        debugItems.get(19).setText(gameInput.getMouseX() + " " + gameInput.getMouseY());
+
+        ArrayList<Block> blockList = new ArrayList<>();
+        for(Region region: getWorld(spawnWorld).getRegions().values()) {
+            for (Block block : region.getBlocksArray()) {
+                if (block instanceof DebugBlock) {
+                    blockList.add(block);
+                }
+            }
+        }
+
+        //375
+        Block block = selectBlock2D(blockList,globalGameData.getGameWindow(),mousePos,camera);
+        if(block != null) {
+            System.out.println("found");
+            ((DebugBlock)block).setTestValue((((DebugBlock) block).getTestValue()+1)%3);
+        } else {
+            System.out.println("None " + mousePos);
+        }
+
     }
 
 
@@ -466,7 +492,7 @@ public class DebugServerGameState extends ServerWorldGameState {
                 entity.render(renderer,camera);
             }
         }
-        renderer.renderHUD(hudItems, "Default2D");
+        renderer.render2DTextItems(hudItems, "Default2D");
         walkieTalkie.render(renderer,500);
 
         if(currentPlayers.size() > 0) {
@@ -483,8 +509,14 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
         }
 
+        renderer.setRenderSpace(500,0,280,500);
+        SpriteItem spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Noise"),280,500,true);
+        spriteItem.setPosition(0,0,0);
+        renderer.render2DSpriteItem(spriteItem,"Default2D");
+        spriteItem.cleanup();
+
         renderer.setRenderSpace(1000,0,500,500);
-        renderer.renderHUD(debugItems, "Default2D");
+        renderer.render2DTextItems(debugItems, "Default2D");
 
 
         /*

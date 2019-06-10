@@ -99,5 +99,8 @@ GameAssets\Textures\UI\Controller\Vertical2.png
 GameAssets\Textures\UI\DebugFont.png
 GameAssets\Textures\UI\DebugFontConfig.configList
 GameAssets\Textures\UI\WalkieTalkie\WalkieTalkie_Body.png
+GameAssets\Textures\UI\WalkieTalkie\WalkieTalkie_Body_Back.png
+GameAssets\Textures\UI\WalkieTalkie\WalkieTalkie_Body_Back_Empty.png
+GameAssets\Textures\UI\WalkieTalkie\WalkieTalkie_Body_Back_Plate.png
 GameAssets\Textures\UI\WalkieTalkie\WalkieTalkie_Screen.png
 GameAssets\Textures\UI\WalkieTalkie\WalkieTalkie_Signal.png

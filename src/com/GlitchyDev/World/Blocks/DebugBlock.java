@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class DebugBlock extends Block implements CustomRenderBlock {
-    private final int testValue;
+    private int testValue;
     private final GameItem mesh;
 
     public DebugBlock(WorldGameState worldGameState, Location location, int testValue) {
@@ -88,6 +88,23 @@ public class DebugBlock extends Block implements CustomRenderBlock {
 
     public int getTestValue() {
         return testValue;
+    }
+
+    public void setTestValue(int newValue) {
+        this.testValue = newValue;
+        switch(testValue) {
+            case 0:
+                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon16x16"));
+                break;
+            case 1:
+                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon24x24"));
+                break;
+            case 2:
+                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon32x32"));
+                break;
+            default:
+                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Test_Floor_" + testValue));
+        }
     }
 
     @Override

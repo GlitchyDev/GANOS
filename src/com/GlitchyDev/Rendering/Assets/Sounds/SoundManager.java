@@ -2,7 +2,6 @@ package com.GlitchyDev.Rendering.Assets.Sounds;
 
 
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
-import com.GlitchyDev.Rendering.Assets.WorldElements.Transformation;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.openal.AL;
@@ -92,7 +91,7 @@ public class SoundManager {
 
     public void updateListenerPosition(Camera camera) {
         // Update camera matrix with camera data
-        Transformation.updateGenericViewMatrix(camera.getPosition(), camera.getRotation(), cameraMatrix);
+        //Transformation.updateGenericViewMatrix(camera.getPosition(), camera.getRotation(), cameraMatrix);
 
         listener.setPosition(camera.getPosition());
         Vector3f at = new Vector3f();

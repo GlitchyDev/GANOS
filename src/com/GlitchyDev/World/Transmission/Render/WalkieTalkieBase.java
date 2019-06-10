@@ -86,7 +86,7 @@ public class WalkieTalkieBase {
     public void render(Renderer renderer, int windowHeight) {
 
         setPosition((int) (4 * WALKIE_TALKIE_SCALE), windowHeight - verticalOffset);
-        renderer.render2DSprite(walkieTalkie_Body,"Default2D");
+        renderer.render2DSpriteItem(walkieTalkie_Body,"Default2D");
 
 
         if(!currentWalkieTalkieState.isHasCustomScreen()) {
@@ -128,7 +128,7 @@ public class WalkieTalkieBase {
         renderer.getShader("WalkieTalkieScreen2D").setUniform("selectedTexture",new Vector2f(currentWalkieTalkieDisplay.getX(),currentWalkieTalkieDisplay.getY()));
         renderer.getShader("WalkieTalkieScreen2D").setUniform("selectedTexture",new Vector2f(currentWalkieTalkieDisplay.getX(),currentWalkieTalkieDisplay.getY()));
         renderer.getShader("WalkieTalkieScreen2D").setUniform("dimScreen", currentWalkieTalkieState.usesDimScreen());
-        renderer.render2DSprite(walkieTalkie_Screen,"WalkieTalkieScreen2D");
+        renderer.render2DSpriteItem(walkieTalkie_Screen,"WalkieTalkieScreen2D");
 
         if(currentWalkieTalkieState == WalkieTalkieState.SPEAKER_VIEW || currentWalkieTalkieState == WalkieTalkieState.TALKING_ACTIVE) {
             renderer.getShader("TextureGrid2D").bind();
@@ -136,7 +136,7 @@ public class WalkieTalkieBase {
             final double SIGNAL_ANIMATION_LENGTH = 0.5;
             int currentSignalFrame = (int)(7 * (1.0/SIGNAL_ANIMATION_LENGTH * (System.currentTimeMillis()%(int)(1000.0*SIGNAL_ANIMATION_LENGTH))/1000.0) );
             renderer.getShader("TextureGrid2D").setUniform("selectedTexture", new Vector2f(0, currentSignalFrame));
-            renderer.render2DSprite(walkieTalkie_Signal, "TextureGrid2D");
+            renderer.render2DSpriteItem(walkieTalkie_Signal, "TextureGrid2D");
         }
     }
 

@@ -128,7 +128,7 @@ public class InstancedMesh extends Mesh {
         int offset = 0;
         for(int i = 0; i < size; i++)
         {
-            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(gameItems.get(i), viewMatrix);
+            Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(gameItems.get(i), viewMatrix);
             modelViewMatrix.get(offset * 16, matrixVboData);
             offset++;
         }

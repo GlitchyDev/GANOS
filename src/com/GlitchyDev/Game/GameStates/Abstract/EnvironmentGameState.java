@@ -1,10 +1,10 @@
 package com.GlitchyDev.Game.GameStates.Abstract;
 
 import com.GlitchyDev.Game.GameStates.GameStateType;
-import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
-import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
 import com.GlitchyDev.Game.GameWindow;
 import com.GlitchyDev.Game.GlobalGameData;
+import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
+import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import org.joml.*;
 
@@ -16,14 +16,11 @@ import java.util.List;
  * Methods identify selected Gameitems from the Center of a selected Camera or selected by the Cursor
  */
 public abstract class EnvironmentGameState extends InputGameStateBase {
-
-
-
-    // Cache'd values
     private Vector3f dir = new Vector3f();
     private Vector3f max = new Vector3f();
     private Vector3f min = new Vector3f();
     private Vector2f nearFar = new Vector2f();
+    //
     private Matrix4f invProjectionMatrix = new Matrix4f();
     private Matrix4f invViewMatrix = new Matrix4f();
     private Vector3f mouseDir = new Vector3f();
@@ -39,7 +36,7 @@ public abstract class EnvironmentGameState extends InputGameStateBase {
     Allows for the Selection of 3D Game Items through the view of a Camera
      */
     protected GameItem selectGameItem3D(List<GameItem> gameItems, Camera camera) {
-        dir = camera.getViewMatrix().positiveZ(dir).negate();
+        dir = renderer.getTransformation().getCameraViewMatrix(camera).positiveZ(dir).negate();
         return selectGameItem3D(gameItems, camera.getPosition(), dir);
     }
 
@@ -71,7 +68,7 @@ public abstract class EnvironmentGameState extends InputGameStateBase {
         float y = 1.0f - (float)(2 * mousePos.y) / (float)wdwHeight;
         float z = -1.0f;
 
-        invProjectionMatrix.set(window.getProjectionMatrix());
+        invProjectionMatrix.set(renderer.getTransformation().getProjectionMatrix(window.getWidth(),window.getHeight()));
         invProjectionMatrix.invert();
 
         tmpVec.set(x, y, z, 1.0f);
@@ -79,7 +76,7 @@ public abstract class EnvironmentGameState extends InputGameStateBase {
         tmpVec.z = -1.0f;
         tmpVec.w = 0.0f;
 
-        Matrix4f viewMatrix = camera.getViewMatrix();
+        Matrix4f viewMatrix = renderer.getTransformation().getCameraViewMatrix(camera);
         invViewMatrix.set(viewMatrix);
         invViewMatrix.invert();
         tmpVec.mul(invViewMatrix);
@@ -94,7 +91,7 @@ public abstract class EnvironmentGameState extends InputGameStateBase {
     // Block Selections
 
     protected Block selectBlock3D(List<Block> blocks, Camera camera) {
-        dir = camera.getViewMatrix().positiveZ(dir).negate();
+        dir = renderer.getTransformation().getCameraViewMatrix(camera).positiveZ(dir).negate();
         return selectBlock3D(blocks, camera.getPosition(), dir);
     }
 
@@ -121,14 +118,14 @@ public abstract class EnvironmentGameState extends InputGameStateBase {
 
     protected Block selectBlock2D(List<Block> blocks, GameWindow window, Vector2d mousePos, Camera camera) {
         // Transform mouse coordinates into normalized spaze [-1, 1]
-        int wdwWitdh = window.getWidth();
-        int wdwHeight = window.getHeight();
+        int wdwWitdh = 500;
+        int wdwHeight = 500;
 
         float x = (float)(2 * mousePos.x) / (float)wdwWitdh - 1.0f;
         float y = 1.0f - (float)(2 * mousePos.y) / (float)wdwHeight;
         float z = -1.0f;
 
-        invProjectionMatrix.set(window.getProjectionMatrix());
+        invProjectionMatrix.set(renderer.getTransformation().getProjectionMatrix(500,500));
         invProjectionMatrix.invert();
 
         tmpVec.set(x, y, z, 1.0f);
@@ -136,7 +133,7 @@ public abstract class EnvironmentGameState extends InputGameStateBase {
         tmpVec.z = -1.0f;
         tmpVec.w = 0.0f;
 
-        Matrix4f viewMatrix = camera.getViewMatrix();
+        Matrix4f viewMatrix = renderer.getTransformation().getCameraViewMatrix(camera);
         invViewMatrix.set(viewMatrix);
         invViewMatrix.invert();
         tmpVec.mul(invViewMatrix);

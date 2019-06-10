@@ -1,6 +1,5 @@
 package com.GlitchyDev.Game;
 
-import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -32,13 +31,8 @@ public class GameWindow {
 
     private final int targetFPS = 60;
 
-    private Matrix4f projectionMatrix;
 
-    private static final float FOV = (float) Math.toRadians(60.0f);
 
-    private static final float Z_NEAR = 0.01f;
-
-    private static final float Z_FAR = 1000.f;
 
     public GameWindow(String title, int width, int height, boolean isVSync) {
         this.title = title;
@@ -46,7 +40,6 @@ public class GameWindow {
         this.height = height;
         this.isVSync = isVSync;
         this.resized = false;
-        projectionMatrix = new Matrix4f();
     }
 
     public void init() {
@@ -74,6 +67,7 @@ public class GameWindow {
 
 
         System.out.println("GameWindow: Create Window of WIDTH " + width + " HEIGHT " + height);
+
 
         // Create the window
         windowHandle = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -131,13 +125,8 @@ public class GameWindow {
     public void update() {
         glfwSwapBuffers(windowHandle);
         glfwPollEvents();
-        updateProjectionMatrix();
     }
 
-    public Matrix4f updateProjectionMatrix() {
-        float aspectRatio = (float)width / (float)height;
-        return projectionMatrix.setPerspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
-    }
 
     public Vector2i getWindowPosition() {
         int[] x = new int[1];
@@ -289,9 +278,7 @@ public class GameWindow {
 
     // Getter and Setters
 
-    public Matrix4f getProjectionMatrix() {
-        return projectionMatrix;
-    }
+
 
     public long getWindowHandle() {
         return windowHandle;

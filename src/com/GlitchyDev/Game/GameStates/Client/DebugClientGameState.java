@@ -103,8 +103,18 @@ public class DebugClientGameState extends ClientWorldGameState {
             for(Region region: world.getRegions().values()) {
                 entityCount += region.getEntities().size();
             }
+
+            boolean effectFound = false;
+            for(Entity entity: world.getEntities().values()) {
+                if(entity.getEffects().size() != 0) {
+                    effectFound = true;
+                }
+            }
+            textItems.get(9).setText("Effect Found " + effectFound);
+
         }
         textItems.get(7).setText("Entity count " + entityCount);
+
 
 
     }
@@ -177,7 +187,7 @@ public class DebugClientGameState extends ClientWorldGameState {
     public void render() {
         renderer.prepWindowRender(globalGameData.getGameWindow());
         renderer.setRenderSpace(0,0,500,500);
-        renderer.renderHUD(textItems, "Default2D");
+        renderer.render2DTextItems(textItems, "Default2D");
 
         if(getWorlds().size() == 1) {
             World world = null;

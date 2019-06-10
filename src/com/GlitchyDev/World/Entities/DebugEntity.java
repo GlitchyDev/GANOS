@@ -3,6 +3,7 @@ package com.GlitchyDev.World.Entities;
 import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
+import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
 import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
 import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.AssetLoader;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class DebugEntity extends Entity implements CustomVisibleEntity {
+    private GameItem gameItem;
     private SpriteItem spriteItem;
 
 
@@ -42,9 +44,12 @@ public class DebugEntity extends Entity implements CustomVisibleEntity {
 
     @Override
     public void onSpawn(SpawnReason spawnReason) {
-        spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Icon32x32"),1,1, true);
-        spriteItem.setPosition(getLocation().getNormalizedPosition());
+        gameItem = new GameItem(AssetLoader.getMeshAsset("CubicMesh1"));
+        gameItem.getMesh().setTexture(AssetLoader.getTextureAsset("grassblock"));
+        gameItem.setPosition(getLocation().getNormalizedPosition());
 
+        spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Standing_Mirror"),5,5,true);
+        spriteItem.setPosition(getLocation().getNormalizedPosition());
 
     }
 
@@ -57,17 +62,19 @@ public class DebugEntity extends Entity implements CustomVisibleEntity {
             isVisible = !isVisible;
         }
         tickCount++;
+
+
     }
 
     @Override
     public void render(Renderer renderer, Camera camera) {
-
-        renderer.render3DElement(camera,spriteItem, "Default3D");
+        renderer.renderBillboard3DElement(camera,gameItem, "Default3D");
+        renderer.renderBillboard3DElement(camera,spriteItem, "Default3D");
     }
 
     @Override
     public void onDespawn(DespawnReason despawnReason) {
-        spriteItem.getMesh().cleanUp();
+        gameItem.getMesh().cleanUp();
     }
 
     @Override
@@ -88,6 +95,7 @@ public class DebugEntity extends Entity implements CustomVisibleEntity {
     @Override
     public void setLocation(Location location) {
         super.setLocation(location);
+        gameItem.setPosition(getLocation().getNormalizedPosition());
         spriteItem.setPosition(getLocation().getNormalizedPosition());
     }
 

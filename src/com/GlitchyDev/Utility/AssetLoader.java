@@ -202,13 +202,11 @@ public class AssetLoader {
         return null;
     }
 
-    public static Texture loadTexture(String filePath)
-    {
+    public static Texture loadTexture(String filePath) {
         return new Texture(AssetLoader.class.getResourceAsStream(filePath));
     }
 
-    public static String loadShader(String filePath)
-    {
+    public static String loadShader(String filePath) {
         try {
             return Utils.loadResource(AssetLoader.class.getResourceAsStream(filePath));
         } catch (Exception e) {

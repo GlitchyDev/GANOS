@@ -15,7 +15,7 @@ public class GANOSGame {
 
     public GANOSGame(String[] args) throws Exception {
         // Add potential permanent declaration
-        gameWindow = new GameWindow(args[0] + "_GANOS",800,800,true);
+        gameWindow = new GameWindow(args[0] + "_GANOS",1000,1000,true);
         globalGameData = new GlobalGameData(gameWindow);
         gameWindow.init();
 
@@ -30,8 +30,7 @@ public class GANOSGame {
      * Load and Register the starting Game State for the Game Args
      * @param args
      */
-    public void initGameStates(String[] args)
-    {
+    public void initGameStates(String[] args) {
         if(args.length != 0) {
             switch (args[0]) {
                 case "CLIENT":
@@ -48,8 +47,7 @@ public class GANOSGame {
                     break;
             }
         }
-        else
-        {
+        else {
            // Debug GameState
             //globalGameData.registerGameState(new DebugGameState1(globalGameData));
         }
@@ -57,8 +55,7 @@ public class GANOSGame {
     }
 
 
-    public void run()
-    {
+    public void run() {
         GameStateBase currentGameState;
         while(!globalGameData.getGameWindow().shouldWindowClose()) {
             gameWindow.update();
@@ -68,8 +65,7 @@ public class GANOSGame {
             currentGameState.doLogic();
             currentGameState.doRender();
 
-            if(gameWindow.shouldWindowClose())
-            {
+            if(gameWindow.shouldWindowClose()) {
                 currentGameState.windowClose();
             }
         }

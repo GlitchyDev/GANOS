@@ -19,9 +19,6 @@ import static org.lwjgl.opengl.GL11.*;
  * A rendering assistant for rendering GameItems in OpenGL using Shaders
  */
 public class Renderer {
-    private static final float FOV = (float) Math.toRadians(60.0f);
-    private static final float Z_NEAR = 0.01f;
-    private static final float Z_FAR = 1000.f;
     private final Transformation transformation = new Transformation();
     private String previousShader = "";
     private int renderWidth;
@@ -77,16 +74,16 @@ public class Renderer {
         }
 
         // Update projection Matrix
-        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, renderWidth, renderWidth, Z_NEAR, Z_FAR);
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(renderWidth, renderHeight);
         shader.setUniform("projectionMatrix", projectionMatrix);
 
         // Update view Matrix
-        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+        Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
 
         shader.setUniform("texture_sampler", 0);
         // Render each gameItem
         for (GameItem gameItem : gameItems) {
-            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(gameItem, viewMatrix);
+            Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(gameItem, viewMatrix);
             shader.setUniform("modelViewMatrix", modelViewMatrix);
             gameItem.getMesh().render();
         }
@@ -101,21 +98,77 @@ public class Renderer {
         }
 
         // Update projection Matrix
-        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, renderWidth, renderWidth, Z_NEAR, Z_FAR);
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(renderWidth, renderHeight);
         shader.setUniform("projectionMatrix", projectionMatrix);
 
         // Update view Matrix
-        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+        Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
 
         shader.setUniform("texture_sampler", 0);
         // Render each gameItem
-        Matrix4f modelViewMatrix = transformation.getModelViewMatrix(gameItem, viewMatrix);
+        Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(gameItem, viewMatrix);
         shader.setUniform("modelViewMatrix", modelViewMatrix);
         gameItem.getMesh().render();
 
 
         //shader.unbind();
     }
+
+
+    public void renderBillboard3DElements(Camera camera, List<GameItem> gameItems, String shaderName) {
+        ShaderProgram shader = loadedShaders.get(shaderName);
+        if(!previousShader.equals(shaderName)) {
+            shader.bind();
+        }
+
+        // Update projection Matrix
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(renderWidth, renderHeight);
+        shader.setUniform("projectionMatrix", projectionMatrix);
+
+        // Update view Matrix
+        Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
+
+        shader.setUniform("texture_sampler", 0);
+        // Render each gameItem
+        for (GameItem gameItem : gameItems) {
+            Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
+            viewMatrix.transpose3x3(modelMatrix);
+            Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
+            modelViewMatrix.scale(gameItem.getScale());//
+            shader.setUniform("modelViewMatrix", modelViewMatrix);
+            gameItem.getMesh().render();
+        }
+
+        //shader.unbind();
+    }
+
+    public void renderBillboard3DElement(Camera camera, GameItem gameItem, String shaderName) {
+        ShaderProgram shader = loadedShaders.get(shaderName);
+        if(!previousShader.equals(shaderName)) {
+            shader.bind();
+        }
+
+        // Update projection Matrix
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(renderWidth, renderHeight);
+        shader.setUniform("projectionMatrix", projectionMatrix);
+
+        // Update view Matrix
+        Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
+
+        shader.setUniform("texture_sampler", 0);
+        // Render each gameItem
+        Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
+        viewMatrix.transpose3x3(modelMatrix);
+        Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
+        modelViewMatrix.scale(gameItem.getScale());
+        shader.setUniform("modelViewMatrix", modelViewMatrix);
+        gameItem.getMesh().render();
+
+
+        //shader.unbind();
+    }
+
+
 
 
     /*
@@ -130,7 +183,7 @@ public class Renderer {
         shader.setUniform("projectionMatrix", projectionMatrix);
 
         // Update view Matrix
-        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+        Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
 
         shader.setUniform("texture_sampler", 0);
         // Render each gameItem
@@ -152,7 +205,7 @@ public class Renderer {
         shader.setUniform("projectionMatrix", projectionMatrix);
 
         // Update view Matrix
-        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+        Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
 
         shader.setUniform("texture_sampler", 0);
 
@@ -176,7 +229,7 @@ public class Renderer {
         shader.setUniform("projectionMatrix", projectionMatrix);
 
         // Update view Matrix
-        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+        Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
 
         shader.setUniform("texture_sampler", 0);
 
@@ -189,23 +242,23 @@ public class Renderer {
     */
 
 
-    public void renderHUD(List<TextItem> hudItems, String shaderName)
+    public void render2DSpriteItems(List<SpriteItem> spriteItems, String shaderName)
     {
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
             shader.bind();
         }
 
-        Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, renderWidth, renderHeight, 0);
+        Matrix4f ortho = transformation.getOrtho2DProjectionMatrix(0, renderWidth, renderHeight, 0);
 
         shader.setUniform("texture_sampler", 0);
 
 
-        for (GameItem gameItem : hudItems) {
+        for (SpriteItem spriteItem : spriteItems) {
             // Set ortohtaphic and model matrix for this HUD item
-            Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(gameItem, ortho);
-            shader.setUniform("projModelMatrix", projModelMatrix);
-            gameItem.getMesh().render();
+            Matrix4f orthModelMatrix = transformation.buildOrtoProjModelMatrix(spriteItem, ortho);
+            shader.setUniform("projModelMatrix", orthModelMatrix);
+            spriteItem.getMesh().render();
         }
 
 
@@ -213,41 +266,66 @@ public class Renderer {
     }
 
 
-
-    public void render2DSprites(List<SpriteItem> spriteItems, String shaderName) {
+    public void render2DSpriteItem(SpriteItem spriteItem, String shaderName) {
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
             shader.bind();
         }
 
-        Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, renderWidth, renderHeight, 0);
-
-        shader.setUniform("texture_sampler", 0);
-        for (GameItem gameItem : spriteItems) {
-            // Set ortohtaphic and model matrix for this HUD item
-            Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(gameItem, ortho);
-            shader.setUniform("projModelMatrix", projModelMatrix);
-            gameItem.getMesh().render();
-        }
-
-        shader.unbind();
-    }
-
-    public void render2DSprite(SpriteItem spriteItem, String shaderName) {
-        ShaderProgram shader = loadedShaders.get(shaderName);
-        if(!previousShader.equals(shaderName)) {
-            shader.bind();
-        }
-
-        Matrix4f ortho = transformation.getOrthoProjectionMatrix(0, renderWidth, renderHeight, 0);
+        Matrix4f ortho = transformation.getOrtho2DProjectionMatrix(0, renderWidth, renderHeight, 0);
 
         shader.setUniform("texture_sampler", 0);
 
 
         // Set ortohtaphic and model matrix for this HUD item
-        Matrix4f projModelMatrix = transformation.getOrtoProjModelMatrix(spriteItem, ortho);
+        Matrix4f projModelMatrix = transformation.buildOrtoProjModelMatrix(spriteItem, ortho);
         shader.setUniform("projModelMatrix", projModelMatrix);
         spriteItem.getMesh().render();
+
+        shader.unbind();
+    }
+
+
+
+    public void render2DTextItems(List<TextItem> textItems, String shaderName)
+    {
+        ShaderProgram shader = loadedShaders.get(shaderName);
+        if(!previousShader.equals(shaderName)) {
+            shader.bind();
+        }
+
+        Matrix4f ortho = transformation.getOrtho2DProjectionMatrix(0, renderWidth, renderHeight, 0);
+
+        shader.setUniform("texture_sampler", 0);
+
+
+        for (GameItem gameItem : textItems) {
+            // Set ortohtaphic and model matrix for this HUD item
+            Matrix4f orthModelMatrix = transformation.buildOrtoProjModelMatrix(gameItem, ortho);
+            shader.setUniform("projModelMatrix", orthModelMatrix);
+            gameItem.getMesh().render();
+        }
+
+
+        shader.unbind();
+    }
+
+
+    public void render2DTextItem(TextItem textItem, String shaderName) {
+        ShaderProgram shader = loadedShaders.get(shaderName);
+        if(!previousShader.equals(shaderName)) {
+            shader.bind();
+        }
+
+        Matrix4f ortho = transformation.getOrtho2DProjectionMatrix(0, renderWidth, renderHeight, 0);
+
+        shader.setUniform("texture_sampler", 0);
+
+
+        // Set ortohtaphic and model matrix for this HUD item
+        Matrix4f projModelMatrix = transformation.buildOrtoProjModelMatrix(textItem, ortho);
+        shader.setUniform("projModelMatrix", projModelMatrix);
+        textItem.getMesh().render();
 
         shader.unbind();
     }
@@ -266,7 +344,7 @@ public class Renderer {
     }
 
     public void updateFrustumCullingFilter(Camera camera, Collection<Region> regions) {
-        FrustumCullingFilter.updateFrustum(transformation.getProjectionMatrix(FOV, renderWidth, renderHeight, Z_NEAR, Z_FAR),transformation.getViewMatrix(camera));
+        FrustumCullingFilter.updateFrustum(transformation.getProjectionMatrix(renderWidth, renderHeight),transformation.getCameraViewMatrix(camera));
         FrustumCullingFilter.filter(regions);
     }
 

@@ -114,7 +114,7 @@ public class Location {
      * @return
      */
     public Location getLocationDifference(Location location) {
-        return new Location(location.getX() - getX(), location.getY() - getY(), location.getZ() - getZ(), worldUUID);
+        return new Location(Math.abs(location.getX() - getX()), Math.abs(location.getY() - getY()), Math.abs(location.getZ() - getZ()), worldUUID);
     }
 
     /**

@@ -40,7 +40,7 @@ public class ShaderProgram {
             throw new Exception("Could not create Shader");
         }
         uniforms = new HashMap<>();
-
+        System.out.println(shader);
         createFragmentShader(AssetLoader.getFragmentAsset(shader));
         createVertexShader(AssetLoader.getVertexAsset(shader));
         link();
