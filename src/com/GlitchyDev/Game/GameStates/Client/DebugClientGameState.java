@@ -105,7 +105,7 @@ public class DebugClientGameState extends ClientWorldGameState {
             }
 
             boolean effectFound = false;
-            for(Entity entity: world.getEntities().values()) {
+            for(Entity entity: world.getEntities()) {
                 if(entity.getEffects().size() != 0) {
                     effectFound = true;
                 }

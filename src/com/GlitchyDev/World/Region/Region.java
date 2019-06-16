@@ -5,11 +5,14 @@ import com.GlitchyDev.Utility.HuffmanTreeUtility;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Blocks.AirBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
+import com.GlitchyDev.World.Region.Enum.RegionFileType;
+import com.GlitchyDev.World.Region.Enum.RegionFileVersion;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,38 +61,10 @@ public class Region {
         populateRegions();
     }
 
-    public Region createCopy() {
-        Region copy = new Region(worldGameState, worldUUID, getWidth(), getLength(), getHeight(), location.clone(), regionUUID);
-        for(int y = 0; y < getHeight(); y++) {
-            for(int x = 0; x < getWidth(); x++) {
-                for(int z = 0; z < getLength(); z++) {
-                    copy.setBlockRelative(x,y,z, getBlockRelative(x,y,z));
-                }
-            }
-        }
-
-        copy.getEntities().addAll(entities);
-
-        return copy;
-    }
-
-    /**
-     * Fills newly created regions so they literally can't be null
-     */
-    private void populateRegions() {
-        for(int y = 0; y < getHeight(); y++) {
-            for(int x = 0; x < getWidth(); x++) {
-                for(int z = 0; z < getLength(); z++) {
-                    setBlockRelative(x,y,z, new AirBlock(worldGameState, getLocation().getOffsetLocation(x, y, z)));
-                }
-            }
-        }
-    }
-
-    public Region(InputBitUtility inputBitUtility, Location location, WorldGameState worldGameState) throws IOException {
+    public Region(InputBitUtility inputBitUtility, Location regionLocation, WorldGameState worldGameState) throws IOException {
         this.worldGameState = worldGameState;
-        this.worldUUID = location.getWorldUUID();
-        this.location = location;
+        this.worldUUID = regionLocation.getWorldUUID();
+        this.location = regionLocation;
 
         //RegionFileVersion version = RegionFileVersion.values()[inputBitUtility.getNextCorrectIntByte()];
         RegionFileType type = RegionFileType.values()[inputBitUtility.getNextCorrectIntByte()];
@@ -133,13 +108,14 @@ public class Region {
         this.entities = new ArrayList<>(totalEntities);
         for(int i = 0; i < totalEntities; i++) {
             EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
-            Entity entity = entityType.getEntityFromInput(inputBitUtility, worldGameState, worldUUID, this );
+            Entity entity = entityType.getEntityFromInput(inputBitUtility, worldGameState, worldUUID, regionUUID );
             getEntities().add(entity);
+            entity.setLocation(entity.getLocation().getOffsetLocation(regionLocation));
         }
 
 
-
     }
+
 
     public void writeData(OutputBitUtility outputBitUtility) throws IOException {
         //outputBitUtility.writeNextCorrectByteInt(CURRENT_VERSION.ordinal());
@@ -220,6 +196,35 @@ public class Region {
     }
 
 
+
+    public Region createCopy() {
+        Region copy = new Region(worldGameState, worldUUID, getWidth(), getLength(), getHeight(), location.clone(), regionUUID);
+        for(int y = 0; y < getHeight(); y++) {
+            for(int x = 0; x < getWidth(); x++) {
+                for(int z = 0; z < getLength(); z++) {
+                    copy.setBlockRelative(x,y,z, getBlockRelative(x,y,z));
+                }
+            }
+        }
+
+        copy.getEntities().addAll(entities);
+
+        return copy;
+    }
+
+    /**
+     * Fills newly created regions so they literally can't be null
+     */
+    private void populateRegions() {
+        for(int y = 0; y < getHeight(); y++) {
+            for(int x = 0; x < getWidth(); x++) {
+                for(int z = 0; z < getLength(); z++) {
+                    setBlockRelative(x,y,z, new AirBlock(worldGameState, getLocation().getOffsetLocation(x, y, z)));
+                }
+            }
+        }
+    }
+
     public boolean isLocationInRegion(Location selectLocation) {
         if(getLocation().getY() <= selectLocation.getY() && selectLocation.getY()  < getLocation().getY() + getHeight()) {
             if(getLocation().getX() <= selectLocation.getX() && selectLocation.getX()  < getLocation().getX() + getWidth()) {
@@ -257,18 +262,7 @@ public class Region {
     }
 
 
-    public void setLocation(Location newLocation) {
-        Location oldLocation = getLocation();
-        for(Entity entity: entities) {
-            Location difference = oldLocation.getLocationDifference(entity.getLocation());
-            entity.setLocation(newLocation.getOffsetLocation(difference));
-        }
-        for(Block block: getBlocksArray()) {
-            Location difference = oldLocation.getLocationDifference(block.getLocation());
-            block.setLocation(newLocation.getOffsetLocation(difference));
-        }
-        this.location = newLocation;
-    }
+
 
 
     // Helper Methods
@@ -278,7 +272,14 @@ public class Region {
     }
 
     public void setBlockRelative(Location relativeLocation, Block block) {
+        Block previousBlock = getBlockRelative(relativeLocation);
+        if(previousBlock instanceof TickableBlock) {
+            worldGameState.getWorld(worldUUID).getTickableBlocks().remove(previousBlock);
+        }
         setBlockRelative(relativeLocation.getX(), relativeLocation.getY(), relativeLocation.getZ(), block);
+        if(block instanceof TickableBlock) {
+            worldGameState.getWorld(worldUUID).getTickableBlocks().add((TickableBlock) block);
+        }
     }
 
     public Block getBlockRelative(int relativeX, int relativeY, int relativeZ) {
@@ -325,6 +326,14 @@ public class Region {
         if(containsEntity(entityUUID)) {
             entities.remove(getEntity(entityUUID));
         }
+    }
+
+    public void removeEntity(Entity entity) {
+        entities.remove(entity);
+    }
+
+    public void addEntity(Entity entity) {
+        entities.add(entity);
     }
 
     @Override

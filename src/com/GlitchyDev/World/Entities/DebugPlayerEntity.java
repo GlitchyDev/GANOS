@@ -13,7 +13,6 @@ import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.Region;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -31,11 +30,6 @@ public class DebugPlayerEntity extends PlayerEntity {
 
     }
 
-    public DebugPlayerEntity(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, worldUUID, region, inputBitUtility, EntityType.DEBUG_PLAYER);
-
-    }
-
     @Override
     public void onSpawn(SpawnReason spawnReason) {
         this.gameItem = new GameItem(AssetLoader.getMeshAsset("cube").clone());
@@ -50,11 +44,14 @@ public class DebugPlayerEntity extends PlayerEntity {
 
     @Override
     public void render(Renderer renderer, Camera camera) {
+        gameItem.setPosition(getLocation().getNormalizedPosition());
+
         renderer.render3DElement(camera,gameItem, "Default3D");
     }
 
     @Override
     public void onDespawn(DespawnReason despawnReason) {
+
     }
 
 
@@ -67,6 +64,5 @@ public class DebugPlayerEntity extends PlayerEntity {
     @Override
     public void setLocation(Location location) {
         super.setLocation(location);
-        gameItem.setPosition(getLocation().getNormalizedPosition());
     }
 }

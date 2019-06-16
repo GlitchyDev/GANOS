@@ -1,6 +1,6 @@
 package com.GlitchyDev.World.Effects.Abstract;
 
-import com.GlitchyDev.World.Region.RegionConnection;
+import com.GlitchyDev.World.Region.Enum.RegionConnection;
 
 public interface RegionRevealingEffect {
 

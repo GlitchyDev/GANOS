@@ -160,13 +160,13 @@ public class Renderer {
         Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
         viewMatrix.transpose3x3(modelMatrix);
         Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
-        modelViewMatrix.scale(gameItem.getScale());
         shader.setUniform("modelViewMatrix", modelViewMatrix);
         gameItem.getMesh().render();
 
 
         //shader.unbind();
     }
+
 
 
 

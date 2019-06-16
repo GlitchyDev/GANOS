@@ -10,17 +10,16 @@ import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Direction;
-import com.GlitchyDev.World.Transmission.Communication.CommunicationListener;
-import com.GlitchyDev.World.Transmission.Communication.Constructs.Messages.CommunicationMessage;
-import com.GlitchyDev.World.Transmission.Communication.Constructs.Messages.CommunicationNoise;
-import com.GlitchyDev.World.Transmission.Communication.Constructs.Source.CommunicationSource;
-import com.GlitchyDev.World.Transmission.DetectionType;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.Region;
+import com.GlitchyDev.World.Transmission.Communication.CommunicationListener;
+import com.GlitchyDev.World.Transmission.Communication.Constructs.Messages.CommunicationMessage;
+import com.GlitchyDev.World.Transmission.Communication.Constructs.Messages.CommunicationNoise;
+import com.GlitchyDev.World.Transmission.Communication.Constructs.Source.CommunicationSource;
+import com.GlitchyDev.World.Transmission.DetectionType;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -37,10 +36,7 @@ public class DebugCommunicationEntity extends Entity implements CommunicationLis
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, EntityType.DEBUG_COMMUNICATION_ENTITY);
 
     }
-    public DebugCommunicationEntity(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, worldUUID, region, inputBitUtility, EntityType.DEBUG_COMMUNICATION_ENTITY);
 
-    }
 
     @Override
     public void onSpawn(SpawnReason spawnReason) {
@@ -62,12 +58,14 @@ public class DebugCommunicationEntity extends Entity implements CommunicationLis
 
     @Override
     public void tick() {
-        spriteItem.setPosition(getLocation().getNormalizedPosition());
-        textItem.setPosition(getLocation().getNormalizedPosition().add(0,1,0));
+
     }
 
     @Override
     public void render(Renderer renderer, Camera camera) {
+        spriteItem.setPosition(getLocation().getNormalizedPosition());
+        textItem.setPosition(getLocation().getNormalizedPosition().add(0,1,0));
+
         renderer.render3DElement(camera,spriteItem,"Default3D");
         renderer.render3DElement(camera,textItem,"Default3D");
 

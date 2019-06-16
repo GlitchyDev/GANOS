@@ -16,7 +16,6 @@ import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.Region;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -28,7 +27,6 @@ public class DebugEntity extends Entity implements CustomVisibleEntity {
 
     public DebugEntity(WorldGameState worldGameState, UUID currentRegionUUID, Location location, Direction direction) {
         super(worldGameState, currentRegionUUID, EntityType.DEBUG_ENTITY, location, direction);
-
     }
 
 
@@ -36,19 +34,16 @@ public class DebugEntity extends Entity implements CustomVisibleEntity {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, EntityType.DEBUG_ENTITY);
 
     }
-    public DebugEntity(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, worldUUID, region, inputBitUtility, EntityType.DEBUG_ENTITY);
 
-    }
 
 
     @Override
     public void onSpawn(SpawnReason spawnReason) {
-        gameItem = new GameItem(AssetLoader.getMeshAsset("CubicMesh1"));
+        gameItem = new GameItem(AssetLoader.getMeshAsset("CubicMesh6"));
         gameItem.getMesh().setTexture(AssetLoader.getTextureAsset("grassblock"));
         gameItem.setPosition(getLocation().getNormalizedPosition());
 
-        spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Standing_Mirror"),5,5,true);
+        spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Standing_Mirror"),5,9,false,true);
         spriteItem.setPosition(getLocation().getNormalizedPosition());
 
     }
@@ -68,8 +63,11 @@ public class DebugEntity extends Entity implements CustomVisibleEntity {
 
     @Override
     public void render(Renderer renderer, Camera camera) {
+        gameItem.setPosition(getLocation().getNormalizedPosition());
+        spriteItem.setPosition(getLocation().getNormalizedPosition());
+
         renderer.renderBillboard3DElement(camera,gameItem, "Default3D");
-        renderer.renderBillboard3DElement(camera,spriteItem, "Default3D");
+        renderer.render3DElement(camera,spriteItem, "Default3D");
     }
 
     @Override
@@ -95,8 +93,6 @@ public class DebugEntity extends Entity implements CustomVisibleEntity {
     @Override
     public void setLocation(Location location) {
         super.setLocation(location);
-        gameItem.setPosition(getLocation().getNormalizedPosition());
-        spriteItem.setPosition(getLocation().getNormalizedPosition());
     }
 
     @Override

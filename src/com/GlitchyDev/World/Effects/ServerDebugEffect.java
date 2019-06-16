@@ -7,7 +7,7 @@ import com.GlitchyDev.World.Effects.Abstract.RegionHidingEffect;
 import com.GlitchyDev.World.Effects.Abstract.RegionRevealingEffect;
 import com.GlitchyDev.World.Effects.Enums.EffectType;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
-import com.GlitchyDev.World.Region.RegionConnection;
+import com.GlitchyDev.World.Region.Enum.RegionConnection;
 
 public class ServerDebugEffect extends EntityEffect implements RegionRevealingEffect, RegionHidingEffect {
     public ServerDebugEffect(WorldGameState worldGameState) {

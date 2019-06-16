@@ -53,7 +53,8 @@ public abstract class Entity {
     }
 
     /**
-     * Allows Entities to be constructed from IO/Packets
+     * Allows Entities to be constructed from IO/Packets, PlayerFiles, Region Files, Ect
+     * Only apparent limitation is that the "Location" is encoded as a relative within its Region, and must be calibrated
      * @param worldGameState
      * @param worldUUID
      * @param currentRegionUUID
@@ -62,14 +63,14 @@ public abstract class Entity {
      * @throws IOException
      */
 
-    // This particular constructor is used to retrieve a single entity from file, or from a spawn packet
+    // This particular constructor is used to retrieve a single entity from file, or from a spawn packet, or from region files
     public Entity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
         this.worldGameState = worldGameState;
         this.currentRegionUUID = currentRegionUUID;
         this.entityType = entityType;
         this.uuid = inputBitUtility.getNextUUID();
         Location relativeLocation = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), worldUUID);
-        // This location will be updated on Spawn
+        // This location will be updated on Spawn\
         this.location = relativeLocation;
         this.direction = Direction.values()[inputBitUtility.getNextCorrectedIntBit(3)];
         int totalEffects = inputBitUtility.getNextCorrectIntByte();
@@ -82,64 +83,6 @@ public abstract class Entity {
         }
     }
 
-    // Exclusively from reading from a Region File
-    public Entity(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
-        this.worldGameState = worldGameState;
-        this.currentRegionUUID = region.getRegionUUID();
-        this.entityType = entityType;
-        this.uuid = inputBitUtility.getNextUUID();
-        Location regionLocation = region.getLocation();
-        Location relativeLocation = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), worldUUID);
-        this.location = regionLocation.getOffsetLocation(relativeLocation);
-        this.direction = Direction.values()[inputBitUtility.getNextCorrectedIntBit(3)];
-        int totalEffects = inputBitUtility.getNextCorrectIntByte();
-        this.effects = new ArrayList<>(totalEffects);
-        for(int i = 0; i < totalEffects; i++) {
-            EffectType effectType = EffectType.values()[inputBitUtility.getNextCorrectIntByte()];
-            EntityEffect effect = (EntityEffect) effectType.getEffectFromInput(inputBitUtility, worldGameState);
-            effects.add(effect);
-        }
-    }
-
-
-
-    public abstract void onSpawn(SpawnReason spawnReason);
-
-    public abstract void tick();
-
-    public abstract void render(Renderer renderer, Camera camera);
-
-    public abstract void onDespawn(DespawnReason despawnReason);
-
-
-    public void teleport(Location newLocation, UUID newRegionUUID, UUID worldUUID) {
-        Region oldRegion = worldGameState.getRegion(getCurrentRegionUUID(),getWorldUUID());
-        Region newRegion = worldGameState.getRegion(newRegionUUID,worldUUID);
-
-        Location oldOffset = oldRegion.getLocation().getLocationDifference(getLocation());
-        Location newOffset = newRegion.getLocation().getLocationDifference(newLocation);
-
-        Block startingBlock = worldGameState.getRegionAtLocation(getLocation()).getBlockRelative(oldOffset);
-        Block endingBlock = worldGameState.getRegionAtLocation(newLocation).getBlockRelative(newOffset);
-
-        if (startingBlock instanceof TriggerableBlock) {
-            ((TriggerableBlock) startingBlock).exitBlockSuccessfully(EntityMovementType.TELEPORT, this);
-        }
-
-        if (endingBlock instanceof TriggerableBlock) {
-            ((TriggerableBlock) endingBlock).enterBlockSccessfully(EntityMovementType.TELEPORT, this);
-        }
-
-        setLocation(newLocation);
-        currentRegionUUID = newRegionUUID;
-    }
-
-    public void setDirection(Direction newDirection) {
-        this.direction = newDirection;
-        if(worldGameState instanceof ServerWorldGameState) {
-            ((ServerWorldGameState) worldGameState).replicateChangeDirectionEntity(uuid,getLocation().getWorldUUID(),newDirection);
-        }
-    }
 
     /**
      * Writes file to IO and Packet
@@ -165,6 +108,55 @@ public abstract class Entity {
 
     }
 
+    public abstract void onSpawn(SpawnReason spawnReason);
+
+    public abstract void tick();
+
+    public abstract void render(Renderer renderer, Camera camera);
+
+    public abstract void onDespawn(DespawnReason despawnReason);
+
+    public void teleport(Location newLocation) {
+        Region selectedRegion = worldGameState.getRegionAtLocation(newLocation);
+        teleport(newLocation,selectedRegion.getRegionUUID());
+    }
+
+    public void teleport(Location newLocation, UUID newRegionUUID) {
+        Region oldRegion = worldGameState.getRegion(getCurrentRegionUUID(),getWorldUUID());
+        Region newRegion = worldGameState.getRegion(newRegionUUID,newLocation.getWorldUUID());
+
+        Location oldOffset = oldRegion.getLocation().getLocationDifference(getLocation());
+        Location newOffset = newRegion.getLocation().getLocationDifference(newLocation);
+
+        Block startingBlock = worldGameState.getRegionAtLocation(getLocation()).getBlockRelative(oldOffset);
+        Block endingBlock = worldGameState.getRegionAtLocation(newLocation).getBlockRelative(newOffset);
+
+        if (startingBlock instanceof TriggerableBlock) {
+            ((TriggerableBlock) startingBlock).exitBlockSuccessfully(EntityMovementType.TELEPORT, this);
+        }
+
+        if (endingBlock instanceof TriggerableBlock) {
+            ((TriggerableBlock) endingBlock).enterBlockSccessfully(EntityMovementType.TELEPORT, this);
+        }
+
+
+        oldRegion.removeEntity(getUUID());
+        newRegion.addEntity(this);
+        if(newLocation.getWorldUUID() != getWorldUUID()) {
+            worldGameState.getWorld(getWorldUUID()).removeEntity(this);
+            worldGameState.getWorld(newLocation.getWorldUUID()).addEntity(this);
+        }
+
+        setLocation(newLocation);
+        currentRegionUUID = newRegionUUID;
+    }
+
+    public void setDirection(Direction newDirection) {
+        this.direction = newDirection;
+        if(worldGameState instanceof ServerWorldGameState) {
+            ((ServerWorldGameState) worldGameState).replicateChangeDirectionEntity(uuid,getLocation().getWorldUUID(),newDirection);
+        }
+    }
 
 
     public UUID getUUID() {
@@ -210,7 +202,7 @@ public abstract class Entity {
         effects.add(effect);
     }
 
-    public void remooveffect(EntityEffect effect) {
+    public void removeEffect(EntityEffect effect) {
         effect.removeEntityEffect();
         effects.remove(effect);
     }

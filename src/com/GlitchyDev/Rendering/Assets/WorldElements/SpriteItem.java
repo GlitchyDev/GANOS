@@ -17,6 +17,15 @@ public class SpriteItem extends GameItem {
         setMesh(buildMesh(spriteTexture,loadedTexture));
     }
 
+    public SpriteItem(Texture spriteTexture, boolean loadedTexture, boolean centered) {
+        super(null);
+        if(centered) {
+            setMesh(buildCenteredMesh(spriteTexture,spriteTexture.getWidth(),spriteTexture.getHeight(),loadedTexture));
+        } else {
+            setMesh(buildMesh(spriteTexture,spriteTexture.getWidth(),spriteTexture.getHeight(),loadedTexture));
+        }
+    }
+
     public SpriteItem(Texture spriteTexture, int width, int height, boolean loadedTexture) {
         super(null);
         setMesh(buildMesh(spriteTexture, width, height, loadedTexture));

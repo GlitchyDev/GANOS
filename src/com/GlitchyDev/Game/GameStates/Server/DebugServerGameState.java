@@ -32,7 +32,7 @@ import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Region;
-import com.GlitchyDev.World.Region.RegionConnection;
+import com.GlitchyDev.World.Region.Enum.RegionConnection;
 import com.GlitchyDev.World.Transmission.Communication.Constructs.Enums.LanguageType;
 import com.GlitchyDev.World.Transmission.Communication.Constructs.Messages.CommunicationMessage;
 import com.GlitchyDev.World.Transmission.Communication.Constructs.Source.CommunicationServerSource;
@@ -369,12 +369,8 @@ public class DebugServerGameState extends ServerWorldGameState {
         //375
         Block block = selectBlock2D(blockList,globalGameData.getGameWindow(),mousePos,camera);
         if(block != null) {
-            System.out.println("found");
             ((DebugBlock)block).setTestValue((((DebugBlock) block).getTestValue()+1)%3);
-        } else {
-            System.out.println("None " + mousePos);
         }
-
     }
 
 

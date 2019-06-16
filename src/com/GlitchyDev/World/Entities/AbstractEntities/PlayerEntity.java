@@ -11,7 +11,7 @@ import com.GlitchyDev.World.Effects.Abstract.RegionRevealingEffect;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Region;
-import com.GlitchyDev.World.Region.RegionConnection;
+import com.GlitchyDev.World.Region.Enum.RegionConnection;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,10 +27,6 @@ public abstract class PlayerEntity extends ViewingEntity {
 
     public PlayerEntity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, entityType);
-    }
-
-    public PlayerEntity(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
-        super(worldGameState, worldUUID, region, inputBitUtility, entityType);
     }
 
     public void setPlayer(Player player) {

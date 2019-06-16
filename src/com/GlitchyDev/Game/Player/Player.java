@@ -7,6 +7,7 @@ import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.AbstractEntities.PlayerEntity;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
+import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Views.EntityView;
 
 import java.io.IOException;
@@ -37,6 +38,8 @@ public class Player {
         this.playerEntity = (PlayerEntity) playerEntityType.getEntityFromInput(inputBitUtility,worldGameState, worldUUID, regionUUID);
         this.playerEntity.setPlayer(this);
         // Place into world as loaded
+        Region hostRegion = worldGameState.getRegion(playerEntity.getCurrentRegionUUID(),playerEntity.getWorldUUID());
+        playerEntity.setLocation(hostRegion.getLocation().getOffsetLocation(playerEntity.getLocation()));
         worldGameState.spawnEntity(playerEntity, SpawnReason.READ_FILE);
 
         int totalControlledEntities = inputBitUtility.getNextCorrectIntByte();

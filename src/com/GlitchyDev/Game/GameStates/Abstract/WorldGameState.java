@@ -9,7 +9,7 @@ import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Region;
-import com.GlitchyDev.World.Region.RegionConnection;
+import com.GlitchyDev.World.Region.Enum.RegionConnection;
 import com.GlitchyDev.World.World;
 
 import java.util.ArrayList;
@@ -110,22 +110,27 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
 
+
+    public void setBlock(Block block) {
+        setBlock(block,getRegionAtLocation(block.getLocation()).getRegionUUID());
+    }
+
+    public void setBlock(Block block, UUID regionUUID) {
+        Region region = getRegion(regionUUID,block.getLocation().getWorldUUID());
+        Location difference = region.getLocation().getLocationDifference(block.getLocation());
+        region.setBlockRelative(difference,block);
+    }
+
     public void addRegionToGame(Region region) {
-        if (region == null) {
-            System.out.println("R Oopsie!");
-        }
         World world = getWorld(region.getWorldUUID());
-        if (world == null) {
-            System.out.println("W Oopsie! " + region.getWorldUUID() + " " + getWorlds().size());
-        }
         world.getRegions().put(region.getRegionUUID(), region);
         for (Entity entity : region.getEntities()) {
-            world.getEntities().put(entity.getUUID(), entity);
+            world.addEntity(entity);
             entity.onSpawn(SpawnReason.REGION_MANUALLY_ADDED);
         }
         for (Block block : region.getBlocksArray()) {
             if (block instanceof TickableBlock) {
-                getWorld(region.getWorldUUID()).getTickableBlocks().put(block.getLocation(), (TickableBlock) block);
+                getWorld(region.getWorldUUID()).getTickableBlocks().add((TickableBlock) block);
             }
         }
     }
@@ -146,52 +151,32 @@ public abstract class WorldGameState extends EnvironmentGameState {
 
     // Replicate Functions
 
+
+
     public void spawnEntity(Entity entity, SpawnReason spawnReason) {
         entity.onSpawn(spawnReason);
-
-        World world = getWorld(entity.getLocation().getWorldUUID());
-
-        Location regionLocation = getRegion(entity.getCurrentRegionUUID(), entity.getWorldUUID()).getLocation();
-        entity.setLocation(entity.getLocation().getOffsetLocation(regionLocation));
-
-        world.getRegionAtLocation(entity.getLocation()).getEntities().add(entity);
-        world.getEntities().put(entity.getUUID(), entity);
-
+        getRegion(entity.getCurrentRegionUUID(), entity.getWorldUUID()).getEntities().add(entity);
+        getWorld(entity.getLocation().getWorldUUID()).addEntity(entity);
     }
 
+
     public void despawnEntity(UUID entityUUID, UUID worldUUID, DespawnReason despawnReason) {
-        Entity entity = getWorld(worldUUID).getEntities().get(entityUUID);
+        Entity entity = getWorld(worldUUID).getEntity(entityUUID);
+        if(entity == null) {
+            System.out.println("We would like your psycopass");
+            System.out.println(getWorld(worldUUID).getEntities());
+        }
         Region hostRegion = getRegion(entity.getCurrentRegionUUID(), worldUUID);
         hostRegion.getEntities().remove(entity);
-        getWorld(worldUUID).getRegionAtLocation(entity.getLocation()).getEntities().remove(entityUUID);
-        getWorld(worldUUID).getEntities().remove(entityUUID);
+        getWorld(worldUUID).removeEntity(entity);
         entity.onDespawn(despawnReason);
-
     }
 
     public Entity getEntity(UUID entityUUID, UUID worldUUID) {
-        return getWorld(worldUUID).getEntities().get(entityUUID);
+        return getWorld(worldUUID).getEntity(entityUUID);
     }
 
-    public void setBlocks(Collection<Block> blocks) {
-        for (Block block : blocks) {
-            setBlock(block);
-        }
-    }
 
-    public void setBlock(Block block) {
-        World world = getWorld(block.getLocation().getWorldUUID());
-        Region region = world.getRegionAtLocation(block.getLocation());
-        Location relativeLocation = region.getLocation().getLocationDifference(block.getLocation());
-        Block previousBlock = region.getBlockRelative(relativeLocation);
-        region.setBlockRelative(relativeLocation, block);
-        if (block instanceof TickableBlock) {
-            world.getTickableBlocks().put(block.getLocation(), (TickableBlock) block);
-        }
-        if (previousBlock instanceof TickableBlock) {
-            world.getTickableBlocks().remove(previousBlock.getLocation());
-        }
-    }
 
 
 

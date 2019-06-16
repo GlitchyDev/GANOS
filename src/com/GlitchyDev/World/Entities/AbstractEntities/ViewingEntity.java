@@ -13,7 +13,7 @@ import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Region;
-import com.GlitchyDev.World.Region.RegionConnection;
+import com.GlitchyDev.World.Region.Enum.RegionConnection;
 import com.GlitchyDev.World.Views.EntityView;
 import com.GlitchyDev.World.World;
 
@@ -35,9 +35,6 @@ public abstract class ViewingEntity extends Entity {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, entityType);
     }
 
-    public ViewingEntity(WorldGameState worldGameState, UUID worldUUID, Region region, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
-        super(worldGameState, worldUUID, region, inputBitUtility, entityType);
-    }
 
 
     /**

@@ -8,6 +8,7 @@ import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
+import com.GlitchyDev.World.Region.Region;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -32,6 +33,8 @@ public class ServerSpawnEntityPacket extends WorldStateModifyingPackets {
 
     @Override
     public void executeModification(WorldGameState worldGameState) {
+        Region hostRegion = worldGameState.getRegion(entity.getCurrentRegionUUID(),entity.getWorldUUID());
+        entity.setLocation(hostRegion.getLocation().getOffsetLocation(entity.getLocation()));
         worldGameState.spawnEntity(entity, SpawnReason.PACKET_SPAWN);
     }
 

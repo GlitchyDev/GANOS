@@ -332,6 +332,16 @@ public abstract class ServerWorldGameState extends WorldGameState {
         changedBlocks.get(regionUUID).add(new ServerChangeBlockPacket(block));
     }
 
+    @Override
+    public void setBlock(Block block, UUID regionUUID) {
+        super.setBlock(block,regionUUID);
+        // This is replicated, mark for entities who can view it
+        if(!changedBlocks.containsKey(regionUUID)) {
+            changedBlocks.put(regionUUID, new ArrayList<>());
+        }
+        changedBlocks.get(regionUUID).add(new ServerChangeBlockPacket(block));
+    }
+
     // Check to make sure the correct "Region" is sent, visibility and all
     public void playerAddRegionToView(UUID playerUUID, Region region, EntityView entityView) throws IOException {
         if(currentPlayers.containsKey(playerUUID)) {
