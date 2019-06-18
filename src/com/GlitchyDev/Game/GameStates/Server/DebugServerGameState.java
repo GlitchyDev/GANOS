@@ -31,8 +31,8 @@ import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Region.Enum.RegionConnection;
+import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Transmission.Communication.Constructs.Enums.LanguageType;
 import com.GlitchyDev.World.Transmission.Communication.Constructs.Messages.CommunicationMessage;
 import com.GlitchyDev.World.Transmission.Communication.Constructs.Source.CommunicationServerSource;
@@ -235,6 +235,37 @@ public class DebugServerGameState extends ServerWorldGameState {
         super.logic();
         controller.tick();
 
+
+        synchronized (playerLogin) {
+            for(UUID playerUUID: playerLogin) {
+                Region spawnRegion = getRegionAtLocation(getWorld(spawnWorld).getOriginLocation());
+                DebugPlayerEntity playerEntity = new DebugPlayerEntity(this,spawnRegion.getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
+                Player loginPlayer = new Player(this,playerUUID,playerEntity);
+                try {
+                    serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnWorldPacket(spawnWorld));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                currentPlayers.put(playerUUID, loginPlayer);
+                spawnEntity(playerEntity,SpawnReason.LOGIN);
+                playerEntity.recalculateView();
+            }
+            playerLogin.clear();
+        }
+
+
+
+        synchronized(playerLogout) {
+            for(UUID playerUUID: playerLogout) {
+                System.out.println("DebugServer: User " + playerUUID);
+                System.out.println("DebugServer: " + currentPlayers.get(playerUUID) + " " + currentPlayers.get(playerUUID).getPlayerEntity());
+                despawnEntity(currentPlayers.get(playerUUID).getPlayerEntity(), DespawnReason.LOGOUT);
+                currentPlayers.remove(playerUUID);
+            }
+            playerLogout.clear();
+        }
+
+
         cameraControlsLogic();
 
         debugItems.get(0).setText("FPS: " + getCurrentFPS() + " Render: " + formatter.format(getRenderUtilization()) + " Logic: " + formatter.format(getLogicUtilization()));
@@ -260,6 +291,9 @@ public class DebugServerGameState extends ServerWorldGameState {
                 System.out.println("Starting up Server");
                 serverNetworkManager.enableAcceptingClients(813);
                 serverNetworkManager.getApprovedUsers().add(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562"));
+                serverNetworkManager.getApprovedUsers().add(UUID.fromString("187954ba-2b12-4215-9a90-f7b810797562"));
+                serverNetworkManager.getApprovedUsers().add(UUID.fromString("287954ba-2b12-4215-9a90-f7b810797562"));
+
                 isRunning = true;
             }
         }
@@ -491,19 +525,21 @@ public class DebugServerGameState extends ServerWorldGameState {
         renderer.render2DTextItems(hudItems, "Default2D");
         walkieTalkie.render(renderer,500);
 
-        if(currentPlayers.size() > 0) {
-            renderer.setRenderSpace(500,0,500,500);
-            for(Region region: currentPlayers.get(currentPlayers.keySet().toArray()[0]).getEntityView().getViewableRegions()) {
-                for(Block block: region.getBlocksArray()) {
-                    if(block instanceof CustomRenderBlock) {
-                        ((CustomRenderBlock) block).render(renderer,camera,testPlayer);
+
+        if (currentPlayers.size() > 0) {
+            renderer.setRenderSpace(500, 0, 500, 500);
+            for (Region region : currentPlayers.get(currentPlayers.keySet().toArray()[0]).getEntityView().getViewableRegions()) {
+                for (Block block : region.getBlocksArray()) {
+                    if (block instanceof CustomRenderBlock) {
+                        ((CustomRenderBlock) block).render(renderer, camera, testPlayer);
                     }
                 }
-                for(Entity entity: region.getEntities()) {
-                    entity.render(renderer,camera);
+                for (Entity entity : region.getEntities()) {
+                    entity.render(renderer, camera);
                 }
             }
         }
+
 
         renderer.setRenderSpace(500,0,280,500);
         SpriteItem spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Noise"),280,500,true);
@@ -556,26 +592,27 @@ public class DebugServerGameState extends ServerWorldGameState {
         }
     }
 
+
+    private final ArrayList<UUID> playerLogin = new ArrayList<>();
     @Override
     public void onPlayerLogin(UUID playerUUID) {
-        Region spawnRegion = getRegionAtLocation(getWorld(spawnWorld).getOriginLocation());
-        DebugPlayerEntity playerEntity = new DebugPlayerEntity(this,spawnRegion.getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
-        Player loginPlayer = new Player(this,playerUUID,playerEntity);
-        try {
-            serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerSpawnWorldPacket(spawnWorld));
-        } catch (IOException e) {
-            e.printStackTrace();
+        synchronized(playerLogin) {
+            playerLogin.add(playerUUID);
         }
-        currentPlayers.put(playerUUID,loginPlayer);
-        playerEntity.recalculateView();
-        spawnEntity(playerEntity, SpawnReason.LOGIN);
+
+
+
+
     }
 
+    private final ArrayList<UUID> playerLogout = new ArrayList<>();
     @Override
     public void onPlayerLogout(UUID playerUUID, NetworkDisconnectType reason) {
-        System.out.println("DebugServer: User " + playerUUID + " disconnected for " + reason);
-        despawnEntity(currentPlayers.get(playerUUID).getPlayerEntity().getUUID(), currentPlayers.get(playerUUID).getPlayerEntity().getWorldUUID(), DespawnReason.LOGOUT);
-        currentPlayers.remove(playerUUID);
+        synchronized(playerLogout) {
+            playerLogout.add(playerUUID);
+        }
+
+
     }
 
     @Override

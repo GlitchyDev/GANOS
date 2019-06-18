@@ -160,12 +160,11 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
 
+    public void despawnEntity(Entity entity, DespawnReason despawnReason) {
+        despawnEntity(entity.getUUID(), entity.getWorldUUID(), despawnReason);
+    }
     public void despawnEntity(UUID entityUUID, UUID worldUUID, DespawnReason despawnReason) {
         Entity entity = getWorld(worldUUID).getEntity(entityUUID);
-        if(entity == null) {
-            System.out.println("We would like your psycopass");
-            System.out.println(getWorld(worldUUID).getEntities());
-        }
         Region hostRegion = getRegion(entity.getCurrentRegionUUID(), worldUUID);
         hostRegion.getEntities().remove(entity);
         getWorld(worldUUID).removeEntity(entity);

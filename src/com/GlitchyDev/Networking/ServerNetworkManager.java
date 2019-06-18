@@ -84,8 +84,7 @@ public class ServerNetworkManager {
         return approvedUsers;
     }
 
-    public Collection<UUID> getConnectedUsers()
-    {
+    public Collection<UUID> getConnectedUsers() {
         return connectedUsers;
     }
 
@@ -168,7 +167,7 @@ public class ServerNetworkManager {
                 if(initPacket instanceof ClientAuthGreetingPacket) {
                     UUID playerUUID = ((ClientAuthGreetingPacket) initPacket).getPlayerUUID();
                     if (approvedUsers.contains(playerUUID)) {
-                        if (connectedClients.contains(playerUUID)) {
+                        if (connectedClients.containsKey(playerUUID)) {
                             System.out.println("ServerNetwork: Duplicate user detected! Denying Access");
                             gameSocket.disconnect(NetworkDisconnectType.SERVER_DUPLICATE_CONNECTION);
                         } else {

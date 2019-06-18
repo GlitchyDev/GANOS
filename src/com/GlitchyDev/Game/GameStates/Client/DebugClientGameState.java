@@ -83,10 +83,18 @@ public class DebugClientGameState extends ClientWorldGameState {
         } else {
             textItems.get(4).setText("Not Connected");
             textItems.get(5).setText("" + gameInput.getKeyValue(GLFW_KEY_C) + "." + gameInputTimings.getActiveMouseButton1Time());
-            if(controller.getToggleLeftBumperButton() || gameInput.getKeyValue(GLFW_KEY_S) >= 1) {
+            if(gameInput.getKeyValue(GLFW_KEY_S) >= 1) {
                 try {
                     System.out.println("Attempt connection to server");
                     connectToServer(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562"), this, InetAddress.getLocalHost(), 813);
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(gameInput.getKeyValue(GLFW_KEY_X) >= 1) {
+                try {
+                    System.out.println("Attempt connection to server");
+                    connectToServer(UUID.fromString("187954ba-2b12-4215-9a90-f7b810797562"), this, InetAddress.getLocalHost(), 813);
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }
