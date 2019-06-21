@@ -54,35 +54,55 @@ public class WorldEventManager {
         }
     }
 
-    public void triggerBlockChange(Block previousBlock, Block newBlock, UUID worldUUID, UUID regionUUID) {
+    public void triggerBlockChange(Block previousBlock, Block newBlock, UUID regionUUID) {
         for(BlockChangeListener blockChangeListener: blockChangeListeners) {
-            blockChangeListener.onTriggerBlockChange(previousBlock,newBlock,worldUUID,regionUUID);
+            blockChangeListener.onTriggerBlockChange(previousBlock,newBlock,regionUUID);
         }
     }
 
 
-
-
-
-
-
-
-
-
-
-    public ArrayList<EntitySpawnListener> getEntitySpawnListeners() {
-        return entitySpawnListeners;
+    public void registerEntitySpawnListener(EntitySpawnListener entitySpawnListener) {
+        entitySpawnListeners.add(entitySpawnListener);
     }
 
-    public ArrayList<EntityDespawnListener> getEntityDespawnListeners() {
-        return entityDespawnListeners;
+    public void deregisterEntitySpawnListener(EntitySpawnListener entitySpawnListener) {
+        entitySpawnListeners.remove(entitySpawnListener);
     }
 
-    public ArrayList<EntityMoveListener> getEntityMoveListeners() {
-        return entityMoveListeners;
+    public void registerEntityDespawnListener(EntityDespawnListener entityDespawnListener) {
+        entityDespawnListeners.add(entityDespawnListener);
     }
 
-    public ArrayList<EntityDirectionListener> getEntityDirectionListeners() {
-        return entityDirectionListeners;
+    public void deregisterEntityDespawnListener(EntityDespawnListener entityDespawnListener) {
+        entityDespawnListeners.remove(entityDespawnListener);
     }
+
+    public void registerEntityMoveListener(EntityMoveListener entityMoveListener) {
+        entityMoveListeners.add(entityMoveListener);
+    }
+
+    public void deregisterEntityMoveListener(EntityMoveListener entityMoveListener) {
+        entityMoveListeners.remove(entityMoveListener);
+    }
+
+    public void registerEntityDirectionListener(EntityDirectionListener entityDirectionListener) {
+        entityDirectionListeners.add(entityDirectionListener);
+    }
+
+    public void deregisterEntityDirectionListener(EntityDirectionListener entityDirectionListener) {
+        entityDirectionListeners.remove(entityDirectionListener);
+    }
+
+    public void registerBlockChangeListener(BlockChangeListener blockChangeListener) {
+        blockChangeListeners.add(blockChangeListener);
+    }
+
+    public void deregisterBlockChangeListener(BlockChangeListener blockChangeListener) {
+        blockChangeListeners.remove(blockChangeListener);
+    }
+
+
+
+
+
 }

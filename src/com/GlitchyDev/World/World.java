@@ -98,7 +98,6 @@ public class World {
     }
 
     public void unlinkRegion(UUID regionUUID, UUID linkedRegion, RegionConnection regionConnection) {
-
         regionConnections.get(regionUUID).get(regionConnection).remove(linkedRegion);
     }
 

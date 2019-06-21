@@ -116,9 +116,10 @@ public abstract class Entity {
 
 
     public void setDirection(Direction newDirection) {
+        Direction oldDirection = direction;
         this.direction = newDirection;
         if(worldGameState instanceof ServerWorldGameState) {
-            ((ServerWorldGameState) worldGameState).replicateChangeDirectionEntity(uuid,getLocation().getWorldUUID(),newDirection);
+            ((ServerWorldGameState) worldGameState).replicateChangeDirectionEntity(uuid,getLocation().getWorldUUID(),oldDirection,newDirection);
         }
     }
 

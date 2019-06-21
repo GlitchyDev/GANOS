@@ -1,9 +1,9 @@
 package com.GlitchyDev.GameStates.Abstract.Replicated;
 
-import com.GlitchyDev.GameStates.Abstract.WorldGameState;
-import com.GlitchyDev.GameStates.GameStateType;
 import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.Game.Player.Player;
+import com.GlitchyDev.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.GameStates.GameStateType;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Packets.Server.World.Block.ServerChangeBlockPacket;
@@ -21,10 +21,11 @@ import com.GlitchyDev.World.Entities.AbstractEntities.CustomVisibleEntity;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
-import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Events.Communication.CommunicationManager;
 import com.GlitchyDev.World.Events.Network.NetworkManager;
+import com.GlitchyDev.World.Events.WorldEvents.WorldEventManager;
+import com.GlitchyDev.World.Location;
+import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Views.EntityView;
 
 import java.io.IOException;
@@ -36,8 +37,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class ServerWorldGameState extends WorldGameState {
     protected final ServerNetworkManager serverNetworkManager;
     protected final ConcurrentHashMap<UUID,Player> currentPlayers;
-    private final NetworkManager networkManager;
-    private final CommunicationManager communicationManager;
+    // Managers
+    protected final NetworkManager networkManager;
+    protected final CommunicationManager communicationManager;
+    protected final WorldEventManager worldEventManager;
 
     public ServerWorldGameState(GlobalGameData globalGameDataBase, GameStateType gameStateType, int assignedPort) {
         super(globalGameDataBase, gameStateType);
@@ -46,6 +49,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
         this.networkManager = new NetworkManager();
         this.communicationManager = new CommunicationManager();
+        this.worldEventManager = new WorldEventManager();
     }
 
     @Override
@@ -248,6 +252,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
         // This is replicated, mark for Entities who can view its region
         super.spawnEntity(entity, spawnReason);
         spawnedEntities.put(entity,new ServerSpawnEntityPacket(entity));
+        worldEventManager.triggerEntitySpawn(entity,spawnReason);
     }
 
 
@@ -256,8 +261,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
     @Override
     public void despawnEntity(UUID entityUUID, UUID worldUUID, DespawnReason despawnReason) {
         Entity entity = getEntity(entityUUID,worldUUID);
-        despawnedEntities.put(entity,new ServerDespawnEntityPacket(entityUUID, worldUUID));
         super.despawnEntity(entityUUID, worldUUID, despawnReason);
+        despawnedEntities.put(entity,new ServerDespawnEntityPacket(entityUUID, worldUUID)); // Moved down one line
+        worldEventManager.triggerEntityDespawn(entity,despawnReason);
     }
 
 
@@ -282,15 +288,17 @@ public abstract class ServerWorldGameState extends WorldGameState {
         movedEntitiesBoth.put(entity,new ServerMoveEntityPacket(entityUUID, newLocation));
         movedEntitiesOld.put(entity,new ServerDespawnEntityPacket(entityUUID, oldLocation.getWorldUUID()));
         movedEntitiesNew.put(entity,new ServerSpawnEntityPacket(entity));
+        worldEventManager.triggerEntityMove(entity,oldLocation,newLocation,previousRegion,newRegion);
     }
 
 
     // Replicate to players with this in its view
     private HashMap<Entity, ServerChangeDirectionEntityPacket> changedDirections = new HashMap<>();
-    public void replicateChangeDirectionEntity(UUID entityUUID, UUID worldUUID, Direction direction) {
+    public void replicateChangeDirectionEntity(UUID entityUUID, UUID worldUUID, Direction oldDirection, Direction newDirection) {
         // This is replicated, mark for entities who can view its region
         Entity entity = getEntity(entityUUID, worldUUID);
-        changedDirections.put(entity,new ServerChangeDirectionEntityPacket(entityUUID, worldUUID, direction));
+        changedDirections.put(entity,new ServerChangeDirectionEntityPacket(entityUUID, worldUUID, newDirection));
+        worldEventManager.triggerEntityDirection(entity,oldDirection,newDirection);
     }
 
 
@@ -300,23 +308,28 @@ public abstract class ServerWorldGameState extends WorldGameState {
     private HashMap<UUID, ArrayList<ServerChangeBlockPacket>> changedBlocks = new HashMap<>();
     @Override
     public void setBlock(Block block) {
-        super.setBlock(block);
-        // This is replicated, mark for entities who can view it
-        UUID regionUUID = getRegionAtLocation(block.getLocation()).getRegionUUID();
-        if(!changedBlocks.containsKey(regionUUID)) {
-            changedBlocks.put(regionUUID, new ArrayList<>());
-        }
-        changedBlocks.get(regionUUID).add(new ServerChangeBlockPacket(block));
+        setBlock(block,getRegionAtLocation(block.getLocation()).getRegionUUID());
     }
+
+    /*
+            Region region = getRegion(regionUUID,block.getLocation().getWorldUUID());
+        Location difference = region.getLocation().getLocationDifference(block.getLocation());
+        region.setBlockRelative(difference,block);
+     */
 
     @Override
     public void setBlock(Block block, UUID regionUUID) {
+        Region region = getRegion(regionUUID,block.getLocation().getWorldUUID());
+        Location difference = region.getLocation().getLocationDifference(block.getLocation());
+        Block previousBlock = region.getBlockRelative(difference);
+
         super.setBlock(block,regionUUID);
         // This is replicated, mark for entities who can view it
         if(!changedBlocks.containsKey(regionUUID)) {
             changedBlocks.put(regionUUID, new ArrayList<>());
         }
         changedBlocks.get(regionUUID).add(new ServerChangeBlockPacket(block));
+        worldEventManager.triggerBlockChange(previousBlock,block,region.getRegionUUID());
     }
 
     // Check to make sure the correct "Region" is sent, visibility and all
@@ -358,6 +371,10 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
     public CommunicationManager getCommunicationManager() {
         return communicationManager;
+    }
+
+    public WorldEventManager getWorldEventManager() {
+        return worldEventManager;
     }
 
 }
