@@ -261,7 +261,7 @@ public class MapBuilderGameState extends EnvironmentGameState {
         camera.updateViewMatrix();
         camera2.updateViewMatrix();
 
-        hudItems.get(1).setText("Render: " + formatter.format(getRenderUtilization()) + " Logic: " + formatter.format(getLogicUtilization()));
+        hudItems.get(1).setText("WalkieTalkie: " + formatter.format(getRenderUtilization()) + " Logic: " + formatter.format(getLogicUtilization()));
         hudItems.get(2).setText("FPS:" + getCurrentFPS());
         hudItems.get(4).setText("Pos:" + formatter.format(camera.getPosition().x) + "," + formatter.format(camera.getPosition().y) + "," + formatter.format(camera.getPosition().z)+ " Rot:" + formatter.format(camera.getRotation().x) + "," + formatter.format(camera.getRotation().y) + "," + formatter.format(camera.getRotation().z));
         hudItems.get(5).setText("Editor Mode: " + currentEditState + " EnableWallMode: " + enableWallMode);

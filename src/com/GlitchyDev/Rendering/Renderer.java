@@ -81,7 +81,7 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
 
         shader.setUniform("texture_sampler", 0);
-        // Render each gameItem
+        // WalkieTalkie each gameItem
         for (GameItem gameItem : gameItems) {
             Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(gameItem, viewMatrix);
             shader.setUniform("modelViewMatrix", modelViewMatrix);
@@ -105,7 +105,7 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
 
         shader.setUniform("texture_sampler", 0);
-        // Render each gameItem
+        // WalkieTalkie each gameItem
         Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(gameItem, viewMatrix);
         shader.setUniform("modelViewMatrix", modelViewMatrix);
         gameItem.getMesh().render();
@@ -129,7 +129,7 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
 
         shader.setUniform("texture_sampler", 0);
-        // Render each gameItem
+        // WalkieTalkie each gameItem
         for (GameItem gameItem : gameItems) {
             Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
             viewMatrix.transpose3x3(modelMatrix);
@@ -156,7 +156,7 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
 
         shader.setUniform("texture_sampler", 0);
-        // Render each gameItem
+        // WalkieTalkie each gameItem
         Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
         viewMatrix.transpose3x3(modelMatrix);
         Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
@@ -186,7 +186,7 @@ public class Renderer {
         Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
 
         shader.setUniform("texture_sampler", 0);
-        // Render each gameItem
+        // WalkieTalkie each gameItem
         instancedMesh.renderMeshInstanceList(gameItems,transformation,viewMatrix);
 
         //shader.unbind();
@@ -210,7 +210,7 @@ public class Renderer {
         shader.setUniform("texture_sampler", 0);
 
         shader.setUniform("textureGridSize",new Vector2f(instancedMesh.getInstancedGridTexture().getTextureGridWidth(),instancedMesh.getInstancedGridTexture().getTextureGridHeight()));
-        // Render each gameItem
+        // WalkieTalkie each gameItem
         instancedMesh.renderPartialCubicBlocksInstanced(blocks,transformation,viewMatrix);
 
         //shader.unbind();
@@ -234,7 +234,7 @@ public class Renderer {
         shader.setUniform("texture_sampler", 0);
 
        // shader.setUniform("textureGridSize",new Vector2f(instancedMesh.getInstancedGridTexture().getTextureGridWidth(),instancedMesh.getInstancedGridTexture().getTextureGridHeight()));
-        // Render each gameItem
+        // WalkieTalkie each gameItem
         instancedMesh.renderPartialCubicBlocksInstancedChunkTextures(shader,chunks,transformation,viewMatrix, useFrustumCullingFilter);
 
         //shader.unbind();

@@ -1,6 +1,6 @@
 package com.GlitchyDev.Networking.Packets.Enums;
 
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.Client.Authentication.ClientAuthGreetingPacket;
 import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;

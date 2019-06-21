@@ -1,8 +1,8 @@
 package com.GlitchyDev.Game;
 
-import com.GlitchyDev.Game.GameStates.Abstract.GameStateBase;
-import com.GlitchyDev.Game.GameStates.Client.DebugClientGameState;
-import com.GlitchyDev.Game.GameStates.Server.DebugServerGameState;
+import com.GlitchyDev.GameStates.Abstract.GameStateBase;
+import com.GlitchyDev.GameStates.Client.DebugClientGameState;
+import com.GlitchyDev.GameStates.Server.DebugServerGameState;
 import com.GlitchyDev.Utility.AssetLoader;
 
 /**

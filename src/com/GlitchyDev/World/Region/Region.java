@@ -1,6 +1,6 @@
 package com.GlitchyDev.World.Region;
 
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.HuffmanTreeUtility;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;

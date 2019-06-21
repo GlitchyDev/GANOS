@@ -1,6 +1,6 @@
 package com.GlitchyDev.World.Blocks.Enums;
 
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AirBlock;

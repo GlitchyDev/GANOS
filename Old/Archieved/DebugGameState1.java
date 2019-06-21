@@ -1,7 +1,7 @@
-package com.GlitchyDev.Game.GameStates.Client;
+package com.GlitchyDev.GameStates.Client;
 
-import com.GlitchyDev.Game.GameStates.Abstract.EnvironmentGameState;
-import com.GlitchyDev.Game.GameStates.GameStateType;
+import com.GlitchyDev.GameStates.Abstract.EnvironmentGameState;
+import com.GlitchyDev.GameStates.GameStateType;
 import com.GlitchyDev.Old.IO.AssetLoader;
 import com.GlitchyDev.Old.Networking.GameSocket;
 import com.GlitchyDev.Old.Networking.Packets.NetworkDisconnectType;
@@ -133,7 +133,7 @@ public class DebugGameState1 extends EnvironmentGameState {
     @Override
     public void logic() {
 
-        hudItems.get(0).setText("Render: " + formatter.format(getRenderUtilization()) + " Logic: " + formatter.format(getLogicUtilization()));
+        hudItems.get(0).setText("WalkieTalkie: " + formatter.format(getRenderUtilization()) + " Logic: " + formatter.format(getLogicUtilization()));
         hudItems.get(1).setText("FPS:" + getCurrentFPS());
 
 

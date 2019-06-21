@@ -1,6 +1,6 @@
 package com.GlitchyDev.Game.Player;
 
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;

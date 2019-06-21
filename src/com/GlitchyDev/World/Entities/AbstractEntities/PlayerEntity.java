@@ -1,7 +1,7 @@
 package com.GlitchyDev.World.Entities.AbstractEntities;
 
-import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ServerWorldGameState;
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
+import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Game.Player.Player;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Direction;

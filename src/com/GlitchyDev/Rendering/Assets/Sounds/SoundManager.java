@@ -20,7 +20,7 @@ import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
- * A manager of Transmission related phenomena
+ * A manager of Events related phenomena
  */
 
 public class SoundManager {

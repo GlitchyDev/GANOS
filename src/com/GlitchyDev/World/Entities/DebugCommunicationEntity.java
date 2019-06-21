@@ -1,7 +1,7 @@
 package com.GlitchyDev.World.Entities;
 
-import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ServerWorldGameState;
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
+import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
@@ -15,11 +15,11 @@ import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Transmission.Communication.CommunicationListener;
-import com.GlitchyDev.World.Transmission.Communication.Constructs.Messages.CommunicationMessage;
-import com.GlitchyDev.World.Transmission.Communication.Constructs.Messages.CommunicationNoise;
-import com.GlitchyDev.World.Transmission.Communication.Constructs.Source.CommunicationSource;
-import com.GlitchyDev.World.Transmission.DetectionType;
+import com.GlitchyDev.World.Events.Communication.CommunicationListener;
+import com.GlitchyDev.World.Events.Communication.Constructs.Messages.CommunicationMessage;
+import com.GlitchyDev.World.Events.Communication.Constructs.Messages.CommunicationNoise;
+import com.GlitchyDev.World.Events.Communication.Constructs.Source.CommunicationSource;
+import com.GlitchyDev.World.Events.Communication.DetectionType;
 
 import java.io.IOException;
 import java.util.UUID;

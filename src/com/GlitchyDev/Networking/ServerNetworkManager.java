@@ -1,6 +1,6 @@
 package com.GlitchyDev.Networking;
 
-import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ServerWorldGameState;
+import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.Client.Authentication.ClientAuthGreetingPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerNetworkManager {
     private final ServerWorldGameState worldGameState;
-
     private final ConcurrentHashMap<UUID, GameSocketBase> connectedClients;
     private final Collection<UUID> connectedUsers;
     private final Collection<UUID> approvedUsers;

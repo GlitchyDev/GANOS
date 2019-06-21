@@ -1,18 +1,15 @@
 package com.GlitchyDev.World.Entities.AbstractEntities;
 
-import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ServerWorldGameState;
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
+import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.TriggerableBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Effects.Abstract.EntityEffect;
 import com.GlitchyDev.World.Effects.Enums.EffectType;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
-import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
@@ -25,13 +22,13 @@ import java.util.UUID;
 public abstract class Entity {
     // Utill
     protected WorldGameState worldGameState;
-    private UUID currentRegionUUID;
+    protected UUID currentRegionUUID;
     // Saved to file
-    private final EntityType entityType;
-    private final UUID uuid;
-    private Location location;
-    private Direction direction;
-    private final ArrayList<EntityEffect> effects;
+    protected final EntityType entityType;
+    protected final UUID uuid;
+    protected Location location;
+    protected Direction direction;
+    protected final ArrayList<EntityEffect> effects;
 
 
     /**
@@ -116,40 +113,7 @@ public abstract class Entity {
 
     public abstract void onDespawn(DespawnReason despawnReason);
 
-    public void teleport(Location newLocation) {
-        Region selectedRegion = worldGameState.getRegionAtLocation(newLocation);
-        teleport(newLocation,selectedRegion.getRegionUUID());
-    }
 
-    public void teleport(Location newLocation, UUID newRegionUUID) {
-        Region oldRegion = worldGameState.getRegion(getCurrentRegionUUID(),getWorldUUID());
-        Region newRegion = worldGameState.getRegion(newRegionUUID,newLocation.getWorldUUID());
-
-        Location oldOffset = oldRegion.getLocation().getLocationDifference(getLocation());
-        Location newOffset = newRegion.getLocation().getLocationDifference(newLocation);
-
-        Block startingBlock = worldGameState.getRegionAtLocation(getLocation()).getBlockRelative(oldOffset);
-        Block endingBlock = worldGameState.getRegionAtLocation(newLocation).getBlockRelative(newOffset);
-
-        if (startingBlock instanceof TriggerableBlock) {
-            ((TriggerableBlock) startingBlock).exitBlockSuccessfully(EntityMovementType.TELEPORT, this);
-        }
-
-        if (endingBlock instanceof TriggerableBlock) {
-            ((TriggerableBlock) endingBlock).enterBlockSccessfully(EntityMovementType.TELEPORT, this);
-        }
-
-
-        oldRegion.removeEntity(getUUID());
-        newRegion.addEntity(this);
-        if(newLocation.getWorldUUID() != getWorldUUID()) {
-            worldGameState.getWorld(getWorldUUID()).removeEntity(this);
-            worldGameState.getWorld(newLocation.getWorldUUID()).addEntity(this);
-        }
-
-        setLocation(newLocation);
-        currentRegionUUID = newRegionUUID;
-    }
 
     public void setDirection(Direction newDirection) {
         this.direction = newDirection;

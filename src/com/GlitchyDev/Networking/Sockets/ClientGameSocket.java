@@ -1,6 +1,6 @@
 package com.GlitchyDev.Networking.Sockets;
 
-import com.GlitchyDev.Game.GameStates.Abstract.Replicated.ClientWorldGameState;
+import com.GlitchyDev.GameStates.Abstract.Replicated.ClientWorldGameState;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.Client.Authentication.ClientAuthGreetingPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;

@@ -1,6 +1,6 @@
 package com.GlitchyDev.World.Effects.Abstract;
 
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Effects.Enums.EffectType;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;

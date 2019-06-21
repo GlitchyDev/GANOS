@@ -1,6 +1,6 @@
 package com.GlitchyDev.Networking.Sockets;
 
-import com.GlitchyDev.Game.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Networking.Packets.General.Authentication.GeneralAuthDisconnectPacket;
@@ -140,6 +140,13 @@ public abstract class GameSocketBase {
             } catch (IOException e) {
                 // Eventually add an way to notify GameState if disconnected for other reasons like PING
                 e.printStackTrace();
+                keepThreadAlive.set(false);
+                try {
+                    socket.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                notifyDisconnect(NetworkDisconnectType.CLIENT_CRASH);
 
             }
         }
