@@ -7,8 +7,10 @@ import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.GeneralAuthDisconnectPacket;
 import com.GlitchyDev.Networking.Packets.Server.Authentication.ServerAuthAcceptClient;
 import com.GlitchyDev.Networking.Packets.Server.World.Block.ServerChangeBlockPacket;
-import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerDespawnEntityPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerAddRelevantEffect;
+import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerRemoveRelevantEffect;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerChangeDirectionEntityPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerDespawnEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerMoveEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerSpawnEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerDespawnRegionPacket;
@@ -45,7 +47,10 @@ public enum PacketType {
     SERVER_MOVE_ENTITY,
     SERVER_CHANGE_DIRECTION_ENTITY,
     // Block
-    SERVER_CHANGE_BLOCK
+    SERVER_CHANGE_BLOCK,
+    // Event
+    SERVER_ADD_RELEVANT_EFFECT,
+    SERVER_REMOVE_RELEVANT_EFFECT,
 
     ;
 
@@ -80,6 +85,10 @@ public enum PacketType {
                 return new ServerChangeDirectionEntityPacket(inputBitUtility, worldGameState);
             case SERVER_CHANGE_BLOCK:
                 return new ServerChangeBlockPacket(inputBitUtility, worldGameState);
+            case SERVER_ADD_RELEVANT_EFFECT:
+                return new ServerAddRelevantEffect(inputBitUtility,worldGameState);
+            case SERVER_REMOVE_RELEVANT_EFFECT:
+                return new ServerRemoveRelevantEffect(inputBitUtility,worldGameState);
             default:
                 System.out.println("PacketType: ERROR NO VALID PACKTYPE REGISTERED");
         }

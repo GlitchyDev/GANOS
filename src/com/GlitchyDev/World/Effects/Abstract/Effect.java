@@ -31,4 +31,6 @@ public  abstract class Effect {
         return effectType;
     }
 
+
+
 }

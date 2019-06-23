@@ -150,7 +150,7 @@ public class SpriteItem extends GameItem {
         indices.add(0);
 
         // Left Bottom vertex
-        positions.add((float) (-height/2)); // x
+        positions.add((float) (-width/2)); // x
         positions.add((float) height/2); //y
         positions.add(0.0f); //z
         textCoords.add(0.0f);

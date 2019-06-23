@@ -7,12 +7,16 @@ import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 
 public abstract class EntityEffect extends Effect {
     private Entity entity;
-    public EntityEffect(EffectType effectType, WorldGameState worldGameState) {
+    private final boolean isClientRelevant;
+
+    public EntityEffect(EffectType effectType, WorldGameState worldGameState, boolean isClientRelevant) {
         super(effectType, worldGameState);
+        this.isClientRelevant = isClientRelevant;
     }
 
-    public EntityEffect(EffectType effectType, WorldGameState worldGameState, InputBitUtility inputBitUtility) {
+    public EntityEffect(EffectType effectType, WorldGameState worldGameState, boolean isClientRelevant, InputBitUtility inputBitUtility) {
         super(effectType, worldGameState, inputBitUtility);
+        this.isClientRelevant = isClientRelevant;
     }
 
     public final void applyEntityEffect(Entity entity) {
@@ -29,5 +33,9 @@ public abstract class EntityEffect extends Effect {
 
     public Entity getEntity() {
         return entity;
+    }
+
+    public boolean isClientRelevant() {
+        return isClientRelevant;
     }
 }

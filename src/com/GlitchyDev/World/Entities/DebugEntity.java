@@ -66,7 +66,7 @@ public class DebugEntity extends Entity implements CustomVisibleEntity {
         gameItem.setPosition(getLocation().getNormalizedPosition());
         spriteItem.setPosition(getLocation().getNormalizedPosition());
 
-        renderer.renderBillboard3DElement(camera,gameItem, "Default3D");
+        renderer.render3DElement(camera,gameItem, "Default3D");
         renderer.render3DElement(camera,spriteItem, "Default3D");
     }
 

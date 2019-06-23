@@ -1,22 +1,25 @@
 package com.GlitchyDev.GameStates.Abstract.Replicated;
 
+import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.GameStates.GameStateType;
+import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Sockets.ClientGameSocket;
-import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
-import com.GlitchyDev.Game.GlobalGameData;
+import com.GlitchyDev.World.Effects.Abstract.Effect;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public abstract class ClientWorldGameState extends WorldGameState {
     private ClientGameSocket gameSocket;
+    private ArrayList<Effect> reliventEffects;
 
     public ClientWorldGameState(GlobalGameData globalGameDataBase, GameStateType gameStateType) {
         super(globalGameDataBase, gameStateType);
-
+        reliventEffects = new ArrayList<>();
     }
 
     @Override
@@ -29,10 +32,9 @@ public abstract class ClientWorldGameState extends WorldGameState {
     }
 
     public abstract void processPacket(PacketBase packet);
-    // ((WorldStateModifyingPackets) packet).executeModification(this);
 
 
-    protected void connectToServer(UUID playerUUID, ClientWorldGameState worldGameState, InetAddress ipAddress, int port) {
+    protected final void connectToServer(UUID playerUUID, ClientWorldGameState worldGameState, InetAddress ipAddress, int port) {
         try {
             gameSocket = new ClientGameSocket(playerUUID, worldGameState, ipAddress, port);
         } catch (IOException e) {
@@ -41,7 +43,7 @@ public abstract class ClientWorldGameState extends WorldGameState {
     }
 
 
-    protected void disconnectFromServer(NetworkDisconnectType reason) {
+    protected final void disconnectFromServer(NetworkDisconnectType reason) {
         try {
             gameSocket.disconnect(reason);
         } catch (IOException e) {
@@ -55,8 +57,12 @@ public abstract class ClientWorldGameState extends WorldGameState {
 
     public abstract void onDisconnectFromServer();
 
-    protected ClientGameSocket getGameSocket() {
+    protected final ClientGameSocket getGameSocket() {
         return gameSocket;
+    }
+
+    public final ArrayList<Effect> getReliventEffects() {
+        return reliventEffects;
     }
 
     // Send input to server

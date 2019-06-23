@@ -7,6 +7,8 @@ import com.GlitchyDev.GameStates.GameStateType;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Packets.Server.World.Block.ServerChangeBlockPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerAddRelevantEffect;
+import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerRemoveRelevantEffect;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerChangeDirectionEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerDespawnEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerMoveEntityPacket;
@@ -17,6 +19,7 @@ import com.GlitchyDev.Networking.ServerNetworkManager;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisableBlock;
 import com.GlitchyDev.World.Direction;
+import com.GlitchyDev.World.Effects.Abstract.EntityEffect;
 import com.GlitchyDev.World.Entities.AbstractEntities.CustomVisibleEntity;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
@@ -361,6 +364,22 @@ public abstract class ServerWorldGameState extends WorldGameState {
     public void playerRemoveRegionFromView(UUID playerUUID, UUID regionUUID, UUID worldUUID) throws IOException {
         if(currentPlayers.containsKey(playerUUID)) {
             serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerDespawnRegionPacket(regionUUID, worldUUID));
+        }
+    }
+
+    public void playerAddRelevantEffect(Player player, EntityEffect effect) {
+        try {
+            serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerAddRelevantEffect(effect));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void playerRemoveRelevantEffect(Player player, EntityEffect effect) {
+        try {
+            serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerRemoveRelevantEffect(effect));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

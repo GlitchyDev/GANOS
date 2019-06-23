@@ -13,7 +13,7 @@ public abstract class BlockEffect extends Effect {
     }
 
     public BlockEffect(EffectType effectType, WorldGameState worldGameState, InputBitUtility inputBitUtility) {
-        super(effectType, worldGameState, inputBitUtility);
+        super(effectType, worldGameState,inputBitUtility);
     }
 
     public void applyBlockEffect(Block block) {

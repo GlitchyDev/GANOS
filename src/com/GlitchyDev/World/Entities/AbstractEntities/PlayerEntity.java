@@ -6,6 +6,7 @@ import com.GlitchyDev.Game.Player.Player;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Effects.Abstract.Effect;
+import com.GlitchyDev.World.Effects.Abstract.EntityEffect;
 import com.GlitchyDev.World.Effects.Abstract.RegionHidingEffect;
 import com.GlitchyDev.World.Effects.Abstract.RegionRevealingEffect;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
@@ -27,14 +28,6 @@ public abstract class PlayerEntity extends ViewingEntity {
 
     public PlayerEntity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
         super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, entityType);
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
-    public Player getPlayer() {
-        return player;
     }
 
     @Override
@@ -132,4 +125,26 @@ public abstract class PlayerEntity extends ViewingEntity {
 
         }
     }
+
+    @Override
+    public void applyEffect(EntityEffect effect) {
+        super.applyEffect(effect);
+        ((ServerWorldGameState)worldGameState).playerAddRelevantEffect(player,effect);
+    }
+
+    @Override
+    public void removeEffect(EntityEffect effect) {
+        super.removeEffect(effect);
+        ((ServerWorldGameState)worldGameState).playerRemoveRelevantEffect(player,effect);
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+
 }

@@ -80,7 +80,6 @@ public abstract class Entity {
         }
     }
 
-
     /**
      * Writes file to IO and Packet
      * @param outputBitUtility
@@ -107,11 +106,11 @@ public abstract class Entity {
 
     public abstract void onSpawn(SpawnReason spawnReason);
 
+    public abstract void onDespawn(DespawnReason despawnReason);
+
     public abstract void tick();
 
     public abstract void render(Renderer renderer, Camera camera);
-
-    public abstract void onDespawn(DespawnReason despawnReason);
 
 
 
@@ -144,7 +143,6 @@ public abstract class Entity {
         return location;
     }
 
-    // Replicate!
     public void setLocation(Location location) {
         this.location = location;
     }
@@ -152,7 +150,6 @@ public abstract class Entity {
     public Direction getDirection() {
         return direction;
     }
-
 
     public EntityType getEntityType() {
         return entityType;
