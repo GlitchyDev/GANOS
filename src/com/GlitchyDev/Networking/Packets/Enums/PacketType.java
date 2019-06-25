@@ -7,8 +7,10 @@ import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.GeneralAuthDisconnectPacket;
 import com.GlitchyDev.Networking.Packets.Server.Authentication.ServerAuthAcceptClient;
 import com.GlitchyDev.Networking.Packets.Server.World.Block.ServerChangeBlockPacket;
-import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerAddRelevantEffect;
-import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerRemoveRelevantEffect;
+import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerAddBlockEffectPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerAddEntityEffectPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerRemoveBlockEffectPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerRemoveEntityEffectPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerChangeDirectionEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerDespawnEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerMoveEntityPacket;
@@ -49,9 +51,10 @@ public enum PacketType {
     // Block
     SERVER_CHANGE_BLOCK,
     // Event
-    SERVER_ADD_RELEVANT_EFFECT,
-    SERVER_REMOVE_RELEVANT_EFFECT,
-
+    SERVER_ADD_ENTITY_EFFECT,
+    SERVER_REMOVE_ENTITY_EFFECT,
+    SERVER_ADD_BLOCK_EFFECT,
+    SERVER_REMOVE_BLOCK_EFFECT,
     ;
 
 
@@ -85,10 +88,15 @@ public enum PacketType {
                 return new ServerChangeDirectionEntityPacket(inputBitUtility, worldGameState);
             case SERVER_CHANGE_BLOCK:
                 return new ServerChangeBlockPacket(inputBitUtility, worldGameState);
-            case SERVER_ADD_RELEVANT_EFFECT:
-                return new ServerAddRelevantEffect(inputBitUtility,worldGameState);
-            case SERVER_REMOVE_RELEVANT_EFFECT:
-                return new ServerRemoveRelevantEffect(inputBitUtility,worldGameState);
+            case SERVER_ADD_ENTITY_EFFECT:
+                return new ServerAddEntityEffectPacket(inputBitUtility,worldGameState);
+            case SERVER_REMOVE_ENTITY_EFFECT:
+                return new ServerRemoveEntityEffectPacket(inputBitUtility,worldGameState);
+            case SERVER_ADD_BLOCK_EFFECT:
+                return new ServerAddBlockEffectPacket(inputBitUtility,worldGameState);
+            case SERVER_REMOVE_BLOCK_EFFECT:
+                return new ServerRemoveBlockEffectPacket(inputBitUtility,worldGameState);
+
             default:
                 System.out.println("PacketType: ERROR NO VALID PACKTYPE REGISTERED");
         }

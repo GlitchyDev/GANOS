@@ -7,16 +7,13 @@ import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 
 public abstract class EntityEffect extends Effect {
     private Entity entity;
-    private final boolean isClientRelevant;
 
-    public EntityEffect(EffectType effectType, WorldGameState worldGameState, boolean isClientRelevant) {
-        super(effectType, worldGameState);
-        this.isClientRelevant = isClientRelevant;
+    public EntityEffect(EffectType effectType, boolean isReplicated, WorldGameState worldGameState) {
+        super(effectType, isReplicated, worldGameState);
     }
 
-    public EntityEffect(EffectType effectType, WorldGameState worldGameState, boolean isClientRelevant, InputBitUtility inputBitUtility) {
-        super(effectType, worldGameState, inputBitUtility);
-        this.isClientRelevant = isClientRelevant;
+    public EntityEffect(EffectType effectType, boolean isReplicated, WorldGameState worldGameState, InputBitUtility inputBitUtility) {
+        super(effectType, isReplicated, worldGameState, inputBitUtility);
     }
 
     public final void applyEntityEffect(Entity entity) {
@@ -28,14 +25,14 @@ public abstract class EntityEffect extends Effect {
         this.entity = null;
     }
 
-    public abstract void onEntityApplyEffect(Entity entity);
-    public abstract void onEntityRemoveEffect(Entity entity);
+    protected abstract void onEntityApplyEffect(Entity entity);
+    protected abstract void onEntityRemoveEffect(Entity entity);
 
     public Entity getEntity() {
         return entity;
     }
 
-    public boolean isClientRelevant() {
-        return isClientRelevant;
+    public void setEntity(Entity entity) {
+        this.entity = entity;
     }
 }

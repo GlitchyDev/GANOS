@@ -11,11 +11,11 @@ import com.GlitchyDev.World.Region.Enum.RegionConnection;
 
 public class ServerDebugEffect extends EntityEffect implements RegionRevealingEffect, RegionHidingEffect {
     public ServerDebugEffect(WorldGameState worldGameState) {
-        super(EffectType.SERVER_DEBUG_EFFECT, worldGameState);
+        super(EffectType.SERVER_DEBUG_EFFECT, false, worldGameState);
     }
 
     public ServerDebugEffect(WorldGameState worldGameState, InputBitUtility inputBitUtility) {
-        super(EffectType.SERVER_DEBUG_EFFECT, worldGameState, inputBitUtility);
+        super(EffectType.SERVER_DEBUG_EFFECT, false, worldGameState, inputBitUtility);
     }
 
     @Override

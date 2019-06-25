@@ -112,8 +112,6 @@ public abstract class Entity {
 
     public abstract void render(Renderer renderer, Camera camera);
 
-
-
     public void setDirection(Direction newDirection) {
         Direction oldDirection = direction;
         this.direction = newDirection;
@@ -121,6 +119,24 @@ public abstract class Entity {
             ((ServerWorldGameState) worldGameState).replicateChangeDirectionEntity(uuid,getLocation().getWorldUUID(),oldDirection,newDirection);
         }
     }
+
+    public void applyEffect(EntityEffect effect) {
+        effect.applyEntityEffect(this);
+        effects.add(effect);
+        if(effect.isReplicatedEffect() && worldGameState instanceof ServerWorldGameState) {
+            ((ServerWorldGameState)worldGameState).replicateEntityEffectAdded(this, effect);
+        }
+    }
+
+    public void removeEffect(EntityEffect effect) {
+        if(effect.isReplicatedEffect() && worldGameState instanceof ServerWorldGameState) {
+            ((ServerWorldGameState)worldGameState).replicateEntityEffectRemoved(this, effect);
+        }
+        effect.removeEntityEffect();
+        effects.remove(effect);
+    }
+
+
 
 
     public UUID getUUID() {
@@ -158,17 +174,6 @@ public abstract class Entity {
     public ArrayList<EntityEffect> getEffects() {
         return effects;
     }
-
-    public void applyEffect(EntityEffect effect) {
-        effect.applyEntityEffect(this);
-        effects.add(effect);
-    }
-
-    public void removeEffect(EntityEffect effect) {
-        effect.removeEntityEffect();
-        effects.remove(effect);
-    }
-
 
     @Override
     public String toString() {

@@ -1,8 +1,8 @@
 package com.GlitchyDev.World.Blocks;
 
+import com.GlitchyDev.Game.Player;
 import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
-import com.GlitchyDev.Game.Player.Player;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
 import com.GlitchyDev.Rendering.Renderer;
@@ -17,6 +17,7 @@ import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.UUID;
 
 public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, CustomVisableBlock, TickableBlock {
     private final GameItem mesh;
@@ -29,11 +30,11 @@ public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, 
         replacementBlock = new AirBlock(worldGameState,location);
     }
 
-    public DebugCustomRenderBlock(WorldGameState worldGameState, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, BlockType.DEBUG_CUSTOM_RENDER, inputBitUtility);
+    public DebugCustomRenderBlock(WorldGameState worldGameState, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {
+        super(worldGameState, BlockType.DEBUG_CUSTOM_RENDER, regionUUID, inputBitUtility);
         mesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
         mesh.getMesh().setTexture(AssetLoader.getTextureAsset("grassblock"));
-        replacementBlock = new AirBlock(worldGameState, (Location) null);
+        replacementBlock = new AirBlock(worldGameState, location);
     }
 
     @Override
@@ -58,7 +59,7 @@ public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, 
 
     @Override
     public Block getVisibleBlock(Player player) {
-        return Math.random() > 0.5 ? this : replacementBlock;
+        return isVisible ? this : replacementBlock;
     }
 
     @Override
@@ -67,11 +68,19 @@ public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, 
         replacementBlock.setLocation(location);
     }
 
-    int tickCount = 0;
+    @Override
+    public void setRegionUUID(UUID regionUUID) {
+        super.setRegionUUID(regionUUID);
+        replacementBlock.setRegionUUID(regionUUID);
+    }
+
+    private int tickCount = 0;
+    private boolean isVisible = true;
     @Override
     public void tick() {
         if(tickCount % 120 == 0) {
             ((ServerWorldGameState)worldGameState).updateBlockVisibility(this);
+            isVisible = !isVisible;
         }
         tickCount++;
     }

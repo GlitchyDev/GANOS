@@ -7,6 +7,7 @@ import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Sockets.ClientGameSocket;
 import com.GlitchyDev.World.Effects.Abstract.Effect;
+import com.GlitchyDev.World.Effects.Abstract.EntityEffect;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -15,11 +16,11 @@ import java.util.UUID;
 
 public abstract class ClientWorldGameState extends WorldGameState {
     private ClientGameSocket gameSocket;
-    private ArrayList<Effect> reliventEffects;
+    private ArrayList<Effect> relivantEffects;
 
     public ClientWorldGameState(GlobalGameData globalGameDataBase, GameStateType gameStateType) {
         super(globalGameDataBase, gameStateType);
-        reliventEffects = new ArrayList<>();
+        relivantEffects = new ArrayList<>();
     }
 
     @Override
@@ -61,9 +62,19 @@ public abstract class ClientWorldGameState extends WorldGameState {
         return gameSocket;
     }
 
-    public final ArrayList<Effect> getReliventEffects() {
-        return reliventEffects;
+    public final ArrayList<Effect> getRelevantEffects() {
+        return relivantEffects;
     }
+
+    public final void addRelevantEffect(EntityEffect effect) {
+        relivantEffects.add(effect);
+    }
+
+    public final void removeRelevantEffect(EntityEffect effect) {
+        relivantEffects.remove(effect);
+    }
+
+
 
     // Send input to server
 }

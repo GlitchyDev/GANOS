@@ -40,8 +40,7 @@ public class TextItem extends GameItem {
         float startx = 0;
         for(int i=0; i<numChars; i++) {
             HudTexture.CharInfo charInfo = hudTexture.getCharInfo(characters[i]);
-            if(charInfo == null)
-            {
+            if(charInfo == null) {
                 System.out.println("TEXTITEM: ERROR CHAR NOT FOUND " + characters[i]);
             }
             // Build a character tile composed by two triangles

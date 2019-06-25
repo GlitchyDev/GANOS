@@ -1,10 +1,11 @@
 package com.GlitchyDev.GameStates.Client;
 
-import com.GlitchyDev.GameStates.Abstract.Replicated.ClientWorldGameState;
-import com.GlitchyDev.GameStates.GameStateType;
+import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.GameInput.Controllers.ControllerDirectionPad;
 import com.GlitchyDev.GameInput.Controllers.GameController;
 import com.GlitchyDev.GameInput.Controllers.XBox360Controller;
+import com.GlitchyDev.GameStates.Abstract.Replicated.ClientWorldGameState;
+import com.GlitchyDev.GameStates.GameStateType;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.WorldStateModifyingPackets;
 import com.GlitchyDev.Networking.Packets.Client.Input.ClientInputType;
@@ -13,7 +14,6 @@ import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnec
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
-import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Direction;
@@ -103,6 +103,7 @@ public class DebugClientGameState extends ClientWorldGameState {
 
 
         int entityCount = 0;
+        ArrayList<Entity> entities = new ArrayList<>();
         if(getWorlds().size() == 1) {
             World world = null;
             for(UUID worldUUID: getWorlds()) {
@@ -110,6 +111,7 @@ public class DebugClientGameState extends ClientWorldGameState {
             }
             for(Region region: world.getRegions().values()) {
                 entityCount += region.getEntities().size();
+                entities.addAll(region.getEntities());
             }
 
             boolean effectFound = false;
@@ -220,7 +222,7 @@ public class DebugClientGameState extends ClientWorldGameState {
 
     @Override
     public void processPacket(PacketBase packet) {
-        System.out.println("Received Packet @ " + packet);
+        System.out.println("Processing Packet @ " + packet);
         if(packet instanceof WorldStateModifyingPackets) {
             ((WorldStateModifyingPackets) packet).executeModification(this);
         } else {
@@ -240,6 +242,7 @@ public class DebugClientGameState extends ClientWorldGameState {
         isConnected = false;
         System.out.println("Client: Disconnected from Server!");
     }
+
 
     @Override
     public void init() {

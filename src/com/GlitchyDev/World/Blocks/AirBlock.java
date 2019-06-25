@@ -9,6 +9,7 @@ import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.UUID;
 
 public class AirBlock extends Block {
 
@@ -17,8 +18,8 @@ public class AirBlock extends Block {
         super(worldGameState, BlockType.AIR, location);
     }
 
-    public AirBlock(WorldGameState worldGameState, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, BlockType.AIR, inputBitUtility);
+    public AirBlock(WorldGameState worldGameState, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {
+        super(worldGameState, BlockType.AIR, regionUUID, inputBitUtility);
 
 
     }

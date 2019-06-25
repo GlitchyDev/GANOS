@@ -1,18 +1,17 @@
 package com.GlitchyDev.World.Entities.AbstractEntities;
 
+import com.GlitchyDev.Game.Player;
 import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
-import com.GlitchyDev.Game.Player.Player;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Effects.Abstract.Effect;
-import com.GlitchyDev.World.Effects.Abstract.EntityEffect;
 import com.GlitchyDev.World.Effects.Abstract.RegionHidingEffect;
 import com.GlitchyDev.World.Effects.Abstract.RegionRevealingEffect;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Region.Enum.RegionConnection;
+import com.GlitchyDev.World.Region.Region;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -124,18 +123,6 @@ public abstract class PlayerEntity extends ViewingEntity {
 
 
         }
-    }
-
-    @Override
-    public void applyEffect(EntityEffect effect) {
-        super.applyEffect(effect);
-        ((ServerWorldGameState)worldGameState).playerAddRelevantEffect(player,effect);
-    }
-
-    @Override
-    public void removeEffect(EntityEffect effect) {
-        super.removeEffect(effect);
-        ((ServerWorldGameState)worldGameState).playerRemoveRelevantEffect(player,effect);
     }
 
     public void setPlayer(Player player) {

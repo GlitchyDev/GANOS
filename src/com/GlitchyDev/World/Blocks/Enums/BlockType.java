@@ -8,6 +8,7 @@ import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public enum BlockType {
     DEBUG,
@@ -19,17 +20,17 @@ public enum BlockType {
 
 
 
-    public Block getBlockFromInput(WorldGameState worldGameState, InputBitUtility inputBitUtility) throws IOException {
+    public Block getBlockFromInput(WorldGameState worldGameState, UUID reguinUUID, InputBitUtility inputBitUtility) throws IOException {
         switch(this) {
             case DEBUG:
-                return new DebugBlock(worldGameState, inputBitUtility);
+                return new DebugBlock(worldGameState,reguinUUID, inputBitUtility);
             case AIR:
-                return new AirBlock(worldGameState, inputBitUtility);
+                return new AirBlock(worldGameState,reguinUUID, inputBitUtility);
             case DEBUG_CUSTOM_RENDER:
-                return new DebugCustomRenderBlock(worldGameState,inputBitUtility);
+                return new DebugCustomRenderBlock(worldGameState,reguinUUID,inputBitUtility);
             default:
                 System.out.println("ERROR BlockType " + this + " not registered");
-                return new AirBlock(worldGameState, inputBitUtility);
+                return new AirBlock(worldGameState,reguinUUID, inputBitUtility);
         }
 
     }

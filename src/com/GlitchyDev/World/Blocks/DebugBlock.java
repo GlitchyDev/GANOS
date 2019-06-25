@@ -1,7 +1,7 @@
 package com.GlitchyDev.World.Blocks;
 
+import com.GlitchyDev.Game.Player;
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
-import com.GlitchyDev.Game.Player.Player;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
 import com.GlitchyDev.Rendering.Renderer;
@@ -15,6 +15,7 @@ import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.UUID;
 
 public class DebugBlock extends Block implements CustomRenderBlock {
     private int testValue;
@@ -40,8 +41,8 @@ public class DebugBlock extends Block implements CustomRenderBlock {
         mesh.setPosition(location.getNormalizedPosition());
     }
 
-    public DebugBlock(WorldGameState worldGameState, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, BlockType.DEBUG, inputBitUtility);
+    public DebugBlock(WorldGameState worldGameState, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {
+        super(worldGameState, BlockType.DEBUG,regionUUID, inputBitUtility);
         testValue = inputBitUtility.getNextCorrectIntByte();
         this.mesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
         switch(testValue) {

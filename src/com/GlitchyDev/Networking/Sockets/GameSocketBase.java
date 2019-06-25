@@ -128,7 +128,7 @@ public abstract class GameSocketBase {
                 while(keepThreadAlive.get()) {
                     PacketType packetType = PacketType.values()[input.getNextCorrectIntByte()];
                     System.out.println();
-                    System.out.println("Recieved packet type " + packetType);
+                    System.out.println("Received packet type " + packetType);
                     PacketBase packet = packetType.getPacketFromInput(input, worldGameState);
                     if (packet instanceof GeneralAuthDisconnectPacket) {
                         keepThreadAlive.set(false);

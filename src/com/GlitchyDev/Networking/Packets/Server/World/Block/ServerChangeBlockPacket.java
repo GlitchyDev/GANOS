@@ -23,7 +23,10 @@ public class ServerChangeBlockPacket extends WorldStateModifyingPackets {
     public ServerChangeBlockPacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
         super(PacketType.SERVER_CHANGE_BLOCK, inputBitUtility, worldGameState);
         BlockType blockType = BlockType.values()[inputBitUtility.getNextCorrectIntByte()];
-        changedBlock = blockType.getBlockFromInput(worldGameState, inputBitUtility);
+
+        UUID regionUUID = inputBitUtility.getNextUUID();
+        changedBlock = blockType.getBlockFromInput(worldGameState, regionUUID, inputBitUtility);
+
         UUID worldUUID = inputBitUtility.getNextUUID();
         Location blockLocation = new Location(inputBitUtility.getNextInteger(),inputBitUtility.getNextInteger(),inputBitUtility.getNextInteger(),worldUUID);
         changedBlock.setLocation(blockLocation);
@@ -31,11 +34,12 @@ public class ServerChangeBlockPacket extends WorldStateModifyingPackets {
 
     @Override
     public void executeModification(WorldGameState worldGameState) {
-        worldGameState.setBlock(changedBlock);
+        worldGameState.setBlock(changedBlock,changedBlock.getRegionUUID());
     }
 
     @Override
     protected void transmitPacketBody(OutputBitUtility outputBitUtility) throws IOException {
+        outputBitUtility.writeNextUUID(changedBlock.getRegionUUID());
         changedBlock.writeData(outputBitUtility);
         outputBitUtility.writeNextUUID(changedBlock.getLocation().getWorldUUID());
         outputBitUtility.writeNextInteger(changedBlock.getLocation().getX());

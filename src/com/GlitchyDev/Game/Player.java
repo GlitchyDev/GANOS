@@ -1,4 +1,4 @@
-package com.GlitchyDev.Game.Player;
+package com.GlitchyDev.Game;
 
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
@@ -46,7 +46,12 @@ public class Player {
         this.controlledEntities = new ArrayList<>(totalControlledEntities);
         for(int i = 0; i < totalControlledEntities; i++) {
             EntityType entityType = EntityType.values()[inputBitUtility.getNextCorrectIntByte()];
-            controlledEntities.add(entityType.getEntityFromInput(inputBitUtility,worldGameState, worldUUID, regionUUID));
+            Entity entity = entityType.getEntityFromInput(inputBitUtility,worldGameState, worldUUID, regionUUID);
+            Region controlledEntityRegion = worldGameState.getRegion(entity.getCurrentRegionUUID(),entity.getWorldUUID());
+            entity.setLocation(controlledEntityRegion.getLocation().getOffsetLocation(entity.getLocation()));
+            worldGameState.spawnEntity(entity, SpawnReason.READ_FILE);
+
+            controlledEntities.add(entity);
         }
     }
 

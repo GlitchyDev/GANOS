@@ -10,6 +10,9 @@ import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
+import com.GlitchyDev.World.Effects.Abstract.EntityEffect;
+import com.GlitchyDev.World.Effects.Enums.EffectType;
+import com.GlitchyDev.World.Effects.ServerPacketReplicationEffect;
 import com.GlitchyDev.World.Entities.AbstractEntities.CustomVisibleEntity;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
@@ -18,6 +21,7 @@ import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class DebugEntity extends Entity implements CustomVisibleEntity {
@@ -55,9 +59,25 @@ public class DebugEntity extends Entity implements CustomVisibleEntity {
         if(tickCount % 120 == 0) {
             ((ServerWorldGameState)worldGameState).updateEntityViability(this);
             isVisible = !isVisible;
+
+            for(Entity entity: worldGameState.getWorld(getWorldUUID()).getEntities()) {
+
+                if(isVisible) {
+                    entity.applyEffect(new ServerPacketReplicationEffect(worldGameState));
+                } else {
+                    ArrayList<EntityEffect> removedEffects = new ArrayList<>();
+                    for(EntityEffect effect: entity.getEffects()) {
+                        if(effect.getEffectType() == EffectType.SERVER_PACKET_REPLICATION) {
+                            removedEffects.add(effect);
+                        }
+                    }
+                    for(EntityEffect effect: removedEffects) {
+                        entity.removeEffect(effect);
+                    }
+                }
+            }
         }
         tickCount++;
-
 
     }
 

@@ -9,16 +9,20 @@ import java.io.IOException;
 
 public  abstract class Effect {
     private final EffectType effectType;
-    private final WorldGameState worldGameState;
+    protected final boolean replicatedEffect;
+    protected final WorldGameState worldGameState;
 
-    public Effect(EffectType effectType, WorldGameState worldGameState) {
+
+    public Effect(EffectType effectType, boolean replicatedEffect, WorldGameState worldGameState) {
         this.effectType = effectType;
+        this.replicatedEffect = replicatedEffect;
         this.worldGameState = worldGameState;
 
     }
 
-    public Effect(EffectType effectType, WorldGameState worldGameState, InputBitUtility inputBitUtility) {
+    public Effect(EffectType effectType, boolean replicatedEffect, WorldGameState worldGameState, InputBitUtility inputBitUtility) {
         this.effectType = effectType;
+        this.replicatedEffect = replicatedEffect;
         this.worldGameState = worldGameState;
 
     }
@@ -31,6 +35,7 @@ public  abstract class Effect {
         return effectType;
     }
 
-
-
+    public boolean isReplicatedEffect() {
+        return replicatedEffect;
+    }
 }

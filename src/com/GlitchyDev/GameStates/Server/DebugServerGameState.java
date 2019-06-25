@@ -1,12 +1,12 @@
 package com.GlitchyDev.GameStates.Server;
 
-import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
-import com.GlitchyDev.GameStates.GameStateType;
 import com.GlitchyDev.Game.GlobalGameData;
-import com.GlitchyDev.Game.Player.Player;
+import com.GlitchyDev.Game.Player;
 import com.GlitchyDev.GameInput.Controllers.ControllerDirectionPad;
 import com.GlitchyDev.GameInput.Controllers.GameController;
 import com.GlitchyDev.GameInput.Controllers.XBox360Controller;
+import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
+import com.GlitchyDev.GameStates.GameStateType;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
@@ -21,6 +21,7 @@ import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
+import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Effects.ServerDebugEffect;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
@@ -30,14 +31,14 @@ import com.GlitchyDev.World.Entities.DebugPlayerEntity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
-import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Region.Enum.RegionConnection;
-import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Events.Communication.Constructs.Enums.LanguageType;
 import com.GlitchyDev.World.Events.Communication.Constructs.Messages.CommunicationMessage;
 import com.GlitchyDev.World.Events.Communication.Constructs.Source.CommunicationServerSource;
 import com.GlitchyDev.World.Events.WalkieTalkie.WalkieTalkieBase;
 import com.GlitchyDev.World.Events.WalkieTalkie.WalkieTalkieDisplay;
+import com.GlitchyDev.World.Location;
+import com.GlitchyDev.World.Region.Enum.RegionConnection;
+import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.World;
 import com.GlitchyDev.World.WorldFileType;
 import org.joml.Vector2d;
@@ -150,7 +151,7 @@ public class DebugServerGameState extends ServerWorldGameState {
                 }
             }
 
-            //region1.setBlockRelative(0,0,0,new DebugCustomRenderBlock(this,region1.getLocation().getOffsetLocation(0,0,0)));
+            region1.setBlockRelative(0,0,0,new DebugCustomRenderBlock(this,region1.getLocation().getOffsetLocation(0,0,0)));
 
 
             addRegionToGame(region1);
@@ -499,9 +500,10 @@ public class DebugServerGameState extends ServerWorldGameState {
         walkieTalkie.render(renderer,500);
 
 
-        if (currentPlayers.size() > 0) {
+        if (currentPlayers.containsKey(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562"))) {
             renderer.setRenderSpace(500, 0, 500, 500);
-            for (Region region : currentPlayers.get(currentPlayers.keySet().toArray()[0]).getEntityView().getViewableRegions()) {
+
+            for (Region region : currentPlayers.get(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562")).getEntityView().getViewableRegions()) {
                 for (Block block : region.getBlocksArray()) {
                     if (block instanceof CustomRenderBlock) {
                         ((CustomRenderBlock) block).render(renderer, camera, testPlayer);
@@ -511,6 +513,7 @@ public class DebugServerGameState extends ServerWorldGameState {
                     entity.render(renderer, camera);
                 }
             }
+
         }
 
 
@@ -556,7 +559,7 @@ public class DebugServerGameState extends ServerWorldGameState {
     @Override
     public void processPacket(UUID playerUUID, PacketBase packet) {
         System.out.println();
-        System.out.println("Received packet " + packet);
+        System.out.println("Processing packet @ " + packet);
         System.out.println();
         if(packet instanceof ClientSendInputPacket) {
             Direction direction = ((ClientSendInputPacket) packet).getClientInputType().getDirection();
@@ -579,8 +582,9 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         currentPlayers.put(playerUUID, loginPlayer);
 
-        spawnEntity(playerEntity,SpawnReason.LOGIN);
         playerEntity.recalculateView();
+        spawnEntity(playerEntity,SpawnReason.LOGIN);
+
     }
 
     @Override

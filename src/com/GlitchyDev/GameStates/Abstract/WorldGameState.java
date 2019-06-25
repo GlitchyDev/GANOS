@@ -133,12 +133,14 @@ public abstract class WorldGameState extends EnvironmentGameState {
 
 
     public void setBlock(Block block) {
-        setBlock(block,getRegionAtLocation(block.getLocation()).getRegionUUID());
+        UUID regionUUID = getRegionAtLocation(block.getLocation()).getRegionUUID();
+        setBlock(block,regionUUID);
     }
 
     public void setBlock(Block block, UUID regionUUID) {
         Region region = getRegion(regionUUID,block.getLocation().getWorldUUID());
         Location difference = region.getLocation().getLocationDifference(block.getLocation());
+        block.setRegionUUID(regionUUID);
         region.setBlockRelative(difference,block);
     }
 

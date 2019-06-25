@@ -1,14 +1,16 @@
 package com.GlitchyDev.GameStates.Abstract.Replicated;
 
 import com.GlitchyDev.Game.GlobalGameData;
-import com.GlitchyDev.Game.Player.Player;
+import com.GlitchyDev.Game.Player;
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.GameStates.GameStateType;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Packets.Server.World.Block.ServerChangeBlockPacket;
-import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerAddRelevantEffect;
-import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerRemoveRelevantEffect;
+import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerAddBlockEffectPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerAddEntityEffectPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerRemoveBlockEffectPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Effect.ServerRemoveEntityEffectPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerChangeDirectionEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerDespawnEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerMoveEntityPacket;
@@ -19,6 +21,7 @@ import com.GlitchyDev.Networking.ServerNetworkManager;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisableBlock;
 import com.GlitchyDev.World.Direction;
+import com.GlitchyDev.World.Effects.Abstract.BlockEffect;
 import com.GlitchyDev.World.Effects.Abstract.EntityEffect;
 import com.GlitchyDev.World.Entities.AbstractEntities.CustomVisibleEntity;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
@@ -133,10 +136,10 @@ public abstract class ServerWorldGameState extends WorldGameState {
                         Block viewedBlock = ((CustomVisableBlock) block).getVisibleBlock(player);
                         Location regionLocation = player.getEntityView().getRegion(regionUUID).getLocation();
                         Location blockRelative = regionLocation.getLocationDifference(block.getLocation());
-                        if (!player.getEntityView().getRegion(regionUUID).getBlockRelative(blockRelative).equals(viewedBlock)) {
+
                             serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerChangeBlockPacket(viewedBlock));
                             player.getEntityView().getRegion(regionUUID).setBlockRelative(blockRelative, viewedBlock);
-                        }
+
                     }
                 }
             }
@@ -191,6 +194,39 @@ public abstract class ServerWorldGameState extends WorldGameState {
                     serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(changedDirections.get(entity));
                 }
             }
+
+
+            for(Entity entity: addedEntityEffects.keySet()) {
+                if(playerView.containsEntity(entity.getUUID())) {
+                    for(EntityEffect entityEffect: addedEntityEffects.get(entity)) {
+                        serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerAddEntityEffectPacket(entityEffect));
+                    }
+                }
+            }
+            for(Entity entity: removedEntityEffects.keySet()) {
+                if(playerView.containsEntity(entity.getUUID())) {
+                    for(EntityEffect entityEffect: removedEntityEffects.get(entity)) {
+                        serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerRemoveEntityEffectPacket(entityEffect, entity));
+                    }
+                }
+            }
+            for(Block block: addedBlockEffects.keySet()) {
+                if(playerView.containsRegion(block.getRegionUUID())) {
+                    for (BlockEffect blockEffect : addedBlockEffects.get(block)) {
+                        serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerAddBlockEffectPacket(blockEffect));
+                    }
+                }
+            }
+            for(Block block: removedBlockEffects.keySet()) {
+                if(playerView.containsRegion(block.getRegionUUID())) {
+                    for (BlockEffect blockEffect : removedBlockEffects.get(block)) {
+                        serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerRemoveBlockEffectPacket(blockEffect, block));
+                    }
+                }
+            }
+
+
+
         }
 
 
@@ -204,6 +240,10 @@ public abstract class ServerWorldGameState extends WorldGameState {
         changedBlocks.clear();
         updatedBlockVisibility.clear();
         updatedEntityVisibility.clear();
+        addedEntityEffects.clear();
+        removedEntityEffects.clear();
+        addedBlockEffects.clear();
+        removedBlockEffects.clear();
 
         // Move entities, spawn respawn and move
         // Check EACH PLAYER for requisite information
@@ -305,6 +345,39 @@ public abstract class ServerWorldGameState extends WorldGameState {
     }
 
 
+    private HashMap<Entity, ArrayList<EntityEffect>> addedEntityEffects = new HashMap<>();
+    public void replicateEntityEffectAdded(Entity entity, EntityEffect entityEffect) {
+        if(!addedEntityEffects.containsKey(entity)) {
+            addedEntityEffects.put(entity,new ArrayList<>());
+        }
+        addedEntityEffects.get(entity).add(entityEffect);
+    }
+
+    private HashMap<Entity, ArrayList<EntityEffect>> removedEntityEffects = new HashMap<>();
+    public void replicateEntityEffectRemoved(Entity entity, EntityEffect entityEffect) {
+        if(!removedEntityEffects.containsKey(entity)) {
+            removedEntityEffects.put(entity,new ArrayList<>());
+        }
+        removedEntityEffects.get(entity).add(entityEffect);
+    }
+
+    private HashMap<Block, ArrayList<BlockEffect>> addedBlockEffects = new HashMap<>();
+    public void replicateBlockEffectAdded(Block block, BlockEffect blockEffect) {
+        if(!addedBlockEffects.containsKey(block)) {
+            addedBlockEffects.put(block,new ArrayList<>());
+        }
+        addedBlockEffects.get(block).add(blockEffect);
+    }
+
+    private HashMap<Block, ArrayList<BlockEffect>> removedBlockEffects = new HashMap<>();
+    public void replicateBlockEffectRemoved(Block block, BlockEffect blockEffect) {
+        if(!removedBlockEffects.containsKey(block)) {
+            removedBlockEffects.put(block,new ArrayList<>());
+        }
+        removedBlockEffects.get(block).add(blockEffect);
+    }
+
+
 
 
     // Replicate to players with visible region, and check to make sure its not a custom visibility block
@@ -313,12 +386,6 @@ public abstract class ServerWorldGameState extends WorldGameState {
     public void setBlock(Block block) {
         setBlock(block,getRegionAtLocation(block.getLocation()).getRegionUUID());
     }
-
-    /*
-            Region region = getRegion(regionUUID,block.getLocation().getWorldUUID());
-        Location difference = region.getLocation().getLocationDifference(block.getLocation());
-        region.setBlockRelative(difference,block);
-     */
 
     @Override
     public void setBlock(Block block, UUID regionUUID) {
@@ -366,23 +433,6 @@ public abstract class ServerWorldGameState extends WorldGameState {
             serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerDespawnRegionPacket(regionUUID, worldUUID));
         }
     }
-
-    public void playerAddRelevantEffect(Player player, EntityEffect effect) {
-        try {
-            serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerAddRelevantEffect(effect));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void playerRemoveRelevantEffect(Player player, EntityEffect effect) {
-        try {
-            serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerRemoveRelevantEffect(effect));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     public NetworkManager getNetworkManager() {
         return networkManager;

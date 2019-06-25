@@ -80,7 +80,7 @@ public class Region {
         Block[] palette = new Block[blockPaletteSize];
         for(int i = 0; i < blockPaletteSize; i++) {
             BlockType blockType = BlockType.values()[inputBitUtility.getNextCorrectIntByte()];
-            palette[i] = blockType.getBlockFromInput(worldGameState, inputBitUtility);
+            palette[i] = blockType.getBlockFromInput(worldGameState,regionUUID, inputBitUtility);
         }
 
 
