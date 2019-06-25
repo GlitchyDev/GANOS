@@ -14,8 +14,8 @@ import java.util.UUID;
 public class AirBlock extends Block {
 
 
-    public AirBlock(WorldGameState worldGameState, Location location) {
-        super(worldGameState, BlockType.AIR, location);
+    public AirBlock(WorldGameState worldGameState, Location location, UUID regionUUID) {
+        super(worldGameState, BlockType.AIR, location, regionUUID);
     }
 
     public AirBlock(WorldGameState worldGameState, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {
@@ -32,7 +32,7 @@ public class AirBlock extends Block {
 
     @Override
     public Block getCopy() {
-        return new AirBlock(worldGameState, getLocation().clone());
+        return new AirBlock(worldGameState, getLocation().clone(), regionUUID);
     }
 
     @Override

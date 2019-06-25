@@ -13,9 +13,7 @@ import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnec
 import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
-import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
-import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
@@ -124,34 +122,39 @@ public class DebugServerGameState extends ServerWorldGameState {
             System.out.println("-------------------");
             for(int x = 0; x < region1.getWidth(); x++) {
                 for(int z = 0; z < region1.getLength(); z++) {
-                    Block block = region1.getBlockRelative(x,0,z);
-                    Location relativeLocation = region1.getLocation().getLocationDifference(block.getLocation());
-                    region1.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
+                    Location blockLocation = region1.getLocation().getOffsetLocation(x,0,z);
+                    DebugBlock debugBlock = new DebugBlock(this,blockLocation, region1.getRegionUUID(), (int)(3 * Math.random()));
+                    region1.setBlockRelative(x,0,z,debugBlock);
                 }
             }
             for(int x = 0; x < region2.getWidth(); x++) {
                 for(int z = 0; z < region2.getLength(); z++) {
-                    Block block = region2.getBlockRelative(x,0,z);
-                    Location relativeLocation = region2.getLocation().getLocationDifference(block.getLocation());
-                    region2.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
+                    Location blockLocation = region2.getLocation().getOffsetLocation(x,0,z);
+                    DebugBlock debugBlock = new DebugBlock(this,blockLocation, region2.getRegionUUID(), (int)(3 * Math.random()));
+                    region2.setBlockRelative(x,0,z,debugBlock);
+
                 }
             }
             for(int x = 0; x < region3.getWidth(); x++) {
                 for(int z = 0; z < region3.getLength(); z++) {
-                    Block block = region3.getBlockRelative(x,0,z);
-                    Location relativeLocation = region3.getLocation().getLocationDifference(block.getLocation());
-                    region3.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
+                    Location blockLocation = region3.getLocation().getOffsetLocation(x,0,z);
+                    DebugBlock debugBlock = new DebugBlock(this,blockLocation, region3.getRegionUUID(), (int)(3 * Math.random()));
+                    region3.setBlockRelative(x,0,z,debugBlock);
+
                 }
             }
             for(int x = 0; x < region4.getWidth(); x++) {
                 for(int z = 0; z < region4.getLength(); z++) {
-                    Block block = region4.getBlockRelative(x,0,z);
-                    Location relativeLocation = region4.getLocation().getLocationDifference(block.getLocation());
-                    region4.setBlockRelative(relativeLocation,new DebugBlock(this,block.getLocation(),(int)(3 * Math.random()) ));
+                    Location blockLocation = region4.getLocation().getOffsetLocation(x,0,z);
+                    DebugBlock debugBlock = new DebugBlock(this,blockLocation, region4.getRegionUUID(), (int)(3 * Math.random()));
+                    region4.setBlockRelative(x,0,z,debugBlock);
+
                 }
             }
 
-            region1.setBlockRelative(0,0,0,new DebugCustomRenderBlock(this,region1.getLocation().getOffsetLocation(0,0,0)));
+            region1.setBlockRelative(0,0,0,new DebugCustomRenderBlock(this,region1.getLocation().getOffsetLocation(0,0,0), region1.getRegionUUID()));
+
+
 
 
             addRegionToGame(region1);
@@ -176,6 +179,8 @@ public class DebugServerGameState extends ServerWorldGameState {
 
             DebugCommunicationEntity debugCommunicationEntity = new DebugCommunicationEntity(this,getRegionAtLocation(new Location(3,1,0,spawnWorld)).getRegionUUID(), new Location(3,1,0,spawnWorld), Direction.NORTH);
             spawnEntity(debugCommunicationEntity, SpawnReason.DEBUG);
+
+
             try {
                 saveWorld(file, world);
             } catch (IOException e) {
@@ -517,11 +522,11 @@ public class DebugServerGameState extends ServerWorldGameState {
         }
 
 
-        renderer.setRenderSpace(500,0,280,500);
-        SpriteItem spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Noise"),280,500,true);
-        spriteItem.setPosition(0,0,0);
-        renderer.render2DSpriteItem(spriteItem,"Default2D");
-        spriteItem.cleanup();
+        //renderer.setRenderSpace(500,0,280,500);
+        //SpriteItem spriteItem = new SpriteItem(AssetLoader.getTextureAsset("Noise"),280,500,true);
+        //spriteItem.setPosition(0,0,0);
+        //renderer.render2DSpriteItem(spriteItem,"Default2D");
+        //spriteItem.cleanup();
 
         renderer.setRenderSpace(1000,0,500,500);
         renderer.render2DTextItems(debugItems, "Default2D");

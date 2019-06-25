@@ -140,8 +140,15 @@ public abstract class WorldGameState extends EnvironmentGameState {
     public void setBlock(Block block, UUID regionUUID) {
         Region region = getRegion(regionUUID,block.getLocation().getWorldUUID());
         Location difference = region.getLocation().getLocationDifference(block.getLocation());
+        Block previousBlock = region.getBlockRelative(difference);
+        if(previousBlock instanceof TickableBlock) {
+            getWorld(block.getLocation().getWorldUUID()).getTickableBlocks().remove(previousBlock);
+        }
         block.setRegionUUID(regionUUID);
         region.setBlockRelative(difference,block);
+        if(block instanceof TickableBlock) {
+            getWorld(block.getLocation().getWorldUUID()).getTickableBlocks().add((TickableBlock) block);
+        }
     }
 
     public void addRegionToGame(Region region) {

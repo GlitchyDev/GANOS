@@ -27,12 +27,12 @@ public abstract class Block {
 
 
 
-    public Block(WorldGameState worldGameState, BlockType blockType, Location location) {
+    public Block(WorldGameState worldGameState, BlockType blockType, Location location, UUID regionUUID) {
         this.worldGameState = worldGameState;
         this.blockType = blockType;
         this.location = location;
+        this.regionUUID = regionUUID;
         effects = new ArrayList<>();
-        regionUUID = null;
     }
 
     public Block(WorldGameState worldGameState, BlockType blockType, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {

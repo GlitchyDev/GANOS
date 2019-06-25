@@ -5,7 +5,6 @@ import com.GlitchyDev.Utility.HuffmanTreeUtility;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Blocks.AirBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
@@ -99,6 +98,7 @@ public class Region {
                     Block clone = ((Block) huffmanMap.get(currentCode)).getCopy();
                     clone.setLocation(getLocation().getOffsetLocation(x,y,z));
                     setBlockRelative(x,y,z,clone);
+                    clone.setRegionUUID(regionUUID);
                 }
             }
         }
@@ -219,7 +219,8 @@ public class Region {
         for(int y = 0; y < getHeight(); y++) {
             for(int x = 0; x < getWidth(); x++) {
                 for(int z = 0; z < getLength(); z++) {
-                    setBlockRelative(x,y,z, new AirBlock(worldGameState, getLocation().getOffsetLocation(x, y, z)));
+                    Block air = new AirBlock(worldGameState, getLocation().getOffsetLocation(x, y, z),regionUUID);
+                    setBlockRelative(x,y,z, air);
                 }
             }
         }
@@ -272,14 +273,7 @@ public class Region {
     }
 
     public void setBlockRelative(Location relativeLocation, Block block) {
-        Block previousBlock = getBlockRelative(relativeLocation);
-        if(previousBlock instanceof TickableBlock) {
-            worldGameState.getWorld(worldUUID).getTickableBlocks().remove(previousBlock);
-        }
         setBlockRelative(relativeLocation.getX(), relativeLocation.getY(), relativeLocation.getZ(), block);
-        if(block instanceof TickableBlock) {
-            worldGameState.getWorld(worldUUID).getTickableBlocks().add((TickableBlock) block);
-        }
     }
 
     public Block getBlockRelative(int relativeX, int relativeY, int relativeZ) {

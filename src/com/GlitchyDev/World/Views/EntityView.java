@@ -20,7 +20,8 @@ public class EntityView {
 
     public boolean containsRegion(UUID regionUUID) {
         for(Region region: viewableRegions) {
-            if(region.getRegionUUID() == regionUUID) {
+            System.out.println(region + " " + regionUUID);
+            if(region.getRegionUUID().equals(regionUUID)) {
                 return true;
             }
         }
@@ -38,7 +39,7 @@ public class EntityView {
 
     public Region getRegion(UUID regionUUID) {
         for(Region region: viewableRegions) {
-            if(region.getRegionUUID() == regionUUID) {
+            if(region.getRegionUUID().equals(regionUUID)) {
                 return region;
             }
         }

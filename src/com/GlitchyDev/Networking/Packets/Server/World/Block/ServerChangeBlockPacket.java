@@ -22,9 +22,10 @@ public class ServerChangeBlockPacket extends WorldStateModifyingPackets {
 
     public ServerChangeBlockPacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
         super(PacketType.SERVER_CHANGE_BLOCK, inputBitUtility, worldGameState);
-        BlockType blockType = BlockType.values()[inputBitUtility.getNextCorrectIntByte()];
+
 
         UUID regionUUID = inputBitUtility.getNextUUID();
+        BlockType blockType = BlockType.values()[inputBitUtility.getNextCorrectIntByte()];
         changedBlock = blockType.getBlockFromInput(worldGameState, regionUUID, inputBitUtility);
 
         UUID worldUUID = inputBitUtility.getNextUUID();

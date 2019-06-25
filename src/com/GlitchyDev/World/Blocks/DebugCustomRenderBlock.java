@@ -23,23 +23,23 @@ public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, 
     private final GameItem mesh;
     private final AirBlock replacementBlock;
 
-    public DebugCustomRenderBlock(WorldGameState worldGameState, Location location) {
-        super(worldGameState, BlockType.DEBUG_CUSTOM_RENDER, location);
+    public DebugCustomRenderBlock(WorldGameState worldGameState, Location location, UUID regionUUID) {
+        super(worldGameState, BlockType.DEBUG_CUSTOM_RENDER, location, regionUUID);
         mesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
         mesh.getMesh().setTexture(AssetLoader.getTextureAsset("grassblock"));
-        replacementBlock = new AirBlock(worldGameState,location);
+        replacementBlock = new AirBlock(worldGameState,location, regionUUID);
     }
 
     public DebugCustomRenderBlock(WorldGameState worldGameState, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {
         super(worldGameState, BlockType.DEBUG_CUSTOM_RENDER, regionUUID, inputBitUtility);
         mesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
         mesh.getMesh().setTexture(AssetLoader.getTextureAsset("grassblock"));
-        replacementBlock = new AirBlock(worldGameState, location);
+        replacementBlock = new AirBlock(worldGameState, location, regionUUID);
     }
 
     @Override
     public Block getCopy() {
-        return new DebugCustomRenderBlock(worldGameState, getLocation().clone());
+        return new DebugCustomRenderBlock(worldGameState, getLocation().clone(), regionUUID);
     }
 
     @Override
@@ -78,9 +78,11 @@ public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, 
     private boolean isVisible = true;
     @Override
     public void tick() {
+        System.out.println("DebugCustomRenderBlock Tick " + tickCount);
         if(tickCount % 120 == 0) {
             ((ServerWorldGameState)worldGameState).updateBlockVisibility(this);
             isVisible = !isVisible;
+            System.out.println("DebugCustomRenderBlock Visibility " + isVisible + " " + regionUUID);
         }
         tickCount++;
     }

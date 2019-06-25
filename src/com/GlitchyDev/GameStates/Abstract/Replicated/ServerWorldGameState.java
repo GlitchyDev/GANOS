@@ -129,9 +129,12 @@ public abstract class ServerWorldGameState extends WorldGameState {
             }
 
 
+            System.out.println("Updated block visibility check " + updatedBlockVisibility.size());
             for (Block block : updatedBlockVisibility) {
-                UUID regionUUID = getRegionAtLocation(block.getLocation()).getRegionUUID();
+                UUID regionUUID = block.getRegionUUID();
+                System.out.println("L " + regionUUID);
                 if (playerView.containsRegion(regionUUID)) {
+                    System.out.println("Updated Block " + block + " for " + player);
                     if (block instanceof CustomVisableBlock) {
                         Block viewedBlock = ((CustomVisableBlock) block).getVisibleBlock(player);
                         Location regionLocation = player.getEntityView().getRegion(regionUUID).getLocation();

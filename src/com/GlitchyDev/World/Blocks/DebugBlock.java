@@ -21,8 +21,8 @@ public class DebugBlock extends Block implements CustomRenderBlock {
     private int testValue;
     private final GameItem mesh;
 
-    public DebugBlock(WorldGameState worldGameState, Location location, int testValue) {
-        super(worldGameState, BlockType.DEBUG, location);
+    public DebugBlock(WorldGameState worldGameState, Location location, UUID regionUUID, int testValue) {
+        super(worldGameState, BlockType.DEBUG, location,regionUUID);
         this.testValue = testValue;
         this.mesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
         switch(testValue) {
@@ -70,7 +70,7 @@ public class DebugBlock extends Block implements CustomRenderBlock {
 
     @Override
     public Block getCopy() {
-        return new DebugBlock(worldGameState, getLocation().clone(), testValue);
+        return new DebugBlock(worldGameState, getLocation().clone(), regionUUID, testValue);
     }
 
     @Override
