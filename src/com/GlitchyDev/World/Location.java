@@ -1,27 +1,27 @@
 package com.GlitchyDev.World;
 
 
-import org.joml.Vector3i;
+import org.joml.Vector3f;
 
 import java.util.UUID;
 
 public class Location {
-    private final Vector3i position;
+    private final Vector3f position;
     private final UUID worldUUID;
 
 
     public Location(UUID worldUUID) {
-        position = new Vector3i();
+        position = new Vector3f();
         this.worldUUID = worldUUID;
     }
 
     public Location(int x, int y, int z, UUID worldUUID) {
-        position = new Vector3i(x, y, z);
+        position = new Vector3f(x, y, z);
         this.worldUUID = worldUUID;
     }
 
     public Location(Location location) {
-        position = new Vector3i(location.getPosition());
+        position = new Vector3f(location.getPosition());
         this.worldUUID = location.getWorldUUID();
     }
 
@@ -43,7 +43,7 @@ public class Location {
      * @ return Returns a Location offset by the provided coordinates from the current location
      */
     public Location getOffsetLocation(int x, int y, int z) {
-        return new Location(this.position.x + x, this.position.y + y, this.position.z + z, worldUUID);
+        return new Location((int)(this.position.x + x), (int)(this.position.y + y), (int)(this.position.z + z), worldUUID);
     }
 
     /**
@@ -143,23 +143,23 @@ public class Location {
     // Getters
 
     public int getX() {
-        return position.x;
+        return (int) position.x;
     }
 
     public int getY() {
-        return position.y;
+        return (int) position.y;
     }
 
     public int getZ() {
-        return position.z;
+        return (int) position.z;
     }
 
-    public Vector3i getPosition() {
+    public Vector3f getPosition() {
         return position;
     }
 
-    public Vector3i getNormalizedPosition() {
-        return new Vector3i(position).mul(2);
+    public Vector3f getNormalizedPosition() {
+        return new Vector3f(position).mul(2);
     }
 
     public UUID getWorldUUID() {

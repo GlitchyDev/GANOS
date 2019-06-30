@@ -51,8 +51,7 @@ public class InstancedMesh extends Mesh {
 
     }
 
-    public void updateVBO(int vbo, FloatBuffer data, FloatBuffer buffer)
-    {
+    public void updateVBO(int vbo, FloatBuffer data, FloatBuffer buffer) {
         buffer.clear();
         buffer.put(data);
         buffer.flip();

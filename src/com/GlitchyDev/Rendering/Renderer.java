@@ -167,13 +167,67 @@ public class Renderer {
         //shader.unbind();
     }
 
-
-
-
-
-    /*
-    public void renderInstanced3DElements(GameWindow window, String shaderName, Camera camera, InstancedMesh instancedMesh, List<GameItem> gameItems) {
+    public void renderBillboard3DSprites(Camera camera, List<GameItem> gameItems, String shaderName) {
         ShaderProgram shader = loadedShaders.get(shaderName);
+        if(!previousShader.equals(shaderName)) {
+            shader.bind();
+        }
+
+        // Update projection Matrix
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(renderWidth, renderHeight);
+        shader.setUniform("projectionMatrix", projectionMatrix);
+
+        // Update view Matrix
+        Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
+
+        shader.setUniform("texture_sampler", 0);
+        // WalkieTalkie each gameItem
+        for (GameItem gameItem : gameItems) {
+            Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
+            viewMatrix.transpose3x3(modelMatrix);
+            modelMatrix.rotateY((float) Math.toRadians(180));
+            Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
+            modelViewMatrix.scale(gameItem.getScale());//
+            shader.setUniform("modelViewMatrix", modelViewMatrix);
+            gameItem.getMesh().render();
+        }
+
+        //shader.unbind();
+    }
+
+    public void renderBillboard3DSprite(Camera camera, GameItem gameItem, String shaderName) {
+        ShaderProgram shader = loadedShaders.get(shaderName);
+        if(!previousShader.equals(shaderName)) {
+            shader.bind();
+        }
+
+        // Update projection Matrix
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(renderWidth, renderHeight);
+        shader.setUniform("projectionMatrix", projectionMatrix);
+
+        // Update view Matrix
+        Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
+
+        shader.setUniform("texture_sampler", 0);
+        // WalkieTalkie each gameItem
+        Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
+        viewMatrix.transpose3x3(modelMatrix);
+        modelMatrix.rotateY((float) Math.toRadians(180));
+        Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
+        shader.setUniform("modelViewMatrix", modelViewMatrix);
+        gameItem.getMesh().render();
+
+
+        //shader.unbind();
+    }
+
+
+
+
+
+    /*--
+    public void renderInstanced3DElements(GameWindow window, String shaderName, Camera camera, InstancedMesh instancedMesh, List<GameItem> gameItems) {
+         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
             shader.bind();
         }

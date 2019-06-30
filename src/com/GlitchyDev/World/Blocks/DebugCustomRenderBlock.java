@@ -78,11 +78,9 @@ public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, 
     private boolean isVisible = true;
     @Override
     public void tick() {
-        System.out.println("DebugCustomRenderBlock Tick " + tickCount);
         if(tickCount % 120 == 0) {
             ((ServerWorldGameState)worldGameState).updateBlockVisibility(this);
             isVisible = !isVisible;
-            System.out.println("DebugCustomRenderBlock Visibility " + isVisible + " " + regionUUID);
         }
         tickCount++;
     }

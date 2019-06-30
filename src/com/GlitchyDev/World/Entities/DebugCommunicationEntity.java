@@ -66,7 +66,7 @@ public class DebugCommunicationEntity extends Entity implements CommunicationLis
         spriteItem.setPosition(getLocation().getNormalizedPosition());
         textItem.setPosition(getLocation().getNormalizedPosition().add(0,1,0));
 
-        renderer.render3DElement(camera,spriteItem,"Default3D");
+        renderer.renderBillboard3DSprite(camera,spriteItem,"Default3D");
         renderer.render3DElement(camera,textItem,"Default3D");
 
     }

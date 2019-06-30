@@ -192,7 +192,7 @@ public class DebugServerGameState extends ServerWorldGameState {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            file.deleteOnExit();
+            file.delete();
         }
 
 

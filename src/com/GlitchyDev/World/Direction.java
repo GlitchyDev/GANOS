@@ -2,11 +2,12 @@ package com.GlitchyDev.World;
 
 public enum Direction {
     ABOVE,
+    BELOW,
     NORTH,
     EAST,
     SOUTH,
     WEST,
-    BELOW;
+    ;
 
     public Direction reverse() {
         switch(this) {
