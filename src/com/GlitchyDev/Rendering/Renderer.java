@@ -2,16 +2,19 @@ package com.GlitchyDev.Rendering;
 
 
 import com.GlitchyDev.Game.GameWindow;
+import com.GlitchyDev.Rendering.Assets.Mesh.Mesh;
 import com.GlitchyDev.Rendering.Assets.Shaders.ShaderProgram;
 import com.GlitchyDev.Rendering.Assets.Texture.InstancedGridTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.*;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.FrustumCullingFilter;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
+import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Region.Region;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 /**
  * A rendering assistant for rendering GameItems in OpenGL using Shaders
@@ -226,35 +231,82 @@ public class Renderer {
         //shader.unbind();
     }
 
-    public void renderBlocks(Camera camera, ArrayList<Block> blocks, String shaderName) {
-        HashMap<InstancedGridTexture,ArrayList<DesignerBlock>> designerBlocks = new HashMap<>();
-        ArrayList<CustomRenderBlock> customRenderBlock = new ArrayList<>();
 
-        for(Block block: blocks) {
-            if(block instanceof DesignerBlock) {
-                DesignerBlock designerBlock = (DesignerBlock) block;
-                if(!designerBlocks.containsKey(designerBlock.getInstancedGridTexture())) {
-                    designerBlocks.put(designerBlock.getInstancedGridTexture(), new ArrayList<>());
+    private InstancedRenderData instancedRenderData = new InstancedRenderData();
+    public void renderDesignerBlocks(Camera camera, ArrayList<DesignerBlock> designerBlocks, Mesh mesh, InstancedGridTexture instancedGridTexture, String shaderName) {
+
+        ShaderProgram shader = loadedShaders.get(shaderName);
+        if(!previousShader.equals(shaderName)) {
+            shader.bind();
+        }
+
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(renderWidth, renderHeight);
+        shader.setUniform("projectionMatrix", projectionMatrix);
+
+        // Update view Matrix
+        Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
+
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, instancedGridTexture.getId());
+        shader.setUniform("texture_sampler", 0);
+
+
+
+
+        ArrayList<Matrix4f> matrices = new ArrayList<>();
+        ArrayList<Vector2f> textures = new ArrayList<>();
+        for(DesignerBlock designerBlock: designerBlocks) {
+            for(Direction direction: Direction.values()) {
+                if(designerBlock.getFaceState(direction)) {
+                    Vector3f rotation;
+                    switch(direction) {
+                        case ABOVE:
+                            rotation = new Vector3f(0,90,0);
+                            break;
+                        case BELOW:
+                            rotation = new Vector3f(180,90,0);
+                            break;
+                        case NORTH:
+                            rotation = new Vector3f(90,-90,0);
+                            break;
+                        case EAST:
+                            rotation = new Vector3f(0, 0,90);
+                            break;
+                        case SOUTH:
+                            rotation = new Vector3f(90, -270,180);
+                            break;
+                        case WEST:
+                            rotation = new Vector3f(180, 0,270);
+                            break;
+                        default:
+                            rotation = new Vector3f();
+                    }
+                    Matrix4f modelMatrix = transformation.buildModelMatrix(designerBlock.getLocation().getNormalizedPosition(), rotation);
+                    Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
+
+                    Vector2f textureData = new Vector2f();
+                    textureData.x = instancedGridTexture.getGridWidthPercent() * (designerBlock.getTextureID(direction) % instancedGridTexture.getHorizontalGridNam());
+                    textureData.y = instancedGridTexture.getGridWidthPercent() * (designerBlock.getTextureID(direction) / instancedGridTexture.getVerticalGridNum());
+
+                    matrices.add(modelViewMatrix);
+                    textures.add(textureData);
                 }
-                designerBlocks.get(designerBlock.getInstancedGridTexture()).add(designerBlock);
-            }
-            if(block instanceof CustomRenderBlock) {
-                customRenderBlock.add((CustomRenderBlock) block);
             }
         }
-        renderDesignerBlocks(camera,designerBlocks,shaderName);
 
+        instancedRenderData.enableAttributes();
 
+        for(int i = 0; i < designerBlocks.size(); i += instancedRenderData.getBLOCK_SIZE()) {
+            int end = Math.min(designerBlocks.size(), i + instancedRenderData.getBLOCK_SIZE());
 
-        // DesogmerN;pcl rendertypes???? 
-
-    }
-
-
-    public void renderDesignerBlocks(Camera camera, HashMap<InstancedGridTexture,ArrayList<DesignerBlock>> partialBlocks, String shaderName) {
-        for(InstancedGridTexture instancedGridTexture: partialBlocks.keySet()) {
-
+            instancedRenderData.uploadModelViewMatrices(matrices.subList(i, end));
+            instancedRenderData.uploadTextures(textures.subList(i, end));
+            mesh.renderInstanced(i-end);
         }
+
+        instancedRenderData.disableAttributes();
+
     }
 
     public void renderCustomRenderBlock(Camera camera, ArrayList<CustomRenderBlock> customRenderBlocks, String shaderName) {

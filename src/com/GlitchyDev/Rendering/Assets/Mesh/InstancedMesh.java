@@ -64,7 +64,7 @@ public class InstancedMesh extends Mesh {
 
 
     @Override
-    public void preRender() {
+    protected void preRender() {
         // Activate firs texture bank
         // Bind the texture
 
@@ -83,7 +83,8 @@ public class InstancedMesh extends Mesh {
     }
 
     @Override
-    public void postRender() {
+    protected void postRender() {
+
         // Restore state
         glBindTexture(GL_TEXTURE_2D, 0);
         glDisableVertexAttribArray(0);
@@ -92,10 +93,10 @@ public class InstancedMesh extends Mesh {
         glDisableVertexAttribArray(3);
         glDisableVertexAttribArray(4);
         glDisableVertexAttribArray(5);
-        GL30.glBindVertexArray(0);
+        glBindVertexArray(0);
     }
 
-    public void addInstancedAttribute(int vao, int vbo, int attribute, int dataSize, int instancedDataLength, int offset) {
+    private void addInstancedAttribute(int vao, int vbo, int attribute, int dataSize, int instancedDataLength, int offset) {
         glBindBuffer(GL_ARRAY_BUFFER,vbo);
         glBindVertexArray(vao);
         glVertexAttribPointer(attribute,dataSize, GL_FLOAT, false, instancedDataLength * 4, offset * 4);
@@ -105,7 +106,7 @@ public class InstancedMesh extends Mesh {
     }
 
 
-    public void renderMeshInstanceList(List<GameItem> gameItems, Transformation transformation, Matrix4f viewMatrix) {
+    private void renderMeshInstanceList(List<GameItem> gameItems, Transformation transformation, Matrix4f viewMatrix) {
         preRender();
         int length = gameItems.size();
         for (int i = 0; i < length; i += instanceChunkSize) {
@@ -117,7 +118,7 @@ public class InstancedMesh extends Mesh {
 
     }
 
-    public void renderMeshInstanced(List<GameItem> gameItems, Transformation transformation, Matrix4f viewMatrix, int size) {
+    private void renderMeshInstanced(List<GameItem> gameItems, Transformation transformation, Matrix4f viewMatrix, int size) {
         matrixVboData = BufferUtils.createFloatBuffer(size * 16);
         int offset = 0;
         for(int i = 0; i < size; i++)

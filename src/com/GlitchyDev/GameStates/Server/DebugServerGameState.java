@@ -12,12 +12,15 @@ import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
+import com.GlitchyDev.Rendering.Assets.Texture.InstancedGridTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
+import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
 import com.GlitchyDev.World.Direction;
@@ -491,23 +494,34 @@ public class DebugServerGameState extends ServerWorldGameState {
     public void render() {
         renderer.prepWindowRender(globalGameData.getGameWindow());
         renderer.setRenderSpace(0,0,500,500);
+
+        HashMap<InstancedGridTexture,ArrayList<DesignerBlock>> designerBlocks = new HashMap();
         for(Region region: testPlayer.getPlayerEntity().getEntityView().getViewableRegions()) {
             for(Block block: region.getBlocksArray()) {
                 if(block instanceof CustomRenderBlock) {
                     ((CustomRenderBlock) block).render(renderer,camera,testPlayer);
+                }
+                if(block instanceof DesignerBlock) {
+                    if(!designerBlocks.containsKey(((DesignerBlock) block).getInstancedGridTexture())) {
+                        designerBlocks.put(((DesignerBlock) block).getInstancedGridTexture(),new ArrayList<>());
+                    }
+                    designerBlocks.get(((DesignerBlock) block).getInstancedGridTexture()).add((DesignerBlock) block);
                 }
             }
             for(Entity entity: region.getEntities()) {
                 entity.render(renderer,camera);
             }
         }
+        for(InstancedGridTexture instancedGridTexture: designerBlocks.keySet()) {
+            renderer.renderDesignerBlocks(camera,designerBlocks.get(instancedGridTexture), AssetLoader.getMeshAsset(""), instancedGridTexture, "Instanced3D");
+        }
+
         renderer.render2DTextItems(hudItems, "Default2D");
         walkieTalkie.render(renderer,500);
 
 
         if (currentPlayers.containsKey(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562"))) {
             renderer.setRenderSpace(500, 0, 500, 500);
-
             for (Region region : currentPlayers.get(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562")).getEntityView().getViewableRegions()) {
                 for (Block block : region.getBlocksArray()) {
                     if (block instanceof CustomRenderBlock) {
@@ -518,7 +532,6 @@ public class DebugServerGameState extends ServerWorldGameState {
                     entity.render(renderer, camera);
                 }
             }
-
         }
 
 

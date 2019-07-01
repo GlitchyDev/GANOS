@@ -2,12 +2,8 @@ package com.GlitchyDev.GameStates.Abstract;
 
 import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.GameStates.GameStateType;
-import com.GlitchyDev.Rendering.Assets.Texture.InstancedGridTexture;
-import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
-import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
@@ -15,10 +11,7 @@ import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Enum.RegionConnection;
 import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.World;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -67,9 +60,9 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
     public boolean isEntityAtLocation(Location location) {
-        for(Region region: getRegionsAtLocation(location)) {
-            for(Entity entity: region.getEntities()) {
-                if(entity.getLocation().equals(location)) {
+        for (Region region : getRegionsAtLocation(location)) {
+            for (Entity entity : region.getEntities()) {
+                if (entity.getLocation().equals(location)) {
                     return true;
                 }
             }
@@ -78,9 +71,9 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
     public Entity getEntityAtLocation(Location location) {
-        for(Region region: getRegionsAtLocation(location)) {
-            for(Entity entity: region.getEntities()) {
-                if(entity.getLocation().equals(location)) {
+        for (Region region : getRegionsAtLocation(location)) {
+            for (Entity entity : region.getEntities()) {
+                if (entity.getLocation().equals(location)) {
                     return entity;
                 }
             }
@@ -91,9 +84,9 @@ public abstract class WorldGameState extends EnvironmentGameState {
 
     public ArrayList<Entity> getEntitiesAtLocation(Location location) {
         ArrayList<Entity> entities = new ArrayList<>();
-        for(Region region: getRegionsAtLocation(location)) {
-            for(Entity entity: region.getEntities()) {
-                if(entity.getLocation().equals(location)) {
+        for (Region region : getRegionsAtLocation(location)) {
+            for (Entity entity : region.getEntities()) {
+                if (entity.getLocation().equals(location)) {
                     entities.add(entity);
                 }
             }
@@ -106,12 +99,12 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
     public Block getBlockAtLocation(Location location) {
-        return getBlockAtLocation(location,getRegionAtLocation(location).getRegionUUID());
+        return getBlockAtLocation(location, getRegionAtLocation(location).getRegionUUID());
     }
 
     public Block getBlockAtLocation(Location location, UUID regionUUID) {
-        Location offset = getRegion(regionUUID,location.getWorldUUID()).getLocation().getLocationDifference(location);
-        return getRegion(regionUUID,location.getWorldUUID()).getBlockRelative(offset);
+        Location offset = getRegion(regionUUID, location.getWorldUUID()).getLocation().getLocationDifference(location);
+        return getRegion(regionUUID, location.getWorldUUID()).getBlockRelative(offset);
     }
 
     public HashMap<UUID, HashMap<RegionConnection, ArrayList<UUID>>> getRegionConnections(UUID worldUUID) {
@@ -141,19 +134,19 @@ public abstract class WorldGameState extends EnvironmentGameState {
 
     public void setBlock(Block block) {
         UUID regionUUID = getRegionAtLocation(block.getLocation()).getRegionUUID();
-        setBlock(block,regionUUID);
+        setBlock(block, regionUUID);
     }
 
     public void setBlock(Block block, UUID regionUUID) {
-        Region region = getRegion(regionUUID,block.getLocation().getWorldUUID());
+        Region region = getRegion(regionUUID, block.getLocation().getWorldUUID());
         Location difference = region.getLocation().getLocationDifference(block.getLocation());
         Block previousBlock = region.getBlockRelative(difference);
-        if(previousBlock instanceof TickableBlock) {
+        if (previousBlock instanceof TickableBlock) {
             getWorld(block.getLocation().getWorldUUID()).getTickableBlocks().remove(previousBlock);
         }
         block.setRegionUUID(regionUUID);
-        region.setBlockRelative(difference,block);
-        if(block instanceof TickableBlock) {
+        region.setBlockRelative(difference, block);
+        if (block instanceof TickableBlock) {
             getWorld(block.getLocation().getWorldUUID()).getTickableBlocks().add((TickableBlock) block);
         }
     }
@@ -189,7 +182,6 @@ public abstract class WorldGameState extends EnvironmentGameState {
     // Replicate Functions
 
 
-
     public void spawnEntity(Entity entity, SpawnReason spawnReason) {
         entity.onSpawn(spawnReason);
         getRegion(entity.getCurrentRegionUUID(), entity.getWorldUUID()).getEntities().add(entity);
@@ -200,6 +192,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
     public void despawnEntity(Entity entity, DespawnReason despawnReason) {
         despawnEntity(entity.getUUID(), entity.getWorldUUID(), despawnReason);
     }
+
     public void despawnEntity(UUID entityUUID, UUID worldUUID, DespawnReason despawnReason) {
         Entity entity = getWorld(worldUUID).getEntity(entityUUID);
         Region hostRegion = getRegion(entity.getCurrentRegionUUID(), worldUUID);
@@ -213,33 +206,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
     }
 
 
-
-
-    private HashMap<UUID,ArrayList<Block>> cachedBlocks;
-    public void renderWorld(World world, Camera camera) {
-        if(requiresCache) {
-            updateCache(world.getWorldUUID());
-        }
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
+
+
+
