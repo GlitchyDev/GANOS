@@ -12,20 +12,20 @@ import java.util.UUID;
 
 public abstract class DesignerBlock extends Block {
     private boolean[] faceStates;
-    private int[] textureStates;
+    private int[] textureID;
     private InstancedGridTexture instancedGridTexture;
 
     public DesignerBlock(WorldGameState worldGameState, BlockType blockType, Location location, UUID regionUUID, InstancedGridTexture instancedGridTexture) {
         super(worldGameState, blockType, location, regionUUID);
         faceStates = new boolean[6];
-        textureStates = new int[6];
+        textureID = new int[6];
         this.instancedGridTexture = instancedGridTexture;
     }
 
     public DesignerBlock(WorldGameState worldGameState, BlockType blockType, UUID regionUUID, InputBitUtility inputBitUtility, InstancedGridTexture instancedGridTexture) throws IOException {
         super(worldGameState, blockType, regionUUID, inputBitUtility);
         faceStates = new boolean[6];
-        textureStates = new int[6];
+        textureID = new int[6];
         this.instancedGridTexture = instancedGridTexture;
     }
 
@@ -37,12 +37,12 @@ public abstract class DesignerBlock extends Block {
         return faceStates[direction.ordinal()];
     }
 
-    public void setTextureState(Direction direction, int texture) {
-        textureStates[direction.ordinal()] = texture;
+    public void setTextureID(Direction direction, int texture) {
+        textureID[direction.ordinal()] = texture;
     }
 
-    public int getTextureState(Direction direction) {
-        return textureStates[direction.ordinal()];
+    public int getTextureID(Direction direction) {
+        return textureID[direction.ordinal()];
     }
 
     public InstancedGridTexture getInstancedGridTexture() {

@@ -118,9 +118,7 @@ public class Mesh implements Cloneable {
 
     public void render() {
         preRender();
-
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
-
         postRender();
     }
 

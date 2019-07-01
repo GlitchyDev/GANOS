@@ -1,41 +1,30 @@
 package com.GlitchyDev.Rendering.Assets.Texture;
 
 public class InstancedGridTexture extends Texture {
-    private final int texWidth;
-    private final int texHeight;
-    private final String name;
+    private final int horizontalGridNam;
+    private final int verticalGridNum;
 
-    public InstancedGridTexture(Texture texture, String name, int texWidth, int texHeight) {
+    public InstancedGridTexture(Texture texture, int horizontalGridNam, int verticalGridNum) {
         super(texture);
-        this.name = name;
-        this.texWidth = texWidth;
-        this.texHeight = texHeight;
+        this.horizontalGridNam = horizontalGridNam;
+        this.verticalGridNum = verticalGridNum;
     }
 
 
-    public int getTextureGridWidth() {
-        return texWidth;
-    }
 
-    public int getTextureGridHeight() {
-        return texHeight;
-    }
-
-
-    public float getTexturePortionWidth() {
+    public float getGridWidthPercent() {
         return 1.0f/super.getWidth();
     }
-
-
-    public float getTexturePortionHeight() {
+    public float getGridHeightPercent() {
         return 1.0f/super.getHeight();
     }
 
-    public int getCubeSideLength() {
-        return getWidth()/texWidth;
+
+    public int getHorizontalGridNam() {
+        return horizontalGridNam;
     }
 
-    public String getName() {
-        return name;
+    public int getVerticalGridNum() {
+        return verticalGridNum;
     }
 }

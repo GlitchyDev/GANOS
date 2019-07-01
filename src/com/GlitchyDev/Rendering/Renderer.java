@@ -1,14 +1,19 @@
 package com.GlitchyDev.Rendering;
 
 
+import com.GlitchyDev.Game.GameWindow;
 import com.GlitchyDev.Rendering.Assets.Shaders.ShaderProgram;
+import com.GlitchyDev.Rendering.Assets.Texture.InstancedGridTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.*;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.FrustumCullingFilter;
-import com.GlitchyDev.Game.GameWindow;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
 import com.GlitchyDev.World.Region.Region;
 import org.joml.Matrix4f;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -219,6 +224,41 @@ public class Renderer {
 
 
         //shader.unbind();
+    }
+
+    public void renderBlocks(Camera camera, ArrayList<Block> blocks, String shaderName) {
+        HashMap<InstancedGridTexture,ArrayList<DesignerBlock>> designerBlocks = new HashMap<>();
+        ArrayList<CustomRenderBlock> customRenderBlock = new ArrayList<>();
+
+        for(Block block: blocks) {
+            if(block instanceof DesignerBlock) {
+                DesignerBlock designerBlock = (DesignerBlock) block;
+                if(!designerBlocks.containsKey(designerBlock.getInstancedGridTexture())) {
+                    designerBlocks.put(designerBlock.getInstancedGridTexture(), new ArrayList<>());
+                }
+                designerBlocks.get(designerBlock.getInstancedGridTexture()).add(designerBlock);
+            }
+            if(block instanceof CustomRenderBlock) {
+                customRenderBlock.add((CustomRenderBlock) block);
+            }
+        }
+        renderDesignerBlocks(camera,designerBlocks,shaderName);
+
+
+
+        // DesogmerN;pcl rendertypes???? 
+
+    }
+
+
+    public void renderDesignerBlocks(Camera camera, HashMap<InstancedGridTexture,ArrayList<DesignerBlock>> partialBlocks, String shaderName) {
+        for(InstancedGridTexture instancedGridTexture: partialBlocks.keySet()) {
+
+        }
+    }
+
+    public void renderCustomRenderBlock(Camera camera, ArrayList<CustomRenderBlock> customRenderBlocks, String shaderName) {
+
     }
 
 
