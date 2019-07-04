@@ -2,19 +2,15 @@ package com.GlitchyDev.Rendering;
 
 
 import com.GlitchyDev.Game.GameWindow;
-import com.GlitchyDev.Rendering.Assets.Mesh.Mesh;
+import com.GlitchyDev.Rendering.Assets.Mesh.PartialCubicInstanceMesh;
 import com.GlitchyDev.Rendering.Assets.Shaders.ShaderProgram;
-import com.GlitchyDev.Rendering.Assets.Texture.InstancedGridTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.*;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.FrustumCullingFilter;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
-import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Region.Region;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,8 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 /**
  * A rendering assistant for rendering GameItems in OpenGL using Shaders
@@ -232,86 +226,50 @@ public class Renderer {
     }
 
 
-    private InstancedRenderData instancedRenderData = new InstancedRenderData();
-    public void renderDesignerBlocks(Camera camera, ArrayList<DesignerBlock> designerBlocks, Mesh mesh, InstancedGridTexture instancedGridTexture, String shaderName) {
+
+    public void renderDesignerBlocks(Camera camera, ArrayList<DesignerBlock> designerBlocks, PartialCubicInstanceMesh partialCubicInstanceMesh, String shaderName) {
 
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
             shader.bind();
         }
 
+        // Update projection Matrix
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(renderWidth, renderHeight);
+        shader.setUniform("projectionMatrix", projectionMatrix);
+
+
+        shader.setUniform("texture_sampler", 0);
+        // WalkieTalkie each gameItem
+
+        shader.setUniform("textureGridSize", new Vector2f(partialCubicInstanceMesh.getInstancedGridTexture().getHorizontalGridNam(),partialCubicInstanceMesh.getInstancedGridTexture().getGridHeightPercent()));
+
+
+        partialCubicInstanceMesh.renderPartialCubicBlocksInstanced(designerBlocks,transformation,transformation.getCameraViewMatrix(camera));
+
+    }
+
+    public void renderInstancingDefault(Camera camera, GameItem gameItem, int size, String shaderName) {
+        ShaderProgram shader = loadedShaders.get(shaderName);
+        if(!previousShader.equals(shaderName)) {
+            shader.bind();
+        }
+
+        // Update projection Matrix
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(renderWidth, renderHeight);
         shader.setUniform("projectionMatrix", projectionMatrix);
 
         // Update view Matrix
         Matrix4f viewMatrix = transformation.getCameraViewMatrix(camera);
 
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, instancedGridTexture.getId());
         shader.setUniform("texture_sampler", 0);
-
-
-
-
-        ArrayList<Matrix4f> matrices = new ArrayList<>();
-        ArrayList<Vector2f> textures = new ArrayList<>();
-        for(DesignerBlock designerBlock: designerBlocks) {
-            for(Direction direction: Direction.values()) {
-                if(designerBlock.getFaceState(direction)) {
-                    Vector3f rotation;
-                    switch(direction) {
-                        case ABOVE:
-                            rotation = new Vector3f(0,90,0);
-                            break;
-                        case BELOW:
-                            rotation = new Vector3f(180,90,0);
-                            break;
-                        case NORTH:
-                            rotation = new Vector3f(90,-90,0);
-                            break;
-                        case EAST:
-                            rotation = new Vector3f(0, 0,90);
-                            break;
-                        case SOUTH:
-                            rotation = new Vector3f(90, -270,180);
-                            break;
-                        case WEST:
-                            rotation = new Vector3f(180, 0,270);
-                            break;
-                        default:
-                            rotation = new Vector3f();
-                    }
-                    Matrix4f modelMatrix = transformation.buildModelMatrix(designerBlock.getLocation().getNormalizedPosition(), rotation);
-                    Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
-
-                    Vector2f textureData = new Vector2f();
-                    textureData.x = instancedGridTexture.getGridWidthPercent() * (designerBlock.getTextureID(direction) % instancedGridTexture.getHorizontalGridNam());
-                    textureData.y = instancedGridTexture.getGridWidthPercent() * (designerBlock.getTextureID(direction) / instancedGridTexture.getVerticalGridNum());
-
-                    matrices.add(modelViewMatrix);
-                    textures.add(textureData);
-                }
-            }
-        }
-
-        instancedRenderData.enableAttributes();
-
-        for(int i = 0; i < designerBlocks.size(); i += instancedRenderData.getBLOCK_SIZE()) {
-            int end = Math.min(designerBlocks.size(), i + instancedRenderData.getBLOCK_SIZE());
-
-            instancedRenderData.uploadModelViewMatrices(matrices.subList(i, end));
-            instancedRenderData.uploadTextures(textures.subList(i, end));
-            mesh.renderInstanced(i-end);
-        }
-
-        instancedRenderData.disableAttributes();
+        // WalkieTalkie each gameItem
+        Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(gameItem, viewMatrix);
+        shader.setUniform("modelViewMatrix", modelViewMatrix);
+        gameItem.getMesh().renderInstanced(size);
 
     }
 
-    public void renderCustomRenderBlock(Camera camera, ArrayList<CustomRenderBlock> customRenderBlocks, String shaderName) {
-
-    }
 
 
 

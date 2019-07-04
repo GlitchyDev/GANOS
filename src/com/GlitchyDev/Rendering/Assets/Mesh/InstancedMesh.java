@@ -96,7 +96,7 @@ public class InstancedMesh extends Mesh {
         glBindVertexArray(0);
     }
 
-    private void addInstancedAttribute(int vao, int vbo, int attribute, int dataSize, int instancedDataLength, int offset) {
+    protected void addInstancedAttribute(int vao, int vbo, int attribute, int dataSize, int instancedDataLength, int offset) {
         glBindBuffer(GL_ARRAY_BUFFER,vbo);
         glBindVertexArray(vao);
         glVertexAttribPointer(attribute,dataSize, GL_FLOAT, false, instancedDataLength * 4, offset * 4);

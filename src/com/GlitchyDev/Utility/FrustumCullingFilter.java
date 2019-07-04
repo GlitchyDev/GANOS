@@ -6,7 +6,6 @@ import com.GlitchyDev.World.Region.Region;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector3i;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,7 +39,7 @@ public class FrustumCullingFilter {
 
     public static void filter(Collection<Region> regions) {
         float boundingRadius;
-        Vector3i pos;
+        Vector3f pos;
         for(Region region: regions) {
             for(Block block: region.getBlocksArray()) {
                 boundingRadius = 1.80f;

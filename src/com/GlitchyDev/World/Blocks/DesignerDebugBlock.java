@@ -1,6 +1,7 @@
 package com.GlitchyDev.World.Blocks;
 
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
@@ -14,13 +15,12 @@ import java.util.UUID;
 
 public class DesignerDebugBlock extends DesignerBlock {
 
-
     public DesignerDebugBlock(WorldGameState worldGameState, Location location, UUID regionUUID) {
-        super(worldGameState, BlockType.DESIGNER_DEBUG_BLOCK, location, regionUUID, null);
+        super(worldGameState, BlockType.DESIGNER_DEBUG_BLOCK, location, regionUUID, AssetLoader.getInstanceGridTexture("School_Tiles"));
     }
 
     public DesignerDebugBlock(WorldGameState worldGameState, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, BlockType.DESIGNER_DEBUG_BLOCK, regionUUID, inputBitUtility, null);
+        super(worldGameState, BlockType.DESIGNER_DEBUG_BLOCK, regionUUID, inputBitUtility, AssetLoader.getInstanceGridTexture("School_Tiles"));
     }
 
     @Override

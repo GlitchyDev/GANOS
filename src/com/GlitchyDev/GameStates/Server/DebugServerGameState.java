@@ -12,6 +12,8 @@ import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
+import com.GlitchyDev.Rendering.Assets.Mesh.Mesh;
+import com.GlitchyDev.Rendering.Assets.Mesh.PartialCubicInstanceMesh;
 import com.GlitchyDev.Rendering.Assets.Texture.InstancedGridTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
@@ -23,6 +25,7 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
+import com.GlitchyDev.World.Blocks.DesignerDebugBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Effects.ServerDebugEffect;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
@@ -75,6 +78,7 @@ public class DebugServerGameState extends ServerWorldGameState {
     private final Texture shaderTestEffect3;
     */
 
+    private PartialCubicInstanceMesh partialCubicInstanceMesh;
 
 
     public DebugServerGameState(GlobalGameData globalGameData) {
@@ -106,7 +110,9 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         spawnWorld = UUID.fromString("0bca5dea-3e45-11e9-b210-d663bd873d93");
 
-
+        Mesh tempMesh = new Mesh(AssetLoader.getMeshAsset("CubicMesh1"));
+        tempMesh.setTexture(AssetLoader.getInstanceGridTexture("School_Tiles"));
+        partialCubicInstanceMesh = new PartialCubicInstanceMesh(tempMesh,1000,AssetLoader.getInstanceGridTexture("School_Tiles"));
 
 
 
@@ -156,6 +162,12 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
 
             region1.setBlockRelative(0,0,0,new DebugCustomRenderBlock(this,region1.getLocation().getOffsetLocation(0,0,0), region1.getRegionUUID()));
+            DesignerDebugBlock designerDebugBlock = new DesignerDebugBlock(this,region1.getLocation().getOffsetLocation(0,3,0), region1.getRegionUUID());
+            for(Direction direction: Direction.values()) {
+                designerDebugBlock.setFaceState(direction,true);
+                designerDebugBlock.setTextureID(direction,1);
+            }
+            region1.setBlockRelative(0,3,0,designerDebugBlock);
 
 
 
@@ -513,7 +525,7 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
         }
         for(InstancedGridTexture instancedGridTexture: designerBlocks.keySet()) {
-            renderer.renderDesignerBlocks(camera,designerBlocks.get(instancedGridTexture), AssetLoader.getMeshAsset(""), instancedGridTexture, "Instanced3D");
+            renderer.renderDesignerBlocks(camera,designerBlocks.get(instancedGridTexture), partialCubicInstanceMesh, "Instance3D");
         }
 
         renderer.render2DTextItems(hudItems, "Default2D");
@@ -541,7 +553,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         //renderer.render2DSpriteItem(spriteItem,"Default2D");
         //spriteItem.cleanup();
 
-        renderer.setRenderSpace(1000,0,500,500);
+        renderer.setRenderSpace(500,0,500,500);
         renderer.render2DTextItems(debugItems, "Default2D");
 
 

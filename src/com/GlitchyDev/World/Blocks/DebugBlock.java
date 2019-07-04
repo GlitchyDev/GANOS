@@ -19,46 +19,46 @@ import java.util.UUID;
 
 public class DebugBlock extends Block implements CustomRenderBlock {
     private int testValue;
-    private final GameItem mesh;
+    private final GameItem gameItemMesh;
 
     public DebugBlock(WorldGameState worldGameState, Location location, UUID regionUUID, int testValue) {
         super(worldGameState, BlockType.DEBUG, location,regionUUID);
         this.testValue = testValue;
-        this.mesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
+        this.gameItemMesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
         switch(testValue) {
             case 0:
-                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon16x16"));
+                gameItemMesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon16x16"));
                 break;
             case 1:
-                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon24x24"));
+                gameItemMesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon24x24"));
                 break;
             case 2:
-                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon32x32"));
+                gameItemMesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon32x32"));
                 break;
             default:
-                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Test_Floor_" + testValue));
+                gameItemMesh.getMesh().setTexture(AssetLoader.getTextureAsset("Test_Floor_" + testValue));
         }
-        mesh.setPosition(location.getNormalizedPosition());
+        gameItemMesh.setPosition(location.getNormalizedPosition());
     }
 
     public DebugBlock(WorldGameState worldGameState, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {
         super(worldGameState, BlockType.DEBUG,regionUUID, inputBitUtility);
         testValue = inputBitUtility.getNextCorrectIntByte();
-        this.mesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
+        this.gameItemMesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
         switch(testValue) {
             case 0:
-                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon16x16"));
+                gameItemMesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon16x16"));
                 break;
             case 1:
-                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon24x24"));
+                gameItemMesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon24x24"));
                 break;
             case 2:
-                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon32x32"));
+                gameItemMesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon32x32"));
                 break;
             default:
-                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Test_Floor_" + testValue));
+                gameItemMesh.getMesh().setTexture(AssetLoader.getTextureAsset("Test_Floor_" + testValue));
         }
-        mesh.setPosition(getLocation().getNormalizedPosition());
+        gameItemMesh.setPosition(getLocation().getNormalizedPosition());
     }
 
 
@@ -95,28 +95,28 @@ public class DebugBlock extends Block implements CustomRenderBlock {
         this.testValue = newValue;
         switch(testValue) {
             case 0:
-                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon16x16"));
+                gameItemMesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon16x16"));
                 break;
             case 1:
-                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon24x24"));
+                gameItemMesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon24x24"));
                 break;
             case 2:
-                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon32x32"));
+                gameItemMesh.getMesh().setTexture(AssetLoader.getTextureAsset("Icon32x32"));
                 break;
             default:
-                mesh.getMesh().setTexture(AssetLoader.getTextureAsset("Test_Floor_" + testValue));
+                gameItemMesh.getMesh().setTexture(AssetLoader.getTextureAsset("Test_Floor_" + testValue));
         }
     }
 
     @Override
     public void render(Renderer renderer, Camera camera, Player player) {
-        renderer.render3DElement(camera, mesh, "Default3D");
+        renderer.render3DElement(camera, gameItemMesh,"DefaultInstancing");
     }
 
     @Override
     public void setLocation(Location location) {
         super.setLocation(location);
-        mesh.setPosition(location.getNormalizedPosition());
+        gameItemMesh.setPosition(location.getNormalizedPosition());
     }
 
     @Override

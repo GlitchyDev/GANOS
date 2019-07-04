@@ -48,6 +48,7 @@ public class InstancedRenderData {
         addInstancedAttribute(vaoID, vboMatrixDataID, 3, 4, 16, 4);
         addInstancedAttribute(vaoID, vboMatrixDataID, 4, 4, 16, 8);
         addInstancedAttribute(vaoID, vboMatrixDataID, 5, 4, 16, 12);
+        vboMatrixData = BufferUtils.createFloatBuffer(BLOCK_SIZE * 16);
 
 
 

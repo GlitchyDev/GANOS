@@ -56,9 +56,6 @@ public class AssetLoader {
 
         long endTime = System.currentTimeMillis();
         System.out.println("AssetLoader: Assets Created in " + (endTime - startTime)/1000.0 + "s");
-
-
-
     }
 
     private static void loadAsset(String fileName) throws Exception {
@@ -76,7 +73,15 @@ public class AssetLoader {
                 meshAssets.put(name,loadMesh(filePath));
                 break;
             case "png":
-                textureAssets.put(name,loadTexture(filePath));
+                if(!filePath.contains("InstanceGridTextures")) {
+                    textureAssets.put(name,loadTexture(filePath));
+                } else {
+                    String[] dimensions = name.split("___")[1].split("x");
+                    int width = Integer.parseInt(dimensions[0]);
+                    int height = Integer.parseInt(dimensions[1]);
+                    registerInstanceGridTexture(name.split("___")[0],loadTexture(filePath),width,height);
+                }
+
                 break;
             case "ogg":
                 System.out.println(filePath);
@@ -94,6 +99,8 @@ public class AssetLoader {
             case "configList":
                 configListAssets.put(name,loadConfigList(filePath));
                 break;
+            default: // InstanceGridTexture
+
         }
 
 
@@ -159,8 +166,8 @@ public class AssetLoader {
         return meshAssets.get(name).clone();
     }
 
-    public static void registerInstanceGridTexture(Texture texture, String name, int width, int length) {
-        instancedGridTextures.put(name,new InstancedGridTexture(texture,name,width,length));
+    public static void registerInstanceGridTexture(String name, Texture texture, int width, int length) {
+        instancedGridTextures.put(name,new InstancedGridTexture(texture,width,length));
     }
 
     public static InstancedGridTexture getInstanceGridTexture(String name) {

@@ -23,6 +23,8 @@ GameAssets\Shaders\Default\TextureGrid2D.vs
 GameAssets\Shaders\Shaders.configList
 GameAssets\Shaders\Special\DebugShader2D.fs
 GameAssets\Shaders\Special\DebugShader2D.vs
+GameAssets\Shaders\Special\DefaultInstancing.fs
+GameAssets\Shaders\Special\DefaultInstancing.vs
 GameAssets\Shaders\Special\WalkieTalkieScreen2D.fs
 GameAssets\Shaders\Special\WalkieTalkieScreen2D.vs
 GameAssets\Sounds\Debug\SoundDebug.ogg
@@ -44,11 +46,11 @@ GameAssets\Textures\Icon\TextureCursor.png
 GameAssets\Textures\Icon\Text_Cursor.png
 GameAssets\Textures\Icon\Text_Cursor_E.png
 GameAssets\Textures\Icon\Tomo.png
-GameAssets\Textures\InstanceGridTextures\EditCursor.png
-GameAssets\Textures\InstanceGridTextures\SchoolTiles.png
-GameAssets\Textures\InstanceGridTextures\School_Tiles.png
-GameAssets\Textures\InstanceGridTextures\TestDice.png
-GameAssets\Textures\InstanceGridTextures\UVMapCubeTexture.png
+GameAssets\Textures\InstanceGridTextures\EditCursor___2x3.png
+GameAssets\Textures\InstanceGridTextures\SchoolTiles___2x4.png
+GameAssets\Textures\InstanceGridTextures\School_Tiles___7x6.png
+GameAssets\Textures\InstanceGridTextures\TestDice___6x7.png
+GameAssets\Textures\InstanceGridTextures\UVMapCubeTexture___2x3.png
 GameAssets\Textures\Testing\grassblock.png
 GameAssets\Textures\Testing\Test_Floor.png
 GameAssets\Textures\Testing\Test_Floor_1.png
