@@ -88,17 +88,15 @@ public class PartialCubicInstanceMesh extends InstancedMesh {
                             rotation = new Vector3f(90, -270,180);
                             break;
                         case WEST:
-                            rotation = new Vector3f(180, apple,270);
+                            rotation = new Vector3f(180, 0,270);
                             break;
                         default:
                             rotation = new Vector3f();
                             break;
                     }
                     Matrix4f modelMatrix = transformation.buildModelMatrix(block.getLocation().getNormalizedPosition(),rotation);
-                    System.out.println(modelMatrix);
-                    System.out.println();
-
-                    modelViewMatrices.add(transformation.buildModelViewMatrix(modelMatrix, viewMatrix));
+                    Matrix4f modelViewMatrix = new Matrix4f(transformation.buildModelViewMatrix(modelMatrix, viewMatrix));
+                    modelViewMatrices.add(modelViewMatrix);
 
 
 
@@ -106,7 +104,7 @@ public class PartialCubicInstanceMesh extends InstancedMesh {
                     int x = num % instancedGridTexture.getHorizontalGridNam();
                     int y = num / instancedGridTexture.getHorizontalGridNam();
                     textureCords.add(new Vector2f(x,y));
-                } 
+                }
             }
         }
 
@@ -128,13 +126,9 @@ public class PartialCubicInstanceMesh extends InstancedMesh {
         matrixVboData.clear();
         textureVboData.clear();
 
-        int offset = 0;
-        System.out.println("*");
         for(int i = 0; i < size; i++) {
-            System.out.println(i + " " + blocks.get(i));
-            blocks.get(i).get(offset * 16, matrixVboData);
-            textureCords.get(i).get(offset * 2, textureVboData);
-            offset++;
+            blocks.get(i).get(i * 16, matrixVboData);
+            textureCords.get(i).get(i * 2, textureVboData);
         }
         updateVBO(matrixVboId, matrixVboData, matrixBuffer);
         updateVBO(textureVboId, textureVboData, textureBuffer);

@@ -12,7 +12,7 @@ uniform vec2 textureGridSize;
 
 void main()
 {
-    gl_Position = projectionMatrix * modelViewMatrix * vec4((position) + gl_InstanceID, 1.0);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4((position), 1.0);
     float texXSize = 1.0/textureGridSize.x;
     float texYSize = 1.0/textureGridSize.y;
 
