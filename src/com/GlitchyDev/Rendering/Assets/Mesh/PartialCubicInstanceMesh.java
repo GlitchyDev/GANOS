@@ -57,10 +57,11 @@ public class PartialCubicInstanceMesh extends InstancedMesh {
 
     private ArrayList<Matrix4f> modelViewMatrices = new ArrayList<>();
     private ArrayList<Vector2f> textureCords = new ArrayList<>();
-    public void renderPartialCubicBlocksInstanced(List<DesignerBlock> designerBlocks, Transformation transformation, Matrix4f viewMatrix)
-    {
+    int apple = 0;
+    public void renderPartialCubicBlocksInstanced(List<DesignerBlock> designerBlocks, Transformation transformation, Matrix4f viewMatrix) {
         preRender();
 
+        apple++;
         // Collect all the rotations from each block
 
         modelViewMatrices.clear();
@@ -87,24 +88,28 @@ public class PartialCubicInstanceMesh extends InstancedMesh {
                             rotation = new Vector3f(90, -270,180);
                             break;
                         case WEST:
-                            rotation = new Vector3f(180, 0,270);
+                            rotation = new Vector3f(180, apple,270);
                             break;
                         default:
                             rotation = new Vector3f();
+                            break;
                     }
-
-                    System.out.println(block.getLocation().getNormalizedPosition());
-
                     Matrix4f modelMatrix = transformation.buildModelMatrix(block.getLocation().getNormalizedPosition(),rotation);
+                    System.out.println(modelMatrix);
+                    System.out.println();
+
                     modelViewMatrices.add(transformation.buildModelViewMatrix(modelMatrix, viewMatrix));
+
+
 
                     int num = block.getTextureID(direction);
                     int x = num % instancedGridTexture.getHorizontalGridNam();
                     int y = num / instancedGridTexture.getHorizontalGridNam();
                     textureCords.add(new Vector2f(x,y));
-                }
+                } 
             }
         }
+
         int length = modelViewMatrices.size();
         for (int i = 0; i < length; i += instanceChunkSize) {
             int end = Math.min(length, i + instanceChunkSize);
@@ -124,12 +129,13 @@ public class PartialCubicInstanceMesh extends InstancedMesh {
         textureVboData.clear();
 
         int offset = 0;
+        System.out.println("*");
         for(int i = 0; i < size; i++) {
+            System.out.println(i + " " + blocks.get(i));
             blocks.get(i).get(offset * 16, matrixVboData);
             textureCords.get(i).get(offset * 2, textureVboData);
             offset++;
         }
-        System.out.println("WE DID IT BOI");
         updateVBO(matrixVboId, matrixVboData, matrixBuffer);
         updateVBO(textureVboId, textureVboData, textureBuffer);
         glDrawElementsInstanced(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0, size);

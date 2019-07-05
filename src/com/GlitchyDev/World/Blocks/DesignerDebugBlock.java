@@ -25,7 +25,12 @@ public class DesignerDebugBlock extends DesignerBlock {
 
     @Override
     public Block getCopy() {
-        return new DesignerDebugBlock(worldGameState,location,regionUUID);
+        DesignerDebugBlock designerDebugBlock = new DesignerDebugBlock(worldGameState,location,regionUUID);
+        for(Direction direction: Direction.values()) {
+            designerDebugBlock.setFaceState(direction,getFaceState(direction));
+            designerDebugBlock.setTextureID(direction,getTextureID(direction));
+        }
+        return designerDebugBlock;
     }
 
 
@@ -35,24 +40,9 @@ public class DesignerDebugBlock extends DesignerBlock {
     }
 
 
+
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof DesignerDebugBlock) {
-            if(((DesignerDebugBlock) obj).getInstancedGridTexture().equals(getInstancedGridTexture())) {
-                for (Direction direction : Direction.values()) {
-                    if (((DesignerDebugBlock) obj).getFaceState(direction) == getFaceState(direction)) {
-                        if (getFaceState(direction)) {
-                            if (((DesignerDebugBlock) obj).getTextureID(direction) != getTextureID(direction)) {
-                                return false;
-                            }
-                        }
-                    } else {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
-        return false;
+        return obj instanceof DesignerDebugBlock;
     }
 }
