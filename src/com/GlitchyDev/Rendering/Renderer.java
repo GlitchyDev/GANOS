@@ -242,8 +242,9 @@ public class Renderer {
         shader.setUniform("texture_sampler", 0);
         // WalkieTalkie each gameItem
 
-        shader.setUniform("textureGridSize", new Vector2f(partialCubicInstanceMesh.getInstancedGridTexture().getHorizontalGridNam(),partialCubicInstanceMesh.getInstancedGridTexture().getGridHeightPercent()));
+        shader.setUniform("textureGridSize", new Vector2f(partialCubicInstanceMesh.getInstancedGridTexture().getHorizontalGridNam(),partialCubicInstanceMesh.getInstancedGridTexture().getVerticalGridNum()));
 
+        System.out.println("Texture Grid Size " + partialCubicInstanceMesh.getInstancedGridTexture().getHorizontalGridNam() + " " + partialCubicInstanceMesh.getInstancedGridTexture().getGridHeightPercent());
 
         partialCubicInstanceMesh.renderPartialCubicBlocksInstanced(designerBlocks,transformation,transformation.getCameraViewMatrix(camera));
 
