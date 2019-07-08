@@ -12,8 +12,11 @@ import com.GlitchyDev.Networking.Packets.Client.Input.ClientInputType;
 import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
+import com.GlitchyDev.Rendering.Assets.Mesh.Mesh;
+import com.GlitchyDev.Rendering.Assets.Mesh.PartialCubicInstanceMesh;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
+import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Region.Region;
@@ -34,6 +37,8 @@ public class DebugClientGameState extends ClientWorldGameState {
     private boolean isConnected = false;
     private GameController controller;
     private Camera camera;
+
+    private PartialCubicInstanceMesh partialCubicInstanceMesh;
 
     public DebugClientGameState(GlobalGameData globalGameDataBase) {
         super(globalGameDataBase, GameStateType.DEBUG_CLIENT);
@@ -58,6 +63,10 @@ public class DebugClientGameState extends ClientWorldGameState {
         globalGameData.getGameWindow().setDimensions(500,500);
         globalGameData.getGameWindow().centerWindow();
         globalGameData.getGameWindow().setTitle("Blackout Client");
+
+        Mesh tempMesh = new Mesh(AssetLoader.getMeshAsset("CubicMesh1"));
+        tempMesh.setTexture(AssetLoader.getInstanceGridTexture("School_Tiles"));
+        partialCubicInstanceMesh = new PartialCubicInstanceMesh(tempMesh,1000,AssetLoader.getInstanceGridTexture("School_Tiles"));
     }
 
 
@@ -195,27 +204,20 @@ public class DebugClientGameState extends ClientWorldGameState {
     public void render() {
         renderer.prepWindowRender(globalGameData.getGameWindow());
         renderer.setRenderSpace(0,0,500,500);
-        renderer.render2DTextItems(textItems, "Default2D");
 
-        /*
+
         if(getWorlds().size() == 1) {
             World world = null;
             for(UUID worldUUID: getWorlds()) {
                 world = getWorld(worldUUID);
             }
-            for(Region region: world.getRegions().values()) {
-                for (Block block : region.getBlocksArray()) {
-                    if (block instanceof CustomRenderBlock) {
-                        ((CustomRenderBlock) block).renderCustomBlock(renderer, camera);
-                    }
-                }
-                for(Entity entity: region.getEntities()) {
-                    entity.render(renderer, camera);
-                }
-            }
+            renderEnviroment(camera,world.getRegions().values(),partialCubicInstanceMesh);
         }
 
-         */
+        renderer.enableTransparency();
+        renderer.render2DTextItems(textItems, "Default2D");
+        renderer.disableTransparency();
+
 
 
     }

@@ -2,8 +2,15 @@ package com.GlitchyDev.GameStates.Abstract;
 
 import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.GameStates.GameStateType;
+import com.GlitchyDev.Rendering.Assets.Mesh.PartialCubicInstanceMesh;
+import com.GlitchyDev.Rendering.Assets.Texture.InstancedGridTexture;
+import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
+import com.GlitchyDev.World.CustomTransparentRenderable;
+import com.GlitchyDev.World.Entities.AbstractEntities.CustomRenderEntity;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
@@ -12,10 +19,7 @@ import com.GlitchyDev.World.Region.Enum.RegionConnection;
 import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.World;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class WorldGameState extends EnvironmentGameState {
     private final HashMap<UUID, World> currentWorlds;
@@ -23,6 +27,50 @@ public abstract class WorldGameState extends EnvironmentGameState {
     public WorldGameState(GlobalGameData globalGameDataBase, GameStateType gameStateType) {
         super(globalGameDataBase, gameStateType);
         this.currentWorlds = new HashMap<>();
+    }
+
+
+    public void renderEnviroment(Camera camera, Collection<Region> regions, PartialCubicInstanceMesh partialCubicInstanceMesh) {
+        HashMap<InstancedGridTexture,ArrayList<DesignerBlock>> designerBlocks = new HashMap();
+        ArrayList<CustomTransparentRenderable> transparentRenderables = new ArrayList<>();
+
+        for(Region region: regions) {
+            for(Block block: region.getBlocksArray()) {
+                if(block instanceof CustomRenderBlock) {
+                    ((CustomRenderBlock) block).renderCustomBlock(renderer,camera);
+                }
+                if(block instanceof DesignerBlock) {
+
+                    if(!designerBlocks.containsKey(((DesignerBlock) block).getInstancedGridTexture())) {
+                        designerBlocks.put(((DesignerBlock) block).getInstancedGridTexture(),new ArrayList<>());
+                    }
+                    designerBlocks.get(((DesignerBlock) block).getInstancedGridTexture()).add((DesignerBlock) block);
+                }
+                if(block instanceof CustomTransparentRenderable) {
+                    transparentRenderables.add((CustomTransparentRenderable) block);
+                }
+            }
+
+            for(Entity entity: region.getEntities()) {
+                if(entity instanceof CustomRenderEntity) {
+                    ((CustomRenderEntity) entity).renderCustomEntity(renderer, camera);
+                }
+                if(entity instanceof CustomTransparentRenderable) {
+                    transparentRenderables.add((CustomTransparentRenderable) entity);
+                }
+            }
+        }
+
+        for(InstancedGridTexture instancedGridTexture: designerBlocks.keySet()) {
+            renderer.renderDesignerBlocks(camera,designerBlocks.get(instancedGridTexture), partialCubicInstanceMesh, "Instance3D");
+        }
+        transparentRenderables.sort((o1, o2) -> (int) (o1.getDistance(camera.getPosition()) - o2.getDistance(camera.getPosition())));
+        Collections.reverse(transparentRenderables);
+        renderer.enableTransparency();
+        for(CustomTransparentRenderable customTransparentRenderable : transparentRenderables) {
+            customTransparentRenderable.renderTransparency(renderer,camera);
+        }
+        renderer.disableTransparency();
     }
 
 

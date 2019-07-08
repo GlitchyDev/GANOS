@@ -14,22 +14,17 @@ import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.Mesh.Mesh;
 import com.GlitchyDev.Rendering.Assets.Mesh.PartialCubicInstanceMesh;
-import com.GlitchyDev.Rendering.Assets.Texture.InstancedGridTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
 import com.GlitchyDev.World.Blocks.DesignerDebugBlock;
-import com.GlitchyDev.World.*;
+import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Effects.ServerDebugEffect;
-import com.GlitchyDev.World.Entities.AbstractEntities.CustomRenderEntity;
-import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.DebugCommunicationEntity;
 import com.GlitchyDev.World.Entities.DebugEntity;
 import com.GlitchyDev.World.Entities.DebugPlayerEntity;
@@ -41,15 +36,20 @@ import com.GlitchyDev.World.Events.Communication.Constructs.Messages.Communicati
 import com.GlitchyDev.World.Events.Communication.Constructs.Source.CommunicationServerSource;
 import com.GlitchyDev.World.Events.WalkieTalkie.WalkieTalkieBase;
 import com.GlitchyDev.World.Events.WalkieTalkie.WalkieTalkieDisplay;
+import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Enum.RegionConnection;
 import com.GlitchyDev.World.Region.Region;
+import com.GlitchyDev.World.World;
+import com.GlitchyDev.World.WorldFileType;
 import org.joml.Vector2d;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -234,7 +234,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         */
 
 
-        globalGameData.getGameWindow().setDimensions(1280,500);
+        globalGameData.getGameWindow().setDimensions(1500,500);
         globalGameData.getGameWindow().setWindowPosition(0,25);
         globalGameData.getGameWindow().setTitle("Blackout Server");
 
@@ -507,49 +507,24 @@ public class DebugServerGameState extends ServerWorldGameState {
         renderer.prepWindowRender(globalGameData.getGameWindow());
         renderer.setRenderSpace(0,0,500,500);
 
-        HashMap<InstancedGridTexture,ArrayList<DesignerBlock>> designerBlocks = new HashMap();
-        ArrayList<CustomTransparentRenderable> transparantRenderables = new ArrayList<>();
-        for(Region region: testPlayer.getPlayerEntity().getEntityView().getViewableRegions()) {
-            for(Block block: region.getBlocksArray()) {
-                if(block instanceof CustomRenderBlock) {
-                    ((CustomRenderBlock) block).renderCustomBlock(renderer,camera);
-                }
-                if(block instanceof DesignerBlock) {
 
-                    if(!designerBlocks.containsKey(((DesignerBlock) block).getInstancedGridTexture())) {
-                        designerBlocks.put(((DesignerBlock) block).getInstancedGridTexture(),new ArrayList<>());
-                    }
-                    designerBlocks.get(((DesignerBlock) block).getInstancedGridTexture()).add((DesignerBlock) block);
-                }
-                if(block instanceof CustomTransparentRenderable) {
-                    transparantRenderables.add((CustomTransparentRenderable) block);
-                }
-            }
-
-            for(Entity entity: region.getEntities()) {
-                if(entity instanceof CustomRenderEntity) {
-                    ((CustomRenderEntity) entity).renderCustomEntity(renderer, camera);
-                }
-                if(entity instanceof CustomTransparentRenderable) {
-                    transparantRenderables.add((CustomTransparentRenderable) entity);
-                }
-            }
-        }
-        for(InstancedGridTexture instancedGridTexture: designerBlocks.keySet()) {
-            renderer.renderDesignerBlocks(camera,designerBlocks.get(instancedGridTexture), partialCubicInstanceMesh, "Instance3D");
-        }
-
-        transparantRenderables.sort((o1, o2) -> (int) (o1.getDistance(camera.getPosition()) - o2.getDistance(camera.getPosition())));
-        Collections.reverse(transparantRenderables);
-
+        renderEnviroment(camera,testPlayer.getPlayerEntity().getEntityView().getViewableRegions(),partialCubicInstanceMesh);
         renderer.enableTransparency();
-        for(CustomTransparentRenderable customTransparentRenderable : transparantRenderables) {
-            customTransparentRenderable.renderTransparency(renderer,camera);
-        }
-
         renderer.render2DTextItems(hudItems, "Default2D");
         walkieTalkie.render(renderer,500);
+        renderer.disableTransparency();
 
+
+
+        renderer.setRenderSpace(500,0,500,500);
+        if (currentPlayers.containsKey(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562"))) {
+            renderEnviroment(camera,currentPlayers.get(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562")).getEntityView().getViewableRegions(),partialCubicInstanceMesh);
+        }
+
+        renderer.setRenderSpace(1000,0,500,500);
+        renderer.enableTransparency();
+        renderer.render2DTextItems(debugItems, "Default2D");
+        renderer.disableTransparency();
 
         /*
         if (currentPlayers.containsKey(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562"))) {
@@ -574,10 +549,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         //renderer.render2DSpriteItem(spriteItem,"Default2D");
         //spriteItem.cleanup();
 
-        renderer.setRenderSpace(500,0,500,500);
-        renderer.render2DTextItems(debugItems, "Default2D");
 
-        renderer.disableTransparency();
 
         /*
         renderer.getShader("DebugShader2D").bind();
