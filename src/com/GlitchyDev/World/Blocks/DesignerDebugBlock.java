@@ -6,7 +6,6 @@ import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
-import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
@@ -26,10 +25,7 @@ public class DesignerDebugBlock extends DesignerBlock {
     @Override
     public Block getCopy() {
         DesignerDebugBlock designerDebugBlock = new DesignerDebugBlock(worldGameState,location,regionUUID);
-        for(Direction direction: Direction.values()) {
-            designerDebugBlock.setFaceState(direction,getFaceState(direction));
-            designerDebugBlock.setTextureID(direction,getTextureID(direction));
-        }
+        copyInformation(designerDebugBlock);
         return designerDebugBlock;
     }
 

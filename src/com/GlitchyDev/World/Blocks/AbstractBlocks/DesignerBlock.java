@@ -49,6 +49,16 @@ public abstract class DesignerBlock extends Block {
         }
     }
 
+    protected void copyInformation(DesignerBlock destinationBlock) {
+        for(Direction direction: Direction.values()) {
+            destinationBlock.setFaceState(direction,getFaceState(direction));
+            destinationBlock.setTextureID(direction,getTextureID(direction));
+        }
+    }
+
+
+
+
     public void setFaceState(Direction direction, boolean state) {
         faceStates[direction.ordinal()] = state;
     }

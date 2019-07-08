@@ -144,10 +144,7 @@ public class Mesh implements Cloneable {
     }
 
     protected void postRender() {
-        glBindVertexArray(0);
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-        glActiveTexture(GL_TEXTURE0);
+
     }
 
 

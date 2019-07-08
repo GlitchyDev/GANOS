@@ -1,6 +1,5 @@
 package com.GlitchyDev.World.Blocks;
 
-import com.GlitchyDev.Game.Player;
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
@@ -109,7 +108,7 @@ public class DebugBlock extends Block implements CustomRenderBlock {
     }
 
     @Override
-    public void render(Renderer renderer, Camera camera, Player player) {
+    public void renderCustomBlock(Renderer renderer, Camera camera) {
         renderer.render3DElement(camera, gameItemMesh,"DefaultInstancing");
     }
 

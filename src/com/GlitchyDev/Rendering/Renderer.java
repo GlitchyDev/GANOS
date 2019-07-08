@@ -244,10 +244,8 @@ public class Renderer {
 
         shader.setUniform("textureGridSize", new Vector2f(partialCubicInstanceMesh.getInstancedGridTexture().getHorizontalGridNam(),partialCubicInstanceMesh.getInstancedGridTexture().getVerticalGridNum()));
 
-        System.out.println("Texture Grid Size " + partialCubicInstanceMesh.getInstancedGridTexture().getHorizontalGridNam() + " " + partialCubicInstanceMesh.getInstancedGridTexture().getGridHeightPercent());
 
         partialCubicInstanceMesh.renderPartialCubicBlocksInstanced(designerBlocks,transformation,transformation.getCameraViewMatrix(camera));
-
     }
 
     public void renderInstancingDefault(Camera camera, GameItem gameItem, int size, String shaderName) {
@@ -271,7 +269,13 @@ public class Renderer {
 
     }
 
+    public void enableTransparency() {
+        glEnable(GL_BLEND);
+    }
 
+    public void disableTransparency() {
+        glDisable(GL_BLEND);
+    }
 
 
 

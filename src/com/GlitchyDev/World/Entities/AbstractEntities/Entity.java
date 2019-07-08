@@ -2,8 +2,6 @@ package com.GlitchyDev.World.Entities.AbstractEntities;
 
 import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
-import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
-import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
@@ -110,7 +108,6 @@ public abstract class Entity {
 
     public abstract void tick();
 
-    public abstract void render(Renderer renderer, Camera camera);
 
     public void setDirection(Direction newDirection) {
         Direction oldDirection = direction;

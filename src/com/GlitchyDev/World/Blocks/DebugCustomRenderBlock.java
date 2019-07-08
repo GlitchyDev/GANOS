@@ -10,7 +10,7 @@ import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisableBlock;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisibleBlock;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Location;
@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
-public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, CustomVisableBlock, TickableBlock {
+public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, CustomVisibleBlock, TickableBlock {
     private final GameItem mesh;
     private final AirBlock replacementBlock;
 
@@ -53,7 +53,7 @@ public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, 
     }
 
     @Override
-    public void render(Renderer renderer, Camera camera, Player player) {
+    public void renderCustomBlock(Renderer renderer, Camera camera) {
         renderer.render3DElement(camera, mesh, "Default3D");
     }
 

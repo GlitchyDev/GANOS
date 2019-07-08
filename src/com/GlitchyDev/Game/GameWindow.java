@@ -106,11 +106,11 @@ public class GameWindow {
         // Support for transparencies
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_BLEND);
         // Enable Culling of Double sided Triangles since we don't use em
         GL11.glEnable( GL11.GL_CULL_FACE );
         glCullFace(GL_BACK);
 
-        //setIcon(windowHandle, new File("GameAssets/Textures/Icon/Icon16x16.png") , new File("GameAssets/Textures/Icon/Icon24x24.png"));
 
     }
 

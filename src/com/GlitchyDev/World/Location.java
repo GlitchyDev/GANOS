@@ -130,6 +130,11 @@ public class Location {
         }
     }
 
+    public double getDistance(Vector3f position) {
+        return Math.sqrt(Math.pow(position.x() - getX(), 2) + Math.pow(position.y() - getY(), 2) + Math.pow(position.z() - getZ(), 2));
+
+    }
+
     @Override
     public Location clone() {
         return new Location(getX(), getY(), getZ(), worldUUID);

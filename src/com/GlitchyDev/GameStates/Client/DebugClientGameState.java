@@ -14,8 +14,6 @@ import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnec
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Region.Region;
@@ -199,6 +197,7 @@ public class DebugClientGameState extends ClientWorldGameState {
         renderer.setRenderSpace(0,0,500,500);
         renderer.render2DTextItems(textItems, "Default2D");
 
+        /*
         if(getWorlds().size() == 1) {
             World world = null;
             for(UUID worldUUID: getWorlds()) {
@@ -207,7 +206,7 @@ public class DebugClientGameState extends ClientWorldGameState {
             for(Region region: world.getRegions().values()) {
                 for (Block block : region.getBlocksArray()) {
                     if (block instanceof CustomRenderBlock) {
-                        ((CustomRenderBlock) block).render(renderer, camera, null);
+                        ((CustomRenderBlock) block).renderCustomBlock(renderer, camera);
                     }
                 }
                 for(Entity entity: region.getEntities()) {
@@ -215,6 +214,8 @@ public class DebugClientGameState extends ClientWorldGameState {
                 }
             }
         }
+
+         */
 
 
     }

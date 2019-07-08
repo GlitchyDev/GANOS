@@ -26,8 +26,9 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
 import com.GlitchyDev.World.Blocks.DesignerDebugBlock;
-import com.GlitchyDev.World.Direction;
+import com.GlitchyDev.World.*;
 import com.GlitchyDev.World.Effects.ServerDebugEffect;
+import com.GlitchyDev.World.Entities.AbstractEntities.CustomRenderEntity;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.DebugCommunicationEntity;
 import com.GlitchyDev.World.Entities.DebugEntity;
@@ -40,20 +41,15 @@ import com.GlitchyDev.World.Events.Communication.Constructs.Messages.Communicati
 import com.GlitchyDev.World.Events.Communication.Constructs.Source.CommunicationServerSource;
 import com.GlitchyDev.World.Events.WalkieTalkie.WalkieTalkieBase;
 import com.GlitchyDev.World.Events.WalkieTalkie.WalkieTalkieDisplay;
-import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Region.Enum.RegionConnection;
 import com.GlitchyDev.World.Region.Region;
-import com.GlitchyDev.World.World;
-import com.GlitchyDev.World.WorldFileType;
 import org.joml.Vector2d;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -512,10 +508,11 @@ public class DebugServerGameState extends ServerWorldGameState {
         renderer.setRenderSpace(0,0,500,500);
 
         HashMap<InstancedGridTexture,ArrayList<DesignerBlock>> designerBlocks = new HashMap();
+        ArrayList<CustomTransparentRenderable> transparantRenderables = new ArrayList<>();
         for(Region region: testPlayer.getPlayerEntity().getEntityView().getViewableRegions()) {
             for(Block block: region.getBlocksArray()) {
                 if(block instanceof CustomRenderBlock) {
-                    ((CustomRenderBlock) block).render(renderer,camera,testPlayer);
+                    ((CustomRenderBlock) block).renderCustomBlock(renderer,camera);
                 }
                 if(block instanceof DesignerBlock) {
 
@@ -524,25 +521,43 @@ public class DebugServerGameState extends ServerWorldGameState {
                     }
                     designerBlocks.get(((DesignerBlock) block).getInstancedGridTexture()).add((DesignerBlock) block);
                 }
+                if(block instanceof CustomTransparentRenderable) {
+                    transparantRenderables.add((CustomTransparentRenderable) block);
+                }
             }
+
             for(Entity entity: region.getEntities()) {
-                entity.render(renderer,camera);
+                if(entity instanceof CustomRenderEntity) {
+                    ((CustomRenderEntity) entity).renderCustomEntity(renderer, camera);
+                }
+                if(entity instanceof CustomTransparentRenderable) {
+                    transparantRenderables.add((CustomTransparentRenderable) entity);
+                }
             }
         }
         for(InstancedGridTexture instancedGridTexture: designerBlocks.keySet()) {
             renderer.renderDesignerBlocks(camera,designerBlocks.get(instancedGridTexture), partialCubicInstanceMesh, "Instance3D");
         }
 
+        transparantRenderables.sort((o1, o2) -> (int) (o1.getDistance(camera.getPosition()) - o2.getDistance(camera.getPosition())));
+        Collections.reverse(transparantRenderables);
+
+        renderer.enableTransparency();
+        for(CustomTransparentRenderable customTransparentRenderable : transparantRenderables) {
+            customTransparentRenderable.renderTransparency(renderer,camera);
+        }
+
         renderer.render2DTextItems(hudItems, "Default2D");
         walkieTalkie.render(renderer,500);
 
 
+        /*
         if (currentPlayers.containsKey(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562"))) {
             renderer.setRenderSpace(500, 0, 500, 500);
             for (Region region : currentPlayers.get(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562")).getEntityView().getViewableRegions()) {
                 for (Block block : region.getBlocksArray()) {
                     if (block instanceof CustomRenderBlock) {
-                        ((CustomRenderBlock) block).render(renderer, camera, testPlayer);
+                        ((CustomRenderBlock) block).renderCustomBlock(renderer, camera);
                     }
                 }
                 for (Entity entity : region.getEntities()) {
@@ -550,6 +565,7 @@ public class DebugServerGameState extends ServerWorldGameState {
                 }
             }
         }
+         */
 
 
         //renderer.setRenderSpace(500,0,280,500);
@@ -561,6 +577,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         renderer.setRenderSpace(500,0,500,500);
         renderer.render2DTextItems(debugItems, "Default2D");
 
+        renderer.disableTransparency();
 
         /*
         renderer.getShader("DebugShader2D").bind();

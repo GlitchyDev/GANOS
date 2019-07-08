@@ -16,11 +16,13 @@ import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
+import com.GlitchyDev.World.CustomTransparentRenderable;
+import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.util.UUID;
 
-public class DebugEntity extends Entity implements CustomVisibleEntity {
+public class DebugEntity extends Entity implements CustomVisibleEntity, CustomTransparentRenderable {
     private GameItem gameItem;
     private SpriteItem spriteItem;
 
@@ -85,15 +87,6 @@ public class DebugEntity extends Entity implements CustomVisibleEntity {
     }
 
     @Override
-    public void render(Renderer renderer, Camera camera) {
-        gameItem.setPosition(getLocation().getNormalizedPosition());
-        spriteItem.setPosition(getLocation().getNormalizedPosition());
-
-        renderer.render3DElement(camera,gameItem, "Default3D");
-        renderer.render3DElement(camera,spriteItem, "Default3D");
-    }
-
-    @Override
     public void onDespawn(DespawnReason despawnReason) {
         gameItem.getMesh().cleanUp();
     }
@@ -121,5 +114,19 @@ public class DebugEntity extends Entity implements CustomVisibleEntity {
     @Override
     public boolean doSeeEntity(Entity entity) {
         return isVisible;
+    }
+
+    @Override
+    public void renderTransparency(Renderer renderer, Camera camera) {
+        gameItem.setPosition(getLocation().getNormalizedPosition());
+        spriteItem.setPosition(getLocation().getNormalizedPosition());
+
+        renderer.render3DElement(camera,gameItem, "Default3D");
+        renderer.render3DElement(camera,spriteItem, "Default3D");
+    }
+
+    @Override
+    public double getDistance(Vector3f position) {
+        return getLocation().getDistance(position);
     }
 }

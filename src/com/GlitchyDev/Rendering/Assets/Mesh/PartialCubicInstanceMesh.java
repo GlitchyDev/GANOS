@@ -136,9 +136,12 @@ public class PartialCubicInstanceMesh extends InstancedMesh {
     }
 
 
+    public void setInstancedGridTexture(InstancedGridTexture instancedGridTexture) {
+        this.instancedGridTexture = instancedGridTexture;
+        setTexture(instancedGridTexture);
+    }
+
     public InstancedGridTexture getInstancedGridTexture() {
         return instancedGridTexture;
     }
-
-
 }

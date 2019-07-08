@@ -20,11 +20,13 @@ import com.GlitchyDev.World.Events.Communication.Constructs.Messages.Communicati
 import com.GlitchyDev.World.Events.Communication.Constructs.Messages.CommunicationNoise;
 import com.GlitchyDev.World.Events.Communication.Constructs.Source.CommunicationSource;
 import com.GlitchyDev.World.Events.Communication.DetectionType;
+import com.GlitchyDev.World.CustomTransparentRenderable;
+import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.util.UUID;
 
-public class DebugCommunicationEntity extends Entity implements CommunicationListener {
+public class DebugCommunicationEntity extends Entity implements CommunicationListener, CustomTransparentRenderable {
     private SpriteItem spriteItem;
     private TextItem textItem;
 
@@ -61,15 +63,6 @@ public class DebugCommunicationEntity extends Entity implements CommunicationLis
 
     }
 
-    @Override
-    public void render(Renderer renderer, Camera camera) {
-        spriteItem.setPosition(getLocation().getNormalizedPosition());
-        textItem.setPosition(getLocation().getNormalizedPosition().add(0,1,0));
-
-        renderer.renderBillboard3DSprite(camera,spriteItem,"Default3D");
-        renderer.render3DElement(camera,textItem,"Default3D");
-
-    }
 
     @Override
     public void onDespawn(DespawnReason despawnReason) {
@@ -95,5 +88,19 @@ public class DebugCommunicationEntity extends Entity implements CommunicationLis
     @Override
     public void recieveNoise(CommunicationNoise noise, Location origin, CommunicationSource communicationSource) {
         textItem.setText("NOISE " + noise.getNoiseType());
+    }
+
+    @Override
+    public void renderTransparency(Renderer renderer, Camera camera) {
+        spriteItem.setPosition(getLocation().getNormalizedPosition());
+        textItem.setPosition(getLocation().getNormalizedPosition().add(0,1,0));
+
+        renderer.renderBillboard3DSprite(camera,spriteItem,"Default3D");
+        renderer.render3DElement(camera,textItem,"Default3D");
+    }
+
+    @Override
+    public double getDistance(Vector3f position) {
+        return getLocation().getDistance(position);
     }
 }

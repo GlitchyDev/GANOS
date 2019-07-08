@@ -8,6 +8,7 @@ import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
+import com.GlitchyDev.World.Entities.AbstractEntities.CustomRenderEntity;
 import com.GlitchyDev.World.Entities.AbstractEntities.PlayerEntity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
@@ -17,7 +18,7 @@ import com.GlitchyDev.World.Location;
 import java.io.IOException;
 import java.util.UUID;
 
-public class DebugPlayerEntity extends PlayerEntity {
+public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntity {
     private GameItem gameItem;
 
     public DebugPlayerEntity(WorldGameState worldGameState, UUID currentRegionUUID, Location location, Direction direction) {
@@ -42,12 +43,6 @@ public class DebugPlayerEntity extends PlayerEntity {
 
     }
 
-    @Override
-    public void render(Renderer renderer, Camera camera) {
-        gameItem.setPosition(getLocation().getNormalizedPosition());
-
-        renderer.render3DElement(camera,gameItem, "Default3D");
-    }
 
     @Override
     public void onDespawn(DespawnReason despawnReason) {
@@ -64,5 +59,11 @@ public class DebugPlayerEntity extends PlayerEntity {
     @Override
     public void setLocation(Location location) {
         super.setLocation(location);
+    }
+
+    @Override
+    public void renderCustomEntity(Renderer renderer, Camera camera) {
+        gameItem.setPosition(getLocation().getNormalizedPosition());
+        renderer.render3DElement(camera,gameItem, "Default3D");
     }
 }

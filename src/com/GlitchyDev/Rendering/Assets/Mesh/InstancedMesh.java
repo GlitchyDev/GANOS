@@ -86,14 +86,11 @@ public class InstancedMesh extends Mesh {
     protected void postRender() {
 
         // Restore state
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
         glDisableVertexAttribArray(3);
         glDisableVertexAttribArray(4);
         glDisableVertexAttribArray(5);
-        glBindVertexArray(0);
+
     }
 
     protected void addInstancedAttribute(int vao, int vbo, int attribute, int dataSize, int instancedDataLength, int offset) {

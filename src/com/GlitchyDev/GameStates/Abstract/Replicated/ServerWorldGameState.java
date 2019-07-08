@@ -19,7 +19,7 @@ import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerDespawnRegion
 import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerSpawnRegionPacket;
 import com.GlitchyDev.Networking.ServerNetworkManager;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisableBlock;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisibleBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Effects.Abstract.BlockEffect;
 import com.GlitchyDev.World.Effects.Abstract.EntityEffect;
@@ -135,8 +135,8 @@ public abstract class ServerWorldGameState extends WorldGameState {
                 System.out.println("L " + regionUUID);
                 if (playerView.containsRegion(regionUUID)) {
                     System.out.println("Updated Block " + block + " for " + player);
-                    if (block instanceof CustomVisableBlock) {
-                        Block viewedBlock = ((CustomVisableBlock) block).getVisibleBlock(player);
+                    if (block instanceof CustomVisibleBlock) {
+                        Block viewedBlock = ((CustomVisibleBlock) block).getVisibleBlock(player);
                         Location regionLocation = player.getEntityView().getRegion(regionUUID).getLocation();
                         Location blockRelative = regionLocation.getLocationDifference(block.getLocation());
 
@@ -410,9 +410,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
         if(currentPlayers.containsKey(playerUUID)) {
             Region regionCopy = region.createCopy();
             for (Block block : region.getBlocksArray()) {
-                if (block instanceof CustomVisableBlock) {
+                if (block instanceof CustomVisibleBlock) {
                     Location relativeLocation = region.getLocation().getLocationDifference(block.getLocation());
-                    regionCopy.setBlockRelative(relativeLocation, ((CustomVisableBlock) block).getVisibleBlock(currentPlayers.get(playerUUID)));
+                    regionCopy.setBlockRelative(relativeLocation, ((CustomVisibleBlock) block).getVisibleBlock(currentPlayers.get(playerUUID)));
                 }
             }
 
