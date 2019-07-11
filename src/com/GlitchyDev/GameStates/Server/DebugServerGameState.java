@@ -373,9 +373,7 @@ public class DebugServerGameState extends ServerWorldGameState {
             walkieTalkie.toggleMute();
         }
 
-        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_G) == 1) {
-            System.out.println(getBlockAtLocation(new Location(0,3,0,spawnWorld)) + " " + getBlockAtLocation(new Location(0,3,0,spawnWorld)).getLocation() + " " +  AssetLoader.getInstanceGridTexture("School_Tiles"));
-        }
+
 
         walkieTalkie.tick();
 

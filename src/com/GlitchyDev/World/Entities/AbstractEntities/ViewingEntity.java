@@ -207,14 +207,11 @@ public abstract class ViewingEntity extends Entity {
         while(connectedRegions.size() != 0) {
             UUID checkRegion = connectedRegions.get(0);
 
-            //System.out.println("Using region " + checkRegion);
             for(RegionConnection validConnection: visibleRegionConnections) {
                 if(currentWorld.getRegionConnections().containsKey(checkRegion)) {
                     if(currentWorld.getRegionConnections().get(checkRegion).containsKey(validConnection)) {
                         for(UUID foundRegion: currentWorld.getRegionConnections().get(checkRegion).get(validConnection)) {
                             if(!checkedRegions.contains(foundRegion)) {
-                                //System.out.println("Found Region " + foundRegion + " from connection " + validConnection);
-
                                 connectedRegions.add(foundRegion);
                                 if(foundRegion.equals(targetRegion)) {
                                     return true;
