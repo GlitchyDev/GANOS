@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -26,10 +27,11 @@ public class GameWindow {
     private int width;
     private int height;
 
-    private boolean resized;
     private boolean isVSync;
 
-    private final int targetFPS = 60;
+    private final int TARGET_FPS = 60;
+
+    private final HashMap<String,Long> registeredCursors;
 
 
 
@@ -39,7 +41,7 @@ public class GameWindow {
         this.width = width;
         this.height = height;
         this.isVSync = isVSync;
-        this.resized = false;
+        registeredCursors = new HashMap<>();
     }
 
     public void init() {
@@ -60,12 +62,9 @@ public class GameWindow {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
-        //glfwWindowHint(GLFW_AUTO_ICONIFY, GL_FALSE);
 
 
         // Get the resolution of the primary monitor
-
-
         System.out.println("GameWindow: Create Window of WIDTH " + width + " HEIGHT " + height);
 
 
@@ -76,13 +75,6 @@ public class GameWindow {
         }
 
         glfwSetWindowSize(windowHandle,width,height);
-
-
-        // Setup resize callback
-
-
-
-
 
         // Center our window
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -96,13 +88,11 @@ public class GameWindow {
         }
 
         GL.createCapabilities();
-
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glEnable(GL_DEPTH_TEST);
         // Use to polygons
         //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
         // Support for transparencies
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -110,14 +100,8 @@ public class GameWindow {
         // Enable Culling of Double sided Triangles since we don't use em
         GL11.glEnable( GL11.GL_CULL_FACE );
         glCullFace(GL_BACK);
-
-
     }
 
-    public void showWindow()
-    {
-        glfwShowWindow(windowHandle);
-    }
 
     /*.
        Required at the beginning of each loop
@@ -128,14 +112,8 @@ public class GameWindow {
     }
 
 
-    public Vector2i getWindowPosition() {
-        int[] x = new int[1];
-        int[] y = new int[1];
-        glfwGetWindowPos(windowHandle,x,y);
 
-        return new Vector2i(x[0],y[0]);
-    }
-    public void setCursor(InputStream stream, int xOffset, int yOffset) {
+    public void registerCursor(String cursorName, InputStream stream, int xOffset, int yOffset) {
         BufferedImage image = null;
         try {
             image = ImageIO.read(stream);
@@ -152,12 +130,9 @@ public class GameWindow {
         // convert image to RGBA format
         ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4);
 
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
                 int pixel = pixels[y * width + x];
-
                 buffer.put((byte) ((pixel >> 16) & 0xFF));  // red
                 buffer.put((byte) ((pixel >> 8) & 0xFF));   // green
                 buffer.put((byte) (pixel & 0xFF));          // blue
@@ -176,9 +151,18 @@ public class GameWindow {
         long cursorID = org.lwjgl.glfw.GLFW.glfwCreateCursor(cursorImg, xOffset , yOffset);
 
         // set current cursor
-        glfwSetCursor(getWindowHandle(), cursorID);
+        registeredCursors.put(cursorName,cursorID);
+        //glfwSetCursor(getWindowHandle(), cursorID);
 
-        //glfwSetCursor(getWindowHandle(), glfwCreateStandardCursor(GLFW_HAND_CURSOR));
+    }
+
+    public void setCursor(String cursorName) {
+        glfwSetCursor(getWindowHandle(), registeredCursors.get(cursorName));
+    }
+
+    public void showWindow()
+    {
+        glfwShowWindow(windowHandle);
     }
 
     public void setDefaultCursor(int glfwCursor){
@@ -188,8 +172,8 @@ public class GameWindow {
     public void setCursorPosition(int x, int y) {
         glfwSetCursorPos(windowHandle,x,y);
     }
-    public void setIcon(InputStream icon1, InputStream icon2) {
 
+    public void setIcon(InputStream icon1, InputStream icon2) {
         BufferedImage img = null;
         BufferedImage img2 = null;
         try {
@@ -211,7 +195,6 @@ public class GameWindow {
         images.put(1, image2);
 
         glfwSetWindowIcon(windowHandle, images);
-
 
         images.free();
         image.free();
@@ -242,6 +225,13 @@ public class GameWindow {
         glfwSetWindowPos(windowHandle, (vidmode.width() - width) / 2, (vidmode.height() - height) / 2);
     }
 
+    public void setDimensions(int width, int height) {
+        glfwSetWindowSize(windowHandle,width,height);
+        this.width = width;
+        this.height = height;
+
+    }
+
     public void setWindowPosition(int x, int y) {
         glfwSetWindowPos(windowHandle,x,y);
     }
@@ -267,33 +257,38 @@ public class GameWindow {
         return yPos[0];
     }
 
-    public GLFWVidMode getVideoMode() {
-        return glfwGetVideoMode(glfwGetPrimaryMonitor());
+    public Vector2i getWindowPosition() {
+        int[] x = new int[1];
+        int[] y = new int[1];
+        glfwGetWindowPos(windowHandle,x,y);
+
+        return new Vector2i(x[0],y[0]);
+    }
+
+    public int isFocused() {
+        return glfwGetWindowAttrib(windowHandle,GLFW_FOCUSED);
     }
 
     public void setTitle(String title) {
         glfwSetWindowTitle(windowHandle, title);
     }
 
+    public void setClearColor(float r, float g, float b, float alpha) {
+        glClearColor(r, g, b, alpha);
+    }
+
+    public void makeWindowClose() {
+        glfwSetWindowShouldClose(windowHandle,true);
+    }
 
     // Getter and Setters
-
-
 
     public long getWindowHandle() {
         return windowHandle;
     }
 
-    public void setClearColor(float r, float g, float b, float alpha) {
-        glClearColor(r, g, b, alpha);
-    }
-
     public boolean shouldWindowClose() {
         return glfwWindowShouldClose(windowHandle);
-    }
-
-    public void makeWindowClose() {
-        glfwSetWindowShouldClose(windowHandle,true);
     }
 
     public String getTitle() {
@@ -308,24 +303,11 @@ public class GameWindow {
         return height;
     }
 
-    public boolean hasBeenResized() { return resized; }
-
-    public void setIfResized(boolean resized) {
-        this.resized = resized;
-    }
-
     public boolean isVSync() {
         return isVSync;
     }
 
-    public int getTargetFPS() {
-        return targetFPS;
-    }
 
-    public void setDimensions(int width, int height) {
-        glfwSetWindowSize(windowHandle,width,height);
-        this.width = width;
-        this.height = height;
 
-    }
+
 }

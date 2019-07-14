@@ -1,5 +1,6 @@
 package com.GlitchyDev.GameStates.Server;
 
+import com.GlitchyDev.Game.GameWindow;
 import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.Game.Player;
 import com.GlitchyDev.GameInput.Controllers.ControllerDirectionPad;
@@ -45,6 +46,7 @@ import org.joml.Vector2d;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -54,7 +56,6 @@ import java.util.UUID;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class DebugServerGameState extends ServerWorldGameState {
-    private final ArrayList<TextItem> hudItems;
     private final ArrayList<TextItem> debugItems;
     private final Player testPlayer;
     private final Camera camera;
@@ -81,25 +82,18 @@ public class DebugServerGameState extends ServerWorldGameState {
         super(globalGameData, GameStateType.DEBUG_SERVER, 5000);
 
         CustomFontTexture customTexture = new CustomFontTexture("DebugFont");
-        final int NUM_HUD_ITEMS = 20;
-        hudItems = new ArrayList<>(NUM_HUD_ITEMS);
-        final int hudXOffset = 0;
-        final int hudYOffset = 0;
-        final int hudTextYOffset = 12;
-        for(int i = 0; i < NUM_HUD_ITEMS; i++) {
-            TextItem item = new TextItem("",customTexture);
-            item.setPosition(hudXOffset,hudYOffset + i*hudTextYOffset,0);
-            hudItems.add(item);
-        }
 
-        final int NUM_DEBUG_ITEMS = 20;
+
+        final int NUM_DEBUG_ITEMS = 25;
         debugItems = new ArrayList<>(NUM_DEBUG_ITEMS);
         final int debugXOffset = 0;
         final int debugYOffset = 0;
         final int debugTextYOffset = 12;
+        final float scale = 1.0f;
         for(int i = 0; i < NUM_DEBUG_ITEMS; i++) {
             TextItem item = new TextItem("",customTexture);
-            item.setPosition(debugXOffset,debugYOffset + i*debugTextYOffset,0);
+            item.setPosition(debugXOffset,debugYOffset + i*debugTextYOffset*scale,0);
+            item.setScale(scale);
             debugItems.add(item);
         }
 
@@ -234,9 +228,16 @@ public class DebugServerGameState extends ServerWorldGameState {
         */
 
 
-        globalGameData.getGameWindow().setDimensions(1500,500);
-        globalGameData.getGameWindow().setWindowPosition(0,25);
-        globalGameData.getGameWindow().setTitle("Blackout Server");
+        GameWindow gameWindow = globalGameData.getGameWindow();
+        gameWindow.setDimensions(1500,500);
+        gameWindow.setWindowPosition(0,25);
+        gameWindow.setTitle("Blackout Server");
+        InputStream icon1 = AssetLoader.class.getResourceAsStream("/Textures/Icon/Icon16x16.png");
+        InputStream icon2 = AssetLoader.class.getResourceAsStream("/Textures/Icon/Icon24x24.png");
+        gameWindow.setIcon(icon1,icon2);
+        InputStream icon3 = AssetLoader.class.getResourceAsStream("/Textures/Icon/Cursor.png");
+        gameWindow.registerCursor("DebugCursor",icon3,4,4);
+        gameWindow.setCursor("DebugCursor");
 
         walkieTalkie = new WalkieTalkieBase();
 
@@ -302,6 +303,8 @@ public class DebugServerGameState extends ServerWorldGameState {
         debugItems.get(17).setText("Events Battery " + walkieTalkie.getCurrentBatteryLevel());
         debugItems.get(18).setText("Events Powered " + walkieTalkie.getCurrentWalkieTalkieState().isPowered());
         debugItems.get(19).setText("Events Transition " + walkieTalkie.getTransitionProgress());
+        debugItems.get(21).setText("Focused " + globalGameData.getGameWindow().isFocused());
+
 
 
 
@@ -507,7 +510,6 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         renderEnvironment(camera,testPlayer.getPlayerEntity().getEntityView().getViewableRegions(),partialCubicInstanceMesh);
         renderer.enableTransparency();
-        renderer.render2DTextItems(hudItems, "Default2D");
         walkieTalkie.render(renderer,500);
         renderer.disableTransparency();
 
