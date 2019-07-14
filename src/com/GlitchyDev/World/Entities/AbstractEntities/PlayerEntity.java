@@ -58,7 +58,7 @@ public abstract class PlayerEntity extends ViewingEntity {
             for(RegionConnection regionConnection: connections.get(getCurrentRegionUUID()).keySet()) {
                 if(regionConnection.isVisibleByDefault()) {
                     boolean hidden = false;
-                    for(Effect effect: getEffects()) {
+                    for(Effect effect: getCurrentEffects()) {
                         if(effect instanceof RegionHidingEffect) {
                             if(((RegionHidingEffect) effect).doHideRegionConnection(regionConnection)) {
                                 hidden = true;
@@ -70,7 +70,7 @@ public abstract class PlayerEntity extends ViewingEntity {
                         seeableConnectionTypes.add(regionConnection);
                     }
                 } else {
-                    for(Effect effect: getEffects()) {
+                    for(Effect effect: getCurrentEffects()) {
                         if(effect instanceof RegionRevealingEffect) {
                             if(((RegionRevealingEffect) effect).doShowRegionConnection(regionConnection)) {
                                 seeableConnectionTypes.add(regionConnection);

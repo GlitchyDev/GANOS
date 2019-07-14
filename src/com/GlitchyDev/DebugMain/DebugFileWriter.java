@@ -231,9 +231,9 @@ public class DebugFileWriter {
             boolean bit = false;
             System.out.println(bit);
             fileOutputBitUtility.writeNextBit(bit);
-            UUID uuid = UUID.randomUUID();
-            System.out.println(uuid);
-            fileOutputBitUtility.writeNextUUID(uuid);
+            UUID entityUUID = UUID.randomUUID();
+            System.out.println(entityUUID);
+            fileOutputBitUtility.writeNextUUID(entityUUID);
             long l = 12L;
             System.out.println(l);
             fileOutputBitUtility.writeNextLong(l);

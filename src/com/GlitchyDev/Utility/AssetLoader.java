@@ -48,8 +48,7 @@ public class AssetLoader {
         InputStream is = AssetLoader.class.getResourceAsStream("/Configs/General/AssetRegistry.txt");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
-        while(br.ready())
-        {
+        while(br.ready()) {
             String path = br.readLine();
             loadAsset(path);
         }
@@ -67,8 +66,7 @@ public class AssetLoader {
         String name = fullName.replace("." + fileType,"");
         allAssets.put(fullName,filePath);
         System.out.println("AssetLoader: Loading Asset " + name + " of type " + fileType);
-        switch(fileType)
-        {
+        switch(fileType) {
             case "obj":
                 meshAssets.put(name,loadMesh(filePath));
                 break;
@@ -102,8 +100,6 @@ public class AssetLoader {
             default: // InstanceGridTexture
 
         }
-
-
     }
 
 
@@ -120,15 +116,14 @@ public class AssetLoader {
     }
 
     private static void processFileToAssetRegistry(PrintWriter writer, File file) {
-        if(file.isDirectory())
-        {
-            for(File subFiles: file.listFiles())
-            {
-                processFileToAssetRegistry(writer,subFiles);
+        if(file.isDirectory()) {
+            if(!file.getName().equals("MBROLA_Voices")) {
+                for (File subFiles : file.listFiles()) {
+                    processFileToAssetRegistry(writer, subFiles);
+                }
             }
         }
-        else
-        {
+        else {
             if(!file.getName().equals("AssetRegistry.txt")) {
                 System.out.println("AssetLoader: Registered Asset " + file.getName());
                 writer.println(file.getPath());
@@ -136,33 +131,28 @@ public class AssetLoader {
         }
     }
 
-    private static void detectIfJar()
-    {
+    private static void detectIfJar() {
         isLoadedFromJar = AssetLoader.class.getResource("AssetLoader.class").toString().contains("jar");
         if(isLoadedFromJar) {
             System.out.println("AssetLoader: Loading from Jar");
         }
-        else
-        {
+        else {
             System.out.println("AssetLoader: Loading Assets from IDE, update AssetRegistry");
         }
     }
 
-    public static InputStream getInputStream(String fileName)
-    {
+    public static InputStream getInputStream(String fileName) {
         return AssetLoader.class.getResourceAsStream(allAssets.get(fileName));
     }
 
-    public static Texture getTextureAsset(String name)
-    {
+    public static Texture getTextureAsset(String name) {
         return textureAssets.get(name);
     }
 
 
     public static SoundBuffer getSoundAsset(String name) { return soundAssets.get(name);}
 
-    public static Mesh getMeshAsset(String name)
-    {
+    public static Mesh getMeshAsset(String name) {
         return meshAssets.get(name).clone();
     }
 
@@ -174,33 +164,27 @@ public class AssetLoader {
         return instancedGridTextures.get(name);
     }
 
-    public static String getVertexAsset(String name)
-    {
+    public static String getVertexAsset(String name) {
         return vertexShaderAssets.get(name);
     }
 
-    public static String getFragmentAsset(String name)
-    {
+    public static String getFragmentAsset(String name) {
         return fragmentShaderAssets.get(name);
     }
 
-    public static HashMap<String,String> getConfigOptionAsset(String name)
-    {
+    public static HashMap<String,String> getConfigOptionAsset(String name) {
         return configOptionAssets.get(name);
     }
 
-    public static ArrayList<String> getConfigListAsset(String name)
-    {
+    public static ArrayList<String> getConfigListAsset(String name) {
         return configListAssets.get(name);
     }
 
-    public static Mesh loadMesh(String filePath)
-    {
+    public static Mesh loadMesh(String filePath) {
         return OBJLoader.loadMesh(AssetLoader.class.getResourceAsStream(filePath));
     }
 
-    public static SoundBuffer loadSound(String filePath)
-    {
+    public static SoundBuffer loadSound(String filePath) {
         try {
             return new SoundBuffer(AssetLoader.class.getResourceAsStream(filePath));
         } catch (Exception e) {
@@ -225,8 +209,7 @@ public class AssetLoader {
     public static HashMap<String,String> loadConfigOptions(String filePath) throws IOException {
         BufferedReader configOptionReader = new BufferedReader(new InputStreamReader(AssetLoader.class.getResourceAsStream(filePath)));
         HashMap<String,String> configMap = new HashMap<>();
-        while(configOptionReader.ready())
-        {
+        while(configOptionReader.ready()) {
             String line = configOptionReader.readLine();
             String[] configList = line.trim().replace(" ","").split(":");
             configMap.put(configList[0],configList[1]);

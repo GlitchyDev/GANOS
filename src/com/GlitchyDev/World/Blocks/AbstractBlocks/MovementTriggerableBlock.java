@@ -3,7 +3,7 @@ package com.GlitchyDev.World.Blocks.AbstractBlocks;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 
-public interface TriggerableBlock {
+public interface MovementTriggerableBlock {
 
     /**
      * Triggered when an EntityBase enters a TriggerableBlock, is not final

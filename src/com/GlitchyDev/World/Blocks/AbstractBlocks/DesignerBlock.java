@@ -17,14 +17,14 @@ public abstract class DesignerBlock extends Block {
     private InstancedGridTexture instancedGridTexture;
 
     public DesignerBlock(WorldGameState worldGameState, BlockType blockType, Location location, UUID regionUUID, InstancedGridTexture instancedGridTexture) {
-        super(worldGameState, blockType, location, regionUUID);
+        super(blockType, worldGameState, location, regionUUID);
         faceStates = new boolean[6];
         textureID = new int[6];
         this.instancedGridTexture = instancedGridTexture;
     }
 
-    public DesignerBlock(WorldGameState worldGameState, BlockType blockType, UUID regionUUID, InputBitUtility inputBitUtility, InstancedGridTexture instancedGridTexture) throws IOException {
-        super(worldGameState, blockType, regionUUID, inputBitUtility);
+    public DesignerBlock(BlockType blockType, WorldGameState worldGameState, InputBitUtility inputBitUtility, UUID regionUUID, InstancedGridTexture instancedGridTexture) throws IOException {
+        super(blockType, worldGameState, inputBitUtility, regionUUID);
         faceStates = new boolean[6];
         textureID = new int[6];
         this.instancedGridTexture = instancedGridTexture;

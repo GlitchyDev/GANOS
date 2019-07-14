@@ -1,9 +1,11 @@
 package com.GlitchyDev.World;
 
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
+import com.GlitchyDev.World.Effects.Abstract.TickableEffect;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
-import com.GlitchyDev.World.Region.Region;
+import com.GlitchyDev.World.Entities.AbstractEntities.TickableEntity;
 import com.GlitchyDev.World.Region.Enum.RegionConnection;
+import com.GlitchyDev.World.Region.Region;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,11 +13,14 @@ import java.util.UUID;
 
 public class World {
     // Loaded Regions for this world, probably loaded from a WorldRegionList
-    private HashMap<UUID, Region> regions;
-    private ArrayList<Entity> entities;
-    private ArrayList<TickableBlock> tickableBlocks;
+    private final HashMap<UUID, Region> regions;
+    private final ArrayList<Entity> entities;
+    // Tickables
+    private final ArrayList<TickableEntity> tickableEntities;
+    private final ArrayList<TickableBlock> tickableBlocks;
+    private final ArrayList<TickableEffect> tickableEffects;
     // A File loaded with the world that would contain the connections between regions
-    private HashMap<UUID, HashMap<RegionConnection, ArrayList<UUID>>> regionConnections;
+    private final HashMap<UUID, HashMap<RegionConnection, ArrayList<UUID>>> regionConnections;
     // A File loaded with the world with the configuration of the regions connections
 
     public static final String FILETYPE = "worldInfo";
@@ -25,18 +30,23 @@ public class World {
         this.worldUUID = worldUUID;
         this.regions = new HashMap<>();
         this.entities = new ArrayList<>();
+        this.tickableEntities = new ArrayList<>();
         this.tickableBlocks = new ArrayList<>();
+        this.tickableEffects = new ArrayList<>();
 
         this.regionConnections = new HashMap<>();
     }
 
 
     public void tick() {
+        for(TickableEntity entity : tickableEntities) {
+            entity.tick();
+        }
         for(TickableBlock tickableBlock: tickableBlocks) {
             tickableBlock.tick();
         }
-        for(Entity entity : entities) {
-            entity.tick();
+        for(TickableEffect effect : tickableEffects) {
+            effect.tick();
         }
     }
 
@@ -109,6 +119,14 @@ public class World {
 
     public ArrayList<TickableBlock> getTickableBlocks() {
         return tickableBlocks;
+    }
+
+    public ArrayList<TickableEffect> getTickableEffects() {
+        return tickableEffects;
+    }
+
+    public ArrayList<TickableEntity> getTickableEntities() {
+        return tickableEntities;
     }
 
     public ArrayList<Entity> getEntities() {

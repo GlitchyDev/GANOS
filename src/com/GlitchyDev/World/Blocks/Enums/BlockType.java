@@ -25,16 +25,16 @@ public enum BlockType {
     public Block getBlockFromInput(WorldGameState worldGameState, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {
         switch(this) {
             case DEBUG:
-                return new DebugBlock(worldGameState, regionUUID, inputBitUtility);
+                return new DebugBlock(worldGameState, inputBitUtility, regionUUID);
             case AIR:
-                return new AirBlock(worldGameState, regionUUID, inputBitUtility);
+                return new AirBlock(worldGameState, inputBitUtility, regionUUID);
             case DEBUG_CUSTOM_RENDER:
-                return new DebugCustomRenderBlock(worldGameState, regionUUID,inputBitUtility);
+                return new DebugCustomRenderBlock(worldGameState, inputBitUtility, regionUUID);
             case DESIGNER_DEBUG_BLOCK:
-                return new DesignerDebugBlock(worldGameState,regionUUID,inputBitUtility);
+                return new DesignerDebugBlock(worldGameState, inputBitUtility, regionUUID);
             default:
                 System.out.println("ERROR BlockType " + this + " not registered");
-                return new AirBlock(worldGameState, regionUUID, inputBitUtility);
+                return new AirBlock(worldGameState, inputBitUtility, regionUUID);
         }
 
     }

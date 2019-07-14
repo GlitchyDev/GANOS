@@ -18,8 +18,8 @@ public class DesignerDebugBlock extends DesignerBlock {
         super(worldGameState, BlockType.DESIGNER_DEBUG_BLOCK, location, regionUUID, AssetLoader.getInstanceGridTexture("School_Tiles"));
     }
 
-    public DesignerDebugBlock(WorldGameState worldGameState, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, BlockType.DESIGNER_DEBUG_BLOCK, regionUUID, inputBitUtility, AssetLoader.getInstanceGridTexture("School_Tiles"));
+    public DesignerDebugBlock(WorldGameState worldGameState, InputBitUtility inputBitUtility, UUID regionUUID) throws IOException {
+        super(BlockType.DESIGNER_DEBUG_BLOCK,worldGameState, inputBitUtility, regionUUID, AssetLoader.getInstanceGridTexture("School_Tiles"));
     }
 
     @Override

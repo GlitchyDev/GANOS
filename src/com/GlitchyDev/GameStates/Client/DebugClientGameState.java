@@ -123,7 +123,7 @@ public class DebugClientGameState extends ClientWorldGameState {
 
             boolean effectFound = false;
             for(Entity entity: world.getEntities()) {
-                if(entity.getEffects().size() != 0) {
+                if(entity.getCurrentEffects().size() != 0) {
                     effectFound = true;
                 }
             }
@@ -211,7 +211,7 @@ public class DebugClientGameState extends ClientWorldGameState {
             for(UUID worldUUID: getWorlds()) {
                 world = getWorld(worldUUID);
             }
-            renderEnviroment(camera,world.getRegions().values(),partialCubicInstanceMesh);
+            renderEnvironment(camera,world.getRegions().values(),partialCubicInstanceMesh);
         }
 
         renderer.enableTransparency();

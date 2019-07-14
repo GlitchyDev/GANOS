@@ -38,11 +38,6 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
         gameItem.setPosition(getLocation().getNormalizedPosition());
     }
 
-    @Override
-    public void tick() {
-
-    }
-
 
     @Override
     public void onDespawn(DespawnReason despawnReason) {

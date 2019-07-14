@@ -3,7 +3,7 @@ package com.GlitchyDev.World.Entities.AbstractEntities;
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.TriggerableBlock;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.MovementTriggerableBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.Enums.EntityMovementType;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
@@ -15,11 +15,11 @@ import java.util.UUID;
 
 public abstract class NonViewingEntity extends Entity {
     public NonViewingEntity(WorldGameState worldGameState, UUID currentRegionUUID, EntityType entityType, Location location, Direction direction) {
-        super(worldGameState, currentRegionUUID, entityType, location, direction);
+        super(entityType, worldGameState, currentRegionUUID, location, direction);
     }
 
     public NonViewingEntity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
-        super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, entityType);
+        super(entityType, worldGameState, inputBitUtility, worldUUID, currentRegionUUID);
     }
 
     public void teleport(Location newLocation) {
@@ -37,12 +37,12 @@ public abstract class NonViewingEntity extends Entity {
         Block startingBlock = worldGameState.getRegionAtLocation(getLocation()).getBlockRelative(oldOffset);
         Block endingBlock = worldGameState.getRegionAtLocation(newLocation).getBlockRelative(newOffset);
 
-        if (startingBlock instanceof TriggerableBlock) {
-            ((TriggerableBlock) startingBlock).exitBlockSuccessfully(EntityMovementType.TELEPORT, this);
+        if (startingBlock instanceof MovementTriggerableBlock) {
+            ((MovementTriggerableBlock) startingBlock).exitBlockSuccessfully(EntityMovementType.TELEPORT, this);
         }
 
-        if (endingBlock instanceof TriggerableBlock) {
-            ((TriggerableBlock) endingBlock).enterBlockSccessfully(EntityMovementType.TELEPORT, this);
+        if (endingBlock instanceof MovementTriggerableBlock) {
+            ((MovementTriggerableBlock) endingBlock).enterBlockSccessfully(EntityMovementType.TELEPORT, this);
         }
 
 

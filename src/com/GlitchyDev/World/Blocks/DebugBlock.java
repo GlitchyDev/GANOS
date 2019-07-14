@@ -21,7 +21,7 @@ public class DebugBlock extends Block implements CustomRenderBlock {
     private final GameItem gameItemMesh;
 
     public DebugBlock(WorldGameState worldGameState, Location location, UUID regionUUID, int testValue) {
-        super(worldGameState, BlockType.DEBUG, location,regionUUID);
+        super(BlockType.DEBUG, worldGameState, location,regionUUID);
         this.testValue = testValue;
         this.gameItemMesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
         switch(testValue) {
@@ -40,8 +40,8 @@ public class DebugBlock extends Block implements CustomRenderBlock {
         gameItemMesh.setPosition(location.getNormalizedPosition());
     }
 
-    public DebugBlock(WorldGameState worldGameState, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, BlockType.DEBUG,regionUUID, inputBitUtility);
+    public DebugBlock(WorldGameState worldGameState, InputBitUtility inputBitUtility, UUID regionUUID) throws IOException {
+        super(BlockType.DEBUG, worldGameState, inputBitUtility, regionUUID);
         testValue = inputBitUtility.getNextCorrectIntByte();
         this.gameItemMesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
         switch(testValue) {

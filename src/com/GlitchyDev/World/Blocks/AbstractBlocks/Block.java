@@ -23,25 +23,25 @@ public abstract class Block {
     // Others
     protected Location location;
     protected UUID regionUUID;
-    protected ArrayList<BlockEffect> effects;
+    protected ArrayList<BlockEffect> currentEffects;
 
 
 
-    public Block(WorldGameState worldGameState, BlockType blockType, Location location, UUID regionUUID) {
-        this.worldGameState = worldGameState;
+    public Block(BlockType blockType, WorldGameState worldGameState, Location location, UUID regionUUID) {
         this.blockType = blockType;
+        this.worldGameState = worldGameState;
         this.location = location;
         this.regionUUID = regionUUID;
-        effects = new ArrayList<>();
+        currentEffects = new ArrayList<>();
     }
 
-    public Block(WorldGameState worldGameState, BlockType blockType, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {
-        this.worldGameState = worldGameState;
+    public Block(BlockType blockType, WorldGameState worldGameState, InputBitUtility inputBitUtility, UUID regionUUID) throws IOException {
         this.blockType = blockType;
+        this.worldGameState = worldGameState;
         this.regionUUID = regionUUID;
         this.location = new Location(0,0,0,null);
         int effectSize = inputBitUtility.getNextCorrectIntByte();
-        effects = new ArrayList<>(effectSize);
+        currentEffects = new ArrayList<>(effectSize);
         for(int i = 0; i < effectSize; i++) {
             EffectType effectType = EffectType.values()[inputBitUtility.getNextCorrectIntByte()];
             BlockEffect effect = (BlockEffect) effectType.getEffectFromInput(inputBitUtility,worldGameState);
@@ -52,9 +52,9 @@ public abstract class Block {
     // Do not write Location, as that can be refereed engineered from the read protocol
     public void writeData(OutputBitUtility outputBitUtility) throws IOException {
         outputBitUtility.writeNextCorrectByteInt(blockType.ordinal());
-        outputBitUtility.writeNextCorrectByteInt(effects.size());
-        for(int i = 0; i < effects.size(); i++) {
-            effects.get(i).writeData(outputBitUtility);
+        outputBitUtility.writeNextCorrectByteInt(currentEffects.size());
+        for(int i = 0; i < currentEffects.size(); i++) {
+            currentEffects.get(i).writeData(outputBitUtility);
         }
     }
 
@@ -70,7 +70,7 @@ public abstract class Block {
 
     public void applyEffect(BlockEffect effect) {
         effect.applyBlockEffect(this);
-        effects.add(effect);
+        currentEffects.add(effect);
         if(effect.isReplicatedEffect()) {
             ((ServerWorldGameState)worldGameState).replicateBlockEffectAdded(this, effect);
         }
@@ -78,7 +78,7 @@ public abstract class Block {
 
     public void removeEffect(BlockEffect effect) {
         effect.applyBlockEffect(this);
-        effects.remove(effect);
+        currentEffects.remove(effect);
         if(effect.isReplicatedEffect()) {
             ((ServerWorldGameState)worldGameState).replicateBlockEffectRemoved(this, effect);
         }
@@ -128,8 +128,8 @@ public abstract class Block {
         this.isInsideFrustum = insideFrustum;
     }
 
-    public ArrayList<BlockEffect> getEffects() {
-        return effects;
+    public ArrayList<BlockEffect> getCurrentEffects() {
+        return currentEffects;
     }
 
     public UUID getRegionUUID() {

@@ -12,28 +12,29 @@ import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.CustomVisibleEntity;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
+import com.GlitchyDev.World.Entities.AbstractEntities.TickableEntity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.CustomTransparentRenderable;
+import com.GlitchyDev.World.General.CustomTransparentRenderable;
 import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.util.UUID;
 
-public class DebugEntity extends Entity implements CustomVisibleEntity, CustomTransparentRenderable {
+public class DebugEntity extends Entity implements CustomVisibleEntity, CustomTransparentRenderable, TickableEntity {
     private GameItem gameItem;
     private SpriteItem spriteItem;
 
 
     public DebugEntity(WorldGameState worldGameState, UUID currentRegionUUID, Location location, Direction direction) {
-        super(worldGameState, currentRegionUUID, EntityType.DEBUG_ENTITY, location, direction);
+        super(EntityType.DEBUG_ENTITY, worldGameState, currentRegionUUID, location, direction);
     }
 
 
     public DebugEntity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, EntityType.DEBUG_ENTITY);
+        super(EntityType.DEBUG_ENTITY, worldGameState, inputBitUtility, worldUUID, currentRegionUUID);
 
     }
 
@@ -70,7 +71,7 @@ public class DebugEntity extends Entity implements CustomVisibleEntity, CustomTr
                     entity.applyEffect(new ServerPacketReplicationEffect(worldGameState));
                 } else {
                     ArrayList<EntityEffect> removedEffects = new ArrayList<>();
-                    for(EntityEffect effect: entity.getEffects()) {
+                    for(EntityEffect effect: entity.getCurrentEffects()) {
                         if(effect.getEffectType() == EffectType.SERVER_PACKET_REPLICATION) {
                             removedEffects.add(effect);
                         }

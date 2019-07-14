@@ -24,14 +24,14 @@ public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, 
     private final AirBlock replacementBlock;
 
     public DebugCustomRenderBlock(WorldGameState worldGameState, Location location, UUID regionUUID) {
-        super(worldGameState, BlockType.DEBUG_CUSTOM_RENDER, location, regionUUID);
+        super(BlockType.DEBUG_CUSTOM_RENDER, worldGameState, location, regionUUID);
         mesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
         mesh.getMesh().setTexture(AssetLoader.getTextureAsset("grassblock"));
         replacementBlock = new AirBlock(worldGameState,location, regionUUID);
     }
 
-    public DebugCustomRenderBlock(WorldGameState worldGameState, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, BlockType.DEBUG_CUSTOM_RENDER, regionUUID, inputBitUtility);
+    public DebugCustomRenderBlock(WorldGameState worldGameState, InputBitUtility inputBitUtility, UUID regionUUID) throws IOException {
+        super(BlockType.DEBUG_CUSTOM_RENDER, worldGameState, inputBitUtility, regionUUID);
         mesh = new GameItem(AssetLoader.getMeshAsset("CubicMesh1").clone());
         mesh.getMesh().setTexture(AssetLoader.getTextureAsset("grassblock"));
         replacementBlock = new AirBlock(worldGameState, location, regionUUID);

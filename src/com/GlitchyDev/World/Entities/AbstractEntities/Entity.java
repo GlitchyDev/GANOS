@@ -19,62 +19,62 @@ import java.util.UUID;
 
 public abstract class Entity {
     // Utill
-    protected WorldGameState worldGameState;
-    protected UUID currentRegionUUID;
+    protected final WorldGameState worldGameState;
     // Saved to file
     protected final EntityType entityType;
-    protected final UUID uuid;
+    protected final UUID entityUUID;
+    protected UUID currentRegionUUID;
     protected Location location;
     protected Direction direction;
-    protected final ArrayList<EntityEffect> effects;
+    protected final ArrayList<EntityEffect> currentEffects;
 
 
     /**
      * Creates Entities naturally
+     * @param entityType
      * @param worldGameState
      * @param currentRegionUUID
-     * @param entityType
      * @param location
      * @param direction
      */
-    public Entity(WorldGameState worldGameState, UUID currentRegionUUID, EntityType entityType, Location location, Direction direction) {
+    public Entity(EntityType entityType, WorldGameState worldGameState, UUID currentRegionUUID, Location location, Direction direction) {
+        this.entityType = entityType;
         this.worldGameState = worldGameState;
         this.currentRegionUUID = currentRegionUUID;
-        this.entityType = entityType;
-        this.uuid = UUID.randomUUID();
+        this.entityUUID = UUID.randomUUID();
         this.location = location;
         this.direction = direction;
-        this.effects = new ArrayList<>();
+        this.currentEffects = new ArrayList<>();
     }
+
 
     /**
      * Allows Entities to be constructed from IO/Packets, PlayerFiles, Region Files, Ect
      * Only apparent limitation is that the "Location" is encoded as a relative within its Region, and must be calibrated
+     * @param entityType
      * @param worldGameState
+     * @param inputBitUtility
      * @param worldUUID
      * @param currentRegionUUID
-     * @param inputBitUtility
-     * @param entityType
      * @throws IOException
      */
-
     // This particular constructor is used to retrieve a single entity from file, or from a spawn packet, or from region files
-    public Entity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
-        this.worldGameState = worldGameState;
-        this.currentRegionUUID = currentRegionUUID;
+    public Entity(EntityType entityType, WorldGameState worldGameState, InputBitUtility inputBitUtility, UUID worldUUID, UUID currentRegionUUID) throws IOException {
         this.entityType = entityType;
-        this.uuid = inputBitUtility.getNextUUID();
+        this.worldGameState = worldGameState;
+        this.entityUUID = inputBitUtility.getNextUUID();
         Location relativeLocation = new Location(inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), inputBitUtility.getNextCorrectIntByte(), worldUUID);
+        this.currentRegionUUID = currentRegionUUID;
         // This location will be updated on Spawn\
         this.location = relativeLocation;
         this.direction = Direction.values()[inputBitUtility.getNextCorrectedIntBit(3)];
         int totalEffects = inputBitUtility.getNextCorrectIntByte();
-        this.effects = new ArrayList<>(totalEffects);
+        this.currentEffects = new ArrayList<>(totalEffects);
         for(int i = 0; i < totalEffects; i++) {
             EffectType effectType = EffectType.values()[inputBitUtility.getNextCorrectIntByte()];
             EntityEffect effect = (EntityEffect) effectType.getEffectFromInput(inputBitUtility, worldGameState);
             effect.applyEntityEffect(this);
-            effects.add(effect);
+            currentEffects.add(effect);
         }
     }
 
@@ -85,7 +85,7 @@ public abstract class Entity {
      */
     public void writeData(OutputBitUtility outputBitUtility) throws IOException {
         outputBitUtility.writeNextCorrectByteInt(entityType.ordinal());
-        outputBitUtility.writeNextUUID(uuid);
+        outputBitUtility.writeNextUUID(entityUUID);
 
         Region currentRegion = worldGameState.getRegionAtLocation(location);
         Location internalOffset = currentRegion.getLocation().getLocationDifference(getLocation());
@@ -95,9 +95,9 @@ public abstract class Entity {
 
         outputBitUtility.writeNextCorrectedBitsInt(direction.ordinal(),3);
 
-        outputBitUtility.writeNextCorrectByteInt(effects.size());
-        for(int i = 0; i < effects.size(); i++) {
-            effects.get(i).writeData(outputBitUtility);
+        outputBitUtility.writeNextCorrectByteInt(currentEffects.size());
+        for(int i = 0; i < currentEffects.size(); i++) {
+            currentEffects.get(i).writeData(outputBitUtility);
         }
 
     }
@@ -106,20 +106,20 @@ public abstract class Entity {
 
     public abstract void onDespawn(DespawnReason despawnReason);
 
-    public abstract void tick();
+
 
 
     public void setDirection(Direction newDirection) {
         Direction oldDirection = direction;
         this.direction = newDirection;
         if(worldGameState instanceof ServerWorldGameState) {
-            ((ServerWorldGameState) worldGameState).replicateChangeDirectionEntity(uuid,getLocation().getWorldUUID(),oldDirection,newDirection);
+            ((ServerWorldGameState) worldGameState).replicateChangeDirectionEntity(entityUUID,getLocation().getWorldUUID(),oldDirection,newDirection);
         }
     }
 
     public void applyEffect(EntityEffect effect) {
         effect.applyEntityEffect(this);
-        effects.add(effect);
+        currentEffects.add(effect);
         if(effect.isReplicatedEffect() && worldGameState instanceof ServerWorldGameState) {
             ((ServerWorldGameState)worldGameState).replicateEntityEffectAdded(this, effect);
         }
@@ -130,14 +130,14 @@ public abstract class Entity {
             ((ServerWorldGameState)worldGameState).replicateEntityEffectRemoved(this, effect);
         }
         effect.removeEntityEffect();
-        effects.remove(effect);
+        currentEffects.remove(effect);
     }
 
 
 
 
     public UUID getUUID() {
-        return uuid;
+        return entityUUID;
     }
 
     public UUID getCurrentRegionUUID() {
@@ -168,12 +168,12 @@ public abstract class Entity {
         return entityType;
     }
 
-    public ArrayList<EntityEffect> getEffects() {
-        return effects;
+    public ArrayList<EntityEffect> getCurrentEffects() {
+        return currentEffects;
     }
 
     @Override
     public String toString() {
-        return "e@" + entityType + "," + uuid + "," + location + "," + direction;
+        return "e@" + entityType + "," + entityUUID + "," + location + "," + direction;
     }
 }

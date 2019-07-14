@@ -4,7 +4,7 @@ import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.TriggerableBlock;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.MovementTriggerableBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Effects.Abstract.Effect;
 import com.GlitchyDev.World.Effects.Abstract.RegionHidingEffect;
@@ -27,12 +27,12 @@ public abstract class ViewingEntity extends Entity {
 
 
     public ViewingEntity(WorldGameState worldGameState, UUID currentRegionUUID, EntityType entityType, Location location, Direction direction) {
-        super(worldGameState, currentRegionUUID, entityType, location, direction);
+        super(entityType, worldGameState, currentRegionUUID, location, direction);
         this.entityView = new EntityView();
     }
 
     public ViewingEntity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility, EntityType entityType) throws IOException {
-        super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, entityType);
+        super(entityType, worldGameState, inputBitUtility, worldUUID, currentRegionUUID);
     }
 
 
@@ -73,17 +73,17 @@ public abstract class ViewingEntity extends Entity {
                 Block endingBlock = worldGameState.getRegionAtLocation(newLocation).getBlockRelative(newOffset);
 
                 // Check the blocks for preventing leave triggers
-                if(!(startingBlock instanceof TriggerableBlock) || ((TriggerableBlock) startingBlock).attemptExitBlock(movementType,this)) {
-                    if(!(endingBlock instanceof TriggerableBlock) || ((TriggerableBlock) endingBlock).attemptEnterBlock(movementType,this)) {
+                if(!(startingBlock instanceof MovementTriggerableBlock) || ((MovementTriggerableBlock) startingBlock).attemptExitBlock(movementType,this)) {
+                    if(!(endingBlock instanceof MovementTriggerableBlock) || ((MovementTriggerableBlock) endingBlock).attemptEnterBlock(movementType,this)) {
 
 
 
-                        if (startingBlock instanceof TriggerableBlock) {
-                            ((TriggerableBlock) startingBlock).exitBlockSuccessfully(movementType, this);
+                        if (startingBlock instanceof MovementTriggerableBlock) {
+                            ((MovementTriggerableBlock) startingBlock).exitBlockSuccessfully(movementType, this);
                         }
 
-                        if (endingBlock instanceof TriggerableBlock) {
-                            ((TriggerableBlock) endingBlock).enterBlockSccessfully(movementType, this);
+                        if (endingBlock instanceof MovementTriggerableBlock) {
+                            ((MovementTriggerableBlock) endingBlock).enterBlockSccessfully(movementType, this);
                         }
 
                         // GO AHEAD AND CHANGE THE LOCATION
@@ -128,7 +128,7 @@ public abstract class ViewingEntity extends Entity {
         for(RegionConnection regionConnection: connections.get(getCurrentRegionUUID()).keySet()) {
             if(regionConnection.isVisibleByDefault()) {
                 boolean hidden = false;
-                for(Effect effect: getEffects()) {
+                for(Effect effect: getCurrentEffects()) {
                     if(effect instanceof RegionHidingEffect) {
                         if(((RegionHidingEffect) effect).doHideRegionConnection(regionConnection)) {
                             hidden = true;
@@ -140,7 +140,7 @@ public abstract class ViewingEntity extends Entity {
                     seeableConnectionTypes.add(regionConnection);
                 }
             } else {
-                for(Effect effect: getEffects()) {
+                for(Effect effect: getCurrentEffects()) {
                     if(effect instanceof RegionRevealingEffect) {
                         if(((RegionRevealingEffect) effect).doShowRegionConnection(regionConnection)) {
                             seeableConnectionTypes.add(regionConnection);
@@ -167,7 +167,7 @@ public abstract class ViewingEntity extends Entity {
 
     public boolean regionConnectionVisible(RegionConnection regionConnection) {
         if(regionConnection.isVisibleByDefault()) {
-            for(Effect effect: getEffects()) {
+            for(Effect effect: getCurrentEffects()) {
                 if(effect instanceof RegionHidingEffect) {
                     if(((RegionHidingEffect) effect).doHideRegionConnection(regionConnection)) {
                         return false;
@@ -176,7 +176,7 @@ public abstract class ViewingEntity extends Entity {
             }
             return true;
         } else {
-            for(Effect effect: getEffects()) {
+            for(Effect effect: getCurrentEffects()) {
                 if(effect instanceof RegionRevealingEffect) {
                     if(((RegionRevealingEffect) effect).doShowRegionConnection(regionConnection)) {
                         return true;

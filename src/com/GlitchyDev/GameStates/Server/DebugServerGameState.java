@@ -305,7 +305,6 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
 
-        testPlayer.getPlayerEntity().tick();
         if(gameInputTimings.getActiveKeyTime(GLFW_KEY_0) == 1) {
             walkieTalkie.triggerSpeaker(WalkieTalkieDisplay.CALLSIGN_CROWN, false,false);
         }
@@ -506,7 +505,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         renderer.setRenderSpace(0,0,500,500);
 
 
-        renderEnviroment(camera,testPlayer.getPlayerEntity().getEntityView().getViewableRegions(),partialCubicInstanceMesh);
+        renderEnvironment(camera,testPlayer.getPlayerEntity().getEntityView().getViewableRegions(),partialCubicInstanceMesh);
         renderer.enableTransparency();
         renderer.render2DTextItems(hudItems, "Default2D");
         walkieTalkie.render(renderer,500);
@@ -516,7 +515,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         renderer.setRenderSpace(500,0,500,500);
         if (currentPlayers.containsKey(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562"))) {
-            renderEnviroment(camera,currentPlayers.get(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562")).getEntityView().getViewableRegions(),partialCubicInstanceMesh);
+            renderEnvironment(camera,currentPlayers.get(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562")).getEntityView().getViewableRegions(),partialCubicInstanceMesh);
         }
 
         renderer.setRenderSpace(1000,0,500,500);

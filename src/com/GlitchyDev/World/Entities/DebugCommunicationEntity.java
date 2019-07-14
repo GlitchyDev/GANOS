@@ -14,13 +14,13 @@ import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
-import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Events.Communication.CommunicationListener;
 import com.GlitchyDev.World.Events.Communication.Constructs.Messages.CommunicationMessage;
 import com.GlitchyDev.World.Events.Communication.Constructs.Messages.CommunicationNoise;
 import com.GlitchyDev.World.Events.Communication.Constructs.Source.CommunicationSource;
 import com.GlitchyDev.World.Events.Communication.DetectionType;
-import com.GlitchyDev.World.CustomTransparentRenderable;
+import com.GlitchyDev.World.General.CustomTransparentRenderable;
+import com.GlitchyDev.World.Location;
 import org.joml.Vector3f;
 
 import java.io.IOException;
@@ -31,11 +31,11 @@ public class DebugCommunicationEntity extends Entity implements CommunicationLis
     private TextItem textItem;
 
     public DebugCommunicationEntity(WorldGameState worldGameState, UUID currentRegionUUID,  Location location, Direction direction) {
-        super(worldGameState, currentRegionUUID, EntityType.DEBUG_COMMUNICATION_ENTITY, location, direction);
+        super(EntityType.DEBUG_COMMUNICATION_ENTITY,worldGameState, currentRegionUUID, location, direction);
     }
 
     public DebugCommunicationEntity(WorldGameState worldGameState, UUID worldUUID, UUID currentRegionUUID, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, worldUUID, currentRegionUUID, inputBitUtility, EntityType.DEBUG_COMMUNICATION_ENTITY);
+        super(EntityType.DEBUG_COMMUNICATION_ENTITY, worldGameState, inputBitUtility, worldUUID, currentRegionUUID);
 
     }
 
@@ -58,10 +58,6 @@ public class DebugCommunicationEntity extends Entity implements CommunicationLis
 
     }
 
-    @Override
-    public void tick() {
-
-    }
 
 
     @Override

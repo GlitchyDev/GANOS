@@ -40,7 +40,7 @@ public class ServerRemoveEntityEffectPacket extends WorldStateModifyingPackets {
         Entity entity = worldGameState.getWorld(worldUUID).getEntity(entityUUID);
         entityEffect.setEntity(worldGameState.getWorld(worldUUID).getEntity(entityUUID));
         EntityEffect foundEffect = null;
-        for(Effect effect: entity.getEffects()) {
+        for(Effect effect: entity.getCurrentEffects()) {
             if(effect.getEffectType() == entityEffect.getEffectType()) {
                 foundEffect = (EntityEffect) effect;
             }

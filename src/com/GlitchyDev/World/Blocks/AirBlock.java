@@ -15,11 +15,11 @@ public class AirBlock extends Block {
 
 
     public AirBlock(WorldGameState worldGameState, Location location, UUID regionUUID) {
-        super(worldGameState, BlockType.AIR, location, regionUUID);
+        super(BlockType.AIR,worldGameState, location, regionUUID);
     }
 
-    public AirBlock(WorldGameState worldGameState, UUID regionUUID, InputBitUtility inputBitUtility) throws IOException {
-        super(worldGameState, BlockType.AIR, regionUUID, inputBitUtility);
+    public AirBlock(WorldGameState worldGameState, InputBitUtility inputBitUtility, UUID regionUUID) throws IOException {
+        super(BlockType.AIR,worldGameState, inputBitUtility, regionUUID);
 
 
     }

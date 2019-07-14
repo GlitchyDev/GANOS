@@ -7,7 +7,7 @@ import com.GlitchyDev.World.Entities.Enums.EntityInteractionType;
 
 public interface InteractableBlock {
 
-    BlockInteractionResponce interact(Block blockbase, BlockInteractionType blockInteractionType);
+    BlockInteractionResponce interact(Block block, BlockInteractionType blockInteractionType);
 
     BlockInteractionResponce interact(Entity entity, EntityInteractionType entityInteractionType);
 }

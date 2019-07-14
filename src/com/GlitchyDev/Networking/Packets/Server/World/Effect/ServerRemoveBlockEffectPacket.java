@@ -40,7 +40,7 @@ public class ServerRemoveBlockEffectPacket extends WorldStateModifyingPackets {
         Block block = worldGameState.getRegion(regionUUID,blockOffsetLocation.getWorldUUID()).getBlockRelative(blockOffsetLocation);
         blockEffect.setBlock(block);
         BlockEffect foundEffect = null;
-        for(Effect effect: block.getEffects()) {
+        for(Effect effect: block.getCurrentEffects()) {
             if(effect.equals(blockEffect)) {
                 foundEffect = (BlockEffect) effect;
             }
