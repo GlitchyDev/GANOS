@@ -18,9 +18,15 @@ public abstract class BlockEffect extends Effect {
     public void applyBlockEffect(Block block) {
         onBlockApplyEffect(block);
         this.block = block;
+        if(this instanceof TickableEffect) {
+            worldGameState.getWorld(block.getLocation().getWorldUUID()).getTickableEffects().add((TickableEffect) this);
+        }
     }
     public void removeBlockEffect() {
         onBlockRemoveEffect(block);
+        if(this instanceof TickableEffect) {
+            worldGameState.getWorld(block.getLocation().getWorldUUID()).getTickableEffects().remove(this);
+        }
         this.block = null;
     }
 

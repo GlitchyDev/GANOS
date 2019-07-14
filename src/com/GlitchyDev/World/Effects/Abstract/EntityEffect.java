@@ -19,9 +19,15 @@ public abstract class EntityEffect extends Effect {
     public final void applyEntityEffect(Entity entity) {
         onEntityApplyEffect(entity);
         this.entity = entity;
+        if(this instanceof TickableEffect) {
+            worldGameState.getWorld(entity.getWorldUUID()).getTickableEffects().add((TickableEffect) this);
+        }
     }
     public final void removeEntityEffect() {
         onEntityRemoveEffect(entity);
+        if(this instanceof TickableEffect) {
+            worldGameState.getWorld(entity.getWorldUUID()).getTickableEffects().remove(this);
+        }
         this.entity = null;
     }
 
