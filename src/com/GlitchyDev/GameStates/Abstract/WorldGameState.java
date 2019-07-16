@@ -18,6 +18,7 @@ import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.General.CustomTransparentRenderable;
 import com.GlitchyDev.World.Location;
+import com.GlitchyDev.World.Navigation.NavigableBlock;
 import com.GlitchyDev.World.Region.Enum.RegionConnection;
 import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.World;
@@ -192,30 +193,42 @@ public abstract class WorldGameState extends EnvironmentGameState {
         UUID worldUUID = block.getLocation().getWorldUUID();
         Region region = getRegion(regionUUID, worldUUID);
         Location difference = region.getLocation().getLocationDifference(block.getLocation());
+        World world = getWorld(worldUUID);
+
+
         Block previousBlock = region.getBlockRelative(difference);
         if (previousBlock instanceof TickableBlock) {
-            getWorld(worldUUID).getTickableBlocks().remove(previousBlock);
+            world.getTickableBlocks().remove(previousBlock);
         }
         for(Effect effect: previousBlock.getCurrentEffects()) {
             if(effect instanceof TickableEffect) {
-                getWorld(worldUUID).getTickableEffects().remove((TickableEffect) effect);
+                world.getTickableEffects().remove((TickableEffect) effect);
             }
         }
+        if(previousBlock instanceof NavigableBlock) {
+            world.getNavigableBlocks().remove(previousBlock);
+        }
+
+
         block.setRegionUUID(regionUUID);
         region.setBlockRelative(difference, block);
         if (block instanceof TickableBlock) {
-            getWorld(worldUUID).getTickableBlocks().add((TickableBlock) block);
+            world.getTickableBlocks().add((TickableBlock) block);
         }
         for(Effect effect: block.getCurrentEffects()) {
             if(effect instanceof TickableEffect) {
-                getWorld(worldUUID).getTickableEffects().add((TickableEffect) effect);
+                world.getTickableEffects().add((TickableEffect) effect);
             }
+        }
+        if(block instanceof NavigableBlock) {
+            world.getNavigableBlocks().add((NavigableBlock) block);
         }
     }
 
     public void addRegionToGame(Region region) {
         World world = getWorld(region.getWorldUUID());
         world.getRegions().put(region.getRegionUUID(), region);
+
         for (Entity entity : region.getEntities()) {
             world.addEntity(entity);
             entity.onSpawn(SpawnReason.REGION_MANUALLY_ADDED);
@@ -228,6 +241,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
                 }
             }
         }
+
         for (Block block : region.getBlocksArray()) {
             if (block instanceof TickableBlock) {
                 getWorld(region.getWorldUUID()).getTickableBlocks().add((TickableBlock) block);
@@ -236,6 +250,9 @@ public abstract class WorldGameState extends EnvironmentGameState {
                 if(effect instanceof TickableEffect) {
                     world.getTickableEffects().add((TickableEffect) effect);
                 }
+            }
+            if(block instanceof NavigableBlock) {
+                world.getNavigableBlocks().add((NavigableBlock) block);
             }
         }
     }
@@ -262,6 +279,9 @@ public abstract class WorldGameState extends EnvironmentGameState {
                 if(effect instanceof TickableEffect) {
                     world.getTickableEffects().remove(effect);
                 }
+            }
+            if(block instanceof NavigableBlock) {
+                world.getNavigableBlocks().remove(block);
             }
         }
         getWorld(worldUUID).getRegions().remove(regionUUID);

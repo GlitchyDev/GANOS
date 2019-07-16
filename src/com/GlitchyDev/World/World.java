@@ -4,6 +4,7 @@ import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Effects.Abstract.TickableEffect;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.AbstractEntities.TickableEntity;
+import com.GlitchyDev.World.Navigation.NavigableBlock;
 import com.GlitchyDev.World.Region.Enum.RegionConnection;
 import com.GlitchyDev.World.Region.Region;
 
@@ -19,6 +20,8 @@ public class World {
     private final ArrayList<TickableEntity> tickableEntities;
     private final ArrayList<TickableBlock> tickableBlocks;
     private final ArrayList<TickableEffect> tickableEffects;
+    // Navigation
+    private final ArrayList<NavigableBlock> navigableBlocks;
     // A File loaded with the world that would contain the connections between regions
     private final HashMap<UUID, HashMap<RegionConnection, ArrayList<UUID>>> regionConnections;
     // A File loaded with the world with the configuration of the regions connections
@@ -33,6 +36,7 @@ public class World {
         this.tickableEntities = new ArrayList<>();
         this.tickableBlocks = new ArrayList<>();
         this.tickableEffects = new ArrayList<>();
+        navigableBlocks = new ArrayList<>();
 
         this.regionConnections = new HashMap<>();
     }
@@ -111,27 +115,8 @@ public class World {
         regionConnections.get(regionUUID).get(regionConnection).remove(linkedRegion);
     }
 
-    // Getters
 
-    public HashMap<UUID, Region> getRegions() {
-        return regions;
-    }
 
-    public ArrayList<TickableBlock> getTickableBlocks() {
-        return tickableBlocks;
-    }
-
-    public ArrayList<TickableEffect> getTickableEffects() {
-        return tickableEffects;
-    }
-
-    public ArrayList<TickableEntity> getTickableEntities() {
-        return tickableEntities;
-    }
-
-    public ArrayList<Entity> getEntities() {
-        return entities;
-    }
 
     public boolean containsEntity(UUID entityUUID) {
         for(Entity entity: entities) {
@@ -178,5 +163,29 @@ public class World {
 
     public UUID getWorldUUID() {
         return worldUUID;
+    }
+
+    public HashMap<UUID, Region> getRegions() {
+        return regions;
+    }
+
+    public ArrayList<TickableBlock> getTickableBlocks() {
+        return tickableBlocks;
+    }
+
+    public ArrayList<TickableEffect> getTickableEffects() {
+        return tickableEffects;
+    }
+
+    public ArrayList<TickableEntity> getTickableEntities() {
+        return tickableEntities;
+    }
+
+    public ArrayList<NavigableBlock> getNavigableBlocks() {
+        return navigableBlocks;
+    }
+
+    public ArrayList<Entity> getEntities() {
+        return entities;
     }
 }
