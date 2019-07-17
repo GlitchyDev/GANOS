@@ -47,6 +47,7 @@ GameAssets\Textures\Icon\Text_Cursor.png
 GameAssets\Textures\Icon\Text_Cursor_E.png
 GameAssets\Textures\Icon\Tomo.png
 GameAssets\Textures\InstanceGridTextures\EditCursor___2x3.png
+GameAssets\Textures\InstanceGridTextures\Navigation_Grid_Unused___4x4.png
 GameAssets\Textures\InstanceGridTextures\Navigation_Grid___4x4.png
 GameAssets\Textures\InstanceGridTextures\SchoolTiles___2x4.png
 GameAssets\Textures\InstanceGridTextures\School_Tiles___7x6.png

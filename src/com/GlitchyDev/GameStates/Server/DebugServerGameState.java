@@ -39,6 +39,7 @@ import com.GlitchyDev.World.Events.Communication.Constructs.Source.Communication
 import com.GlitchyDev.World.Events.WalkieTalkie.WalkieTalkieBase;
 import com.GlitchyDev.World.Events.WalkieTalkie.WalkieTalkieDisplay;
 import com.GlitchyDev.World.Location;
+import com.GlitchyDev.World.Navigation.NavigationManager;
 import com.GlitchyDev.World.Region.Enum.RegionConnection;
 import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.World;
@@ -66,6 +67,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
     private final WalkieTalkieBase walkieTalkie;
+    private final DebugEntity debugEntity;
 
     /*
     private final SpriteItem shaderTest;
@@ -122,31 +124,29 @@ public class DebugServerGameState extends ServerWorldGameState {
             for(int x = 0; x < region1.getWidth(); x++) {
                 for(int z = 0; z < region1.getLength(); z++) {
                     Location blockLocation = region1.getLocation().getOffsetLocation(x,0,z);
-                    DebugBlock debugBlock = new DebugBlock(this,blockLocation, region1.getRegionUUID(), (int)(3 * Math.random()));
-                    region1.setBlockRelative(x,0,z,debugBlock);
+                    DebugNavigationBlock debugNavigationBlock = new DebugNavigationBlock(this,blockLocation,region1.getRegionUUID());
+                    region1.setBlockRelative(x,0,z,debugNavigationBlock);
                 }
             }
             for(int x = 0; x < region2.getWidth(); x++) {
                 for(int z = 0; z < region2.getLength(); z++) {
                     Location blockLocation = region2.getLocation().getOffsetLocation(x,0,z);
-                    DebugBlock debugBlock = new DebugBlock(this,blockLocation, region2.getRegionUUID(), (int)(3 * Math.random()));
-                    region2.setBlockRelative(x,0,z,debugBlock);
-
+                    DebugNavigationBlock debugNavigationBlock = new DebugNavigationBlock(this,blockLocation,region2.getRegionUUID());
+                    region2.setBlockRelative(x,0,z,debugNavigationBlock);
                 }
             }
             for(int x = 0; x < region3.getWidth(); x++) {
                 for(int z = 0; z < region3.getLength(); z++) {
                     Location blockLocation = region3.getLocation().getOffsetLocation(x,0,z);
-                    DebugBlock debugBlock = new DebugBlock(this,blockLocation, region3.getRegionUUID(), (int)(3 * Math.random()));
-                    region3.setBlockRelative(x,0,z,debugBlock);
-
+                    DebugNavigationBlock debugNavigationBlock = new DebugNavigationBlock(this,blockLocation,region3.getRegionUUID());
+                    region3.setBlockRelative(x,0,z,debugNavigationBlock);
                 }
             }
             for(int x = 0; x < region4.getWidth(); x++) {
                 for(int z = 0; z < region4.getLength(); z++) {
                     Location blockLocation = region4.getLocation().getOffsetLocation(x,0,z);
-                    DebugBlock debugBlock = new DebugBlock(this,blockLocation, region4.getRegionUUID(), (int)(3 * Math.random()));
-                    region4.setBlockRelative(x,0,z,debugBlock);
+                    DebugNavigationBlock debugNavigationBlock = new DebugNavigationBlock(this,blockLocation,region4.getRegionUUID());
+                    region4.setBlockRelative(x,0,z,debugNavigationBlock);
 
                 }
             }
@@ -160,14 +160,6 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
             region1.setBlockRelative(0,3,0,designerDebugBlock);
 
-            DebugNavigationBlock debugNavigationBlock1 = new DebugNavigationBlock(this,region1.getLocation().getOffsetLocation(3,1,3), region1.getRegionUUID());
-            DebugNavigationBlock debugNavigationBlock2 = new DebugNavigationBlock(this,region1.getLocation().getOffsetLocation(4,1,3), region1.getRegionUUID());
-            DebugNavigationBlock debugNavigationBlock3 = new DebugNavigationBlock(this,region1.getLocation().getOffsetLocation(3,1,4), region1.getRegionUUID());
-            DebugNavigationBlock debugNavigationBlock4 = new DebugNavigationBlock(this,region1.getLocation().getOffsetLocation(4,1,4), region1.getRegionUUID());
-            region1.setBlockRelative(debugNavigationBlock1.getLocation(),debugNavigationBlock1);
-            region1.setBlockRelative(debugNavigationBlock2.getLocation(),debugNavigationBlock2);
-            region1.setBlockRelative(debugNavigationBlock3.getLocation(),debugNavigationBlock3);
-            region1.setBlockRelative(debugNavigationBlock4.getLocation(),debugNavigationBlock4);
 
 
 
@@ -193,8 +185,6 @@ public class DebugServerGameState extends ServerWorldGameState {
             world.linkRegion(region4.getRegionUUID(),region1.getRegionUUID(), RegionConnection.NORMAL);
 
 
-            DebugEntity debugEntity = new DebugEntity(this,getRegionAtLocation(new Location(5,1,0,spawnWorld)).getRegionUUID(), new Location(5,1,0,spawnWorld), Direction.NORTH);
-            spawnEntity(debugEntity, SpawnReason.DEBUG);
 
             DebugCommunicationEntity debugCommunicationEntity = new DebugCommunicationEntity(this,getRegionAtLocation(new Location(3,1,0,spawnWorld)).getRegionUUID(), new Location(3,1,0,spawnWorld), Direction.NORTH);
             spawnEntity(debugCommunicationEntity, SpawnReason.DEBUG);
@@ -218,7 +208,8 @@ public class DebugServerGameState extends ServerWorldGameState {
         getWorld(spawnWorld).initNavigatableBlockConnections();
 
 
-
+        debugEntity = new DebugEntity(this,getRegionAtLocation(new Location(5,1,0,spawnWorld)).getRegionUUID(), new Location(5,1,0,spawnWorld), Direction.NORTH);
+        spawnEntity(debugEntity, SpawnReason.DEBUG);
 
         DebugPlayerEntity playerEntity = new DebugPlayerEntity(this,getRegionAtLocation(new Location(0,1,0,spawnWorld)).getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
         this.testPlayer = new Player(this,UUID.randomUUID(),playerEntity);
@@ -418,6 +409,13 @@ public class DebugServerGameState extends ServerWorldGameState {
                 ((DebugBlock) block).setTestValue((((DebugBlock) block).getTestValue() + 1) % 3);
             }
         }
+
+
+        if(gameInputTimings.getActiveMouseButton2Time() == 1) {
+            System.out.println("Advance Navigation");
+            NavigationManager.debugDirectPath(this,new Location(5,0,5,spawnWorld),new Location(7,0,5,spawnWorld),debugEntity);
+        }
+
     }
 
 

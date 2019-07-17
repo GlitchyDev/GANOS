@@ -2,9 +2,9 @@ package com.GlitchyDev.World.Navigation;
 
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.World;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class NavigationManager {
     private static final int TIMEOUT_LIMIT = 1000;
@@ -21,7 +21,7 @@ public class NavigationManager {
             availableNodes.remove(currentNode);
             closedNodes.add(currentNode);
 
-            currentNode.addDirectlyNavigatedNodes(navigatingEntity,availableNodes,endingLocation);
+            currentNode.addDirectlyNavigatedNodes(navigatingEntity,availableNodes,closedNodes,endingLocation);
             int lowestDirectedMovementCost = Integer.MAX_VALUE;
             for(ConnectionNode connectionNode: availableNodes) {
                 if(connectionNode.getDirectedMovementCost() < lowestDirectedMovementCost) {
@@ -37,12 +37,11 @@ public class NavigationManager {
 
         ArrayList<NavigableBlock> blockPathList = new ArrayList<>();
         ConnectionNode finalNode = currentNode;
-        currentNode = startingNode;
         while(currentNode != finalNode) {
             blockPathList.add(currentNode.getNavigableBlock());
-            currentNode = currentNode.getNextNode();
+            currentNode = currentNode.getPreviousNode();
         }
-
+        Collections.reverse(blockPathList);
         return blockPathList;
 
 
@@ -53,22 +52,38 @@ public class NavigationManager {
     private static ArrayList<ConnectionNode> closedNodes = new ArrayList<>();
     private static ConnectionNode startingNode = null;
     private static ConnectionNode currentNode = null;
-    public static void debugDirectPath(WorldGameState worldGameState, World world, Location startingLocation, Location endingLocation, NavigatingEntity navigatingEntity) {
+    public static void debugDirectPath(WorldGameState worldGameState, Location startingLocation, Location endingLocation, NavigatingEntity navigatingEntity) {
+        System.out.println();
         if(currentNode == null) {
+            System.out.println("Starting navigation for block at location " + startingLocation);
             startingNode = ((NavigableBlock) worldGameState.getBlockAtLocation(startingLocation)).getConnectionNode();
             currentNode = startingNode;
         }
+        System.out.println("Current Node " + currentNode);
+        System.out.println("Available list and closed list Start");
+        System.out.println(availableNodes);
+        System.out.println(closedNodes);
+
 
         availableNodes.remove(currentNode);
         closedNodes.add(currentNode);
-        currentNode.addDirectlyNavigatedNodes(navigatingEntity,availableNodes,endingLocation);
 
-        int lowestDirectedMovementCost = Integer.MAX_VALUE;
+
+        currentNode.addDirectlyNavigatedNodes(navigatingEntity,availableNodes,closedNodes,endingLocation);
+
+        System.out.println("Available list and closed list After");
+        System.out.println(availableNodes);
+        System.out.println(closedNodes);
+
+        double lowestDirectedMovementCost = Double.MAX_VALUE;
         for(ConnectionNode connectionNode: availableNodes) {
             if(connectionNode.getDirectedMovementCost() < lowestDirectedMovementCost) {
                 currentNode = connectionNode;
+                lowestDirectedMovementCost = currentNode.getDirectedMovementCost();
             }
         }
+
+        System.out.println("New Selected Node " + currentNode);
 
         if(currentNode.getNavigableBlock().getLocation().equals(endingLocation)) {
             System.out.println("Navigation Manager has completed a path from " + startingLocation + " to " + endingLocation);

@@ -5,6 +5,7 @@ import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Location;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 
-public class DebugNavigationBlock extends DesignerBlock implements NavigableBlock {
+public class DebugNavigationBlock extends DesignerBlock implements NavigableBlock, TickableBlock {
     private final ConnectionNode connectionNode;
     private int textureValue = 0;
 
@@ -67,21 +68,23 @@ public class DebugNavigationBlock extends DesignerBlock implements NavigableBloc
             if(worldGameState.isBlockAtLocation(directionLocation)) {
                 // If this block is in the same region we don't need to check for magical multi-overlap region nonsense
                 if(worldGameState.isLocationInSameRegion(directionLocation,getRegionUUID())) {
-                    Block block = worldGameState.getBlockAtLocation(directionLocation);
-                    if(block instanceof DebugNavigationBlock) {
-                        connectionNode.getPathConnections().put(((DebugNavigationBlock) block).getConnectionNode(), PathType.FLOOR);
+                    Block foundBlock = worldGameState.getBlockAtLocation(directionLocation);
+                    if(foundBlock instanceof DebugNavigationBlock) {
+                        connectionNode.getPathConnections().put(((DebugNavigationBlock) foundBlock).getConnectionNode(), PathType.FLOOR);
                         foundDirection = true;
                     }
                 } else {
                     // Multiple Overlap regions! Quick add a connection type for each region interfering in our grand plans
                     Region hostRegion = worldGameState.getRegion(getRegionUUID(),location.getWorldUUID());
-                    HashMap<RegionConnection,ArrayList<UUID>> hostRegionConnections = worldGameState.getRegionConnections(location.getWorldUUID()).get(hostRegion);
+
+                    HashMap<RegionConnection,ArrayList<UUID>> hostRegionConnections = worldGameState.getRegionConnections(location.getWorldUUID()).get(hostRegion.getRegionUUID());
 
                     ArrayList<Region> regions = worldGameState.getRegionsAtLocation(directionLocation);
                     for(Region region: regions) {
-                        Block block = worldGameState.getBlockAtLocation(directionLocation,region.getRegionUUID());
+                        Block foundBlock = worldGameState.getBlockAtLocation(directionLocation,region.getRegionUUID());
                         // Is this block even worth checking
-                        if(block instanceof DebugNavigationBlock) {
+                        if(foundBlock instanceof DebugNavigationBlock) {
+
 
                             // Lets find out how this blocks region is connected to our host blocks ._.
                             RegionConnection blockRegionConnection = null;
@@ -93,11 +96,11 @@ public class DebugNavigationBlock extends DesignerBlock implements NavigableBloc
 
                             switch (blockRegionConnection) {
                                 case NORMAL:
-                                    connectionNode.getPathConnections().put(((DebugNavigationBlock) block).getConnectionNode(), PathType.FLOOR);
+                                    connectionNode.getPathConnections().put(((DebugNavigationBlock) foundBlock).getConnectionNode(), PathType.FLOOR);
                                     foundDirection = true;
                                     break;
                                 default:
-                                    connectionNode.getPathConnections().put(((DebugNavigationBlock) block).getConnectionNode(), PathType.DEBUG);
+                                    connectionNode.getPathConnections().put(((DebugNavigationBlock) foundBlock).getConnectionNode(), PathType.DEBUG);
                                     foundDirection = true;
                                     break;
                             }
@@ -119,4 +122,17 @@ public class DebugNavigationBlock extends DesignerBlock implements NavigableBloc
     }
 
 
+    @Override
+    public void tick() {
+        if(connectionNode.getPreviousNode() == null) {
+            setInstancedGridTexture(AssetLoader.getInstanceGridTexture("Navigation_Grid_Unused"));
+        } else {
+            setInstancedGridTexture(AssetLoader.getInstanceGridTexture("Navigation_Grid"));
+        }
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

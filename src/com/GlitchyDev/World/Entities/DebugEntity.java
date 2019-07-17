@@ -18,12 +18,14 @@ import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.General.CustomTransparentRenderable;
+import com.GlitchyDev.World.Navigation.NavigatingEntity;
+import com.GlitchyDev.World.Navigation.PathType;
 import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.util.UUID;
 
-public class DebugEntity extends Entity implements CustomVisibleEntity, CustomTransparentRenderable, TickableEntity {
+public class DebugEntity extends Entity implements CustomVisibleEntity, CustomTransparentRenderable, TickableEntity, NavigatingEntity {
     private GameItem gameItem;
     private SpriteItem spriteItem;
 
@@ -129,5 +131,10 @@ public class DebugEntity extends Entity implements CustomVisibleEntity, CustomTr
     @Override
     public double getDistance(Vector3f position) {
         return getLocation().getDistance(position);
+    }
+
+    @Override
+    public int getMovementCost(PathType pathType) {
+        return 5;
     }
 }

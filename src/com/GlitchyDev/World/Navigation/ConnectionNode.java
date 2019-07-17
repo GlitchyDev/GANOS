@@ -9,31 +9,31 @@ public class ConnectionNode {
     private final NavigableBlock navigableBlock;
     private final HashMap<ConnectionNode,PathType> pathConnections;
     private ConnectionNode previousNode;
-    private ConnectionNode nextNode;
 
-    private int heuristicNavigationValue;
-    private int accumulatedMovementCost;
+    private double heuristicNavigationValue;
+    private double accumulatedMovementCost;
 
     public ConnectionNode(NavigableBlock navigableBlock) {
         this.navigableBlock = navigableBlock;
         pathConnections = new HashMap<>();
         previousNode = null;
-        nextNode = null;
         heuristicNavigationValue = 0;
         accumulatedMovementCost = 0;
     }
 
 
     // A* Functionality
-    public void addDirectlyNavigatedNodes(NavigatingEntity navigatingEntity, ArrayList<ConnectionNode> availableNodes, Location navigationTarget) {
+    public void addDirectlyNavigatedNodes(NavigatingEntity navigatingEntity, ArrayList<ConnectionNode> availableNodes, ArrayList<ConnectionNode> closedList, Location navigationTarget) {
         for(ConnectionNode connectionNode: pathConnections.keySet()) {
-            int movementCost = navigatingEntity.getMovementCost(pathConnections.get(connectionNode));
-            if(!availableNodes.contains(connectionNode)) {
-                directlyNavigatedNode(this,movementCost,navigationTarget);
-                availableNodes.add(this);
-            } else {
-                if(connectionNode.getAccumulatedMovementCost() >= getAccumulatedMovementCost() + movementCost) {
-                    directlyNavigatedNode(previousNode,movementCost,navigationTarget);
+            if (!closedList.contains(connectionNode)) {
+                int movementCost = navigatingEntity.getMovementCost(pathConnections.get(connectionNode));
+                if (!availableNodes.contains(connectionNode)) {
+                    connectionNode.directlyNavigatedNode(this, navigatingEntity.getMovementCost(pathConnections.get(connectionNode)), navigationTarget);
+                    availableNodes.add(connectionNode);
+                } else {
+                    if (connectionNode.getAccumulatedMovementCost() >= getAccumulatedMovementCost() + movementCost) {
+                        connectionNode.directlyNavigatedNode(this, navigatingEntity.getMovementCost(pathConnections.get(connectionNode)), navigationTarget);
+                    }
                 }
             }
         }
@@ -49,7 +49,6 @@ public class ConnectionNode {
 
     public void resetNavigation() {
         previousNode = null;
-        nextNode = null;
         heuristicNavigationValue = 0;
         accumulatedMovementCost = 0;
     }
@@ -59,24 +58,20 @@ public class ConnectionNode {
     }
 
 
-    public int getAccumulatedMovementCost() {
+    public double getAccumulatedMovementCost() {
         return accumulatedMovementCost;
     }
 
-    public int getHeuristicNavigationValue() {
+    public double getHeuristicNavigationValue() {
         return heuristicNavigationValue;
     }
 
-    public int getDirectedMovementCost() {
+    public double getDirectedMovementCost() {
         return accumulatedMovementCost + heuristicNavigationValue;
     }
 
     public ConnectionNode getPreviousNode() {
         return previousNode;
-    }
-
-    public ConnectionNode getNextNode() {
-        return nextNode;
     }
 
     public HashMap<ConnectionNode, PathType> getPathConnections() {
@@ -85,5 +80,10 @@ public class ConnectionNode {
 
     public NavigableBlock getNavigableBlock() {
         return navigableBlock;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " " + getDirectedMovementCost();
     }
 }
