@@ -201,6 +201,8 @@ public class DebugServerGameState extends ServerWorldGameState {
         }
 
 
+        getWorld(spawnWorld).initNavigatableBlockConnections();
+
 
 
 

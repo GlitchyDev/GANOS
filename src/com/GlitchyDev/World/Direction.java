@@ -40,4 +40,9 @@ public enum Direction {
         }
         return 0;
     }
+
+    public static Direction[] getCardinal() {
+        Direction[] temp = {NORTH,EAST,SOUTH,WEST};
+        return temp;
+    }
 }

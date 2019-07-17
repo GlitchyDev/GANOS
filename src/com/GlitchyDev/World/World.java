@@ -96,6 +96,13 @@ public class World {
     }
 
 
+    public void initNavigatableBlockConnections() {
+        for(NavigableBlock navigableBlock: navigableBlocks) {
+            navigableBlock.initializeConnections();
+        }
+    }
+
+
 
     public Location getOriginLocation() {
         return new Location(0,0,0, getWorldUUID());

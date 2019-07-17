@@ -15,11 +15,11 @@ import java.util.UUID;
 public class DesignerDebugBlock extends DesignerBlock {
 
     public DesignerDebugBlock(WorldGameState worldGameState, Location location, UUID regionUUID) {
-        super(worldGameState, BlockType.DESIGNER_DEBUG_BLOCK, location, regionUUID, AssetLoader.getInstanceGridTexture("School_Tiles"));
+        super(BlockType.DESIGNER_DEBUG_BLOCK, worldGameState, location, regionUUID, AssetLoader.getInstanceGridTexture("School_Tiles"));
     }
 
     public DesignerDebugBlock(WorldGameState worldGameState, InputBitUtility inputBitUtility, UUID regionUUID) throws IOException {
-        super(BlockType.DESIGNER_DEBUG_BLOCK,worldGameState, inputBitUtility, regionUUID, AssetLoader.getInstanceGridTexture("School_Tiles"));
+        super(BlockType.DESIGNER_DEBUG_BLOCK, worldGameState, inputBitUtility, regionUUID, AssetLoader.getInstanceGridTexture("School_Tiles"));
     }
 
     @Override

@@ -9,9 +9,8 @@ import java.util.ArrayList;
 public class NavigationManager {
     private static final int TIMEOUT_LIMIT = 1000;
 
-    private static ArrayList<NavigableBlock> getDirectPath(WorldGameState worldGameState, World world, Location startingLocation, Location endingLocation, NavigatingEntity navigatingEntity) {
+    public static ArrayList<NavigableBlock> getDirectPath(WorldGameState worldGameState, Location startingLocation, Location endingLocation, NavigatingEntity navigatingEntity) {
         // Might be un-necessary
-        final ArrayList<NavigableBlock> navigableBlocks = world.getNavigableBlocks();
         ArrayList<ConnectionNode> availableNodes = new ArrayList<>();
         ArrayList<ConnectionNode> closedNodes = new ArrayList<>();
 
@@ -47,6 +46,35 @@ public class NavigationManager {
         return blockPathList;
 
 
+    }
+
+
+    private static ArrayList<ConnectionNode> availableNodes = new ArrayList<>();
+    private static ArrayList<ConnectionNode> closedNodes = new ArrayList<>();
+    private static ConnectionNode startingNode = null;
+    private static ConnectionNode currentNode = null;
+    public static void debugDirectPath(WorldGameState worldGameState, World world, Location startingLocation, Location endingLocation, NavigatingEntity navigatingEntity) {
+        if(currentNode == null) {
+            startingNode = ((NavigableBlock) worldGameState.getBlockAtLocation(startingLocation)).getConnectionNode();
+            currentNode = startingNode;
+        }
+
+        availableNodes.remove(currentNode);
+        closedNodes.add(currentNode);
+        currentNode.addDirectlyNavigatedNodes(navigatingEntity,availableNodes,endingLocation);
+
+        int lowestDirectedMovementCost = Integer.MAX_VALUE;
+        for(ConnectionNode connectionNode: availableNodes) {
+            if(connectionNode.getDirectedMovementCost() < lowestDirectedMovementCost) {
+                currentNode = connectionNode;
+            }
+        }
+
+        if(currentNode.getNavigableBlock().getLocation().equals(endingLocation)) {
+            System.out.println("Navigation Manager has completed a path from " + startingLocation + " to " + endingLocation);
+            currentNode = null;
+            startingNode = null;
+        }
     }
 
 

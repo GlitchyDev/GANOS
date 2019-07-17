@@ -16,7 +16,7 @@ public abstract class DesignerBlock extends Block {
     private int[] textureID;
     private InstancedGridTexture instancedGridTexture;
 
-    public DesignerBlock(WorldGameState worldGameState, BlockType blockType, Location location, UUID regionUUID, InstancedGridTexture instancedGridTexture) {
+    public DesignerBlock(BlockType blockType,WorldGameState worldGameState, Location location, UUID regionUUID, InstancedGridTexture instancedGridTexture) {
         super(blockType, worldGameState, location, regionUUID);
         faceStates = new boolean[6];
         textureID = new int[6];

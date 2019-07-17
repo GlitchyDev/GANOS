@@ -150,6 +150,16 @@ public abstract class WorldGameState extends EnvironmentGameState {
         return getWorld(location.getWorldUUID()).isARegionAtLocation(location);
     }
 
+    public boolean isLocationInSameRegion(Location location, UUID hostRegion) {
+        ArrayList<Region> regions = getRegionsAtLocation(location);
+        for(Region region: regions) {
+            if(region.getRegionUUID().equals(hostRegion)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Block getBlockAtLocation(Location location) {
         return getBlockAtLocation(location, getRegionAtLocation(location).getRegionUUID());
     }

@@ -16,7 +16,7 @@ public enum BlockType {
     AIR,
     DEBUG_CUSTOM_RENDER,
     DESIGNER_DEBUG_BLOCK,
-
+    DEBUG_NAVIGATION_BLOCK,
     ;
 
 
