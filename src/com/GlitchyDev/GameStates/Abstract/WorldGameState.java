@@ -66,6 +66,7 @@ public abstract class WorldGameState extends EnvironmentGameState {
         }
 
         for(InstancedGridTexture instancedGridTexture: designerBlocks.keySet()) {
+            partialCubicInstanceMesh.setInstancedGridTexture(instancedGridTexture);
             renderer.renderDesignerBlocks(camera,designerBlocks.get(instancedGridTexture), partialCubicInstanceMesh, "Instance3D");
         }
         transparentRenderables.sort((o1, o2) -> (int) (o1.getDistance(camera.getPosition()) - o2.getDistance(camera.getPosition())));

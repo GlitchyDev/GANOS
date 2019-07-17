@@ -23,6 +23,7 @@ import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
+import com.GlitchyDev.World.Blocks.DebugNavigationBlock;
 import com.GlitchyDev.World.Blocks.DesignerDebugBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Effects.ServerDebugEffect;
@@ -75,7 +76,7 @@ public class DebugServerGameState extends ServerWorldGameState {
     private final Texture shaderTestEffect3;
     */
 
-    private final PartialCubicInstanceMesh partialCubicInstanceMesh;
+    private final PartialCubicInstanceMesh instancedGridMesh;
 
 
     public DebugServerGameState(GlobalGameData globalGameData) {
@@ -101,8 +102,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         spawnWorld = UUID.fromString("0bca5dea-3e45-11e9-b210-d663bd873d93");
 
         Mesh tempMesh = new Mesh(AssetLoader.getMeshAsset("CubicMesh1"));
-        tempMesh.setTexture(AssetLoader.getInstanceGridTexture("School_Tiles"));
-        partialCubicInstanceMesh = new PartialCubicInstanceMesh(tempMesh,1000,AssetLoader.getInstanceGridTexture("School_Tiles"));
+        instancedGridMesh = new PartialCubicInstanceMesh(tempMesh,1000,null);
 
 
 
@@ -152,12 +152,26 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
 
             region1.setBlockRelative(0,0,0,new DebugCustomRenderBlock(this,region1.getLocation().getOffsetLocation(0,0,0), region1.getRegionUUID()));
+
             DesignerDebugBlock designerDebugBlock = new DesignerDebugBlock(this,region1.getLocation().getOffsetLocation(0,3,0), region1.getRegionUUID());
             for(Direction direction: Direction.values()) {
                 designerDebugBlock.setFaceState(direction,true);
-                designerDebugBlock.setTextureID(direction,1);
+                designerDebugBlock.setTextureID(direction,10);
             }
             region1.setBlockRelative(0,3,0,designerDebugBlock);
+
+            DebugNavigationBlock debugNavigationBlock1 = new DebugNavigationBlock(this,region1.getLocation().getOffsetLocation(3,1,3), region1.getRegionUUID());
+            DebugNavigationBlock debugNavigationBlock2 = new DebugNavigationBlock(this,region1.getLocation().getOffsetLocation(4,1,3), region1.getRegionUUID());
+            DebugNavigationBlock debugNavigationBlock3 = new DebugNavigationBlock(this,region1.getLocation().getOffsetLocation(3,1,4), region1.getRegionUUID());
+            DebugNavigationBlock debugNavigationBlock4 = new DebugNavigationBlock(this,region1.getLocation().getOffsetLocation(4,1,4), region1.getRegionUUID());
+            region1.setBlockRelative(debugNavigationBlock1.getLocation(),debugNavigationBlock1);
+            region1.setBlockRelative(debugNavigationBlock2.getLocation(),debugNavigationBlock2);
+            region1.setBlockRelative(debugNavigationBlock3.getLocation(),debugNavigationBlock3);
+            region1.setBlockRelative(debugNavigationBlock4.getLocation(),debugNavigationBlock4);
+
+
+
+
 
 
 
@@ -388,7 +402,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         debugItems.get(19).setText(gameInput.getMouseX() + " " + gameInput.getMouseY());
 
         ArrayList<Block> blockList = new ArrayList<>();
-        for(Region region: getWorld(spawnWorld).getRegions().values()) {
+        for(Region region: testPlayer.getEntityView().getViewableRegions()) {
             for (Block block : region.getBlocksArray()) {
                 if (block instanceof DebugBlock) {
                     blockList.add(block);
@@ -397,9 +411,12 @@ public class DebugServerGameState extends ServerWorldGameState {
         }
 
         //375
-        Block block = selectBlock2D(blockList,globalGameData.getGameWindow(),mousePos,camera);
-        if(block != null) {
-            ((DebugBlock)block).setTestValue((((DebugBlock) block).getTestValue()+1)%3);
+        if(gameInputTimings.getActiveMouseButton1Time() == 1) {
+
+            Block block = selectBlock2D(blockList,globalGameData.getGameWindow(),mousePos,camera);
+            if (block != null) {
+                ((DebugBlock) block).setTestValue((((DebugBlock) block).getTestValue() + 1) % 3);
+            }
         }
     }
 
@@ -510,7 +527,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         renderer.setRenderSpace(0,0,500,500);
 
 
-        renderEnvironment(camera,testPlayer.getPlayerEntity().getEntityView().getViewableRegions(),partialCubicInstanceMesh);
+        renderEnvironment(camera,testPlayer.getPlayerEntity().getEntityView().getViewableRegions(), instancedGridMesh);
         renderer.enableTransparency();
         walkieTalkie.render(renderer,500);
         renderer.disableTransparency();
@@ -519,7 +536,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         renderer.setRenderSpace(500,0,500,500);
         if (currentPlayers.containsKey(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562"))) {
-            renderEnvironment(camera,currentPlayers.get(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562")).getEntityView().getViewableRegions(),partialCubicInstanceMesh);
+            renderEnvironment(camera,currentPlayers.get(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562")).getEntityView().getViewableRegions(), instancedGridMesh);
         }
 
         renderer.setRenderSpace(1000,0,500,500);

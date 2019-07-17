@@ -1,7 +1,7 @@
 package com.GlitchyDev.World.Blocks;
 
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
-import com.GlitchyDev.Rendering.Assets.Texture.InstancedGridTexture;
+import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
@@ -22,20 +22,21 @@ import java.util.UUID;
 
 public class DebugNavigationBlock extends DesignerBlock implements NavigableBlock {
     private final ConnectionNode connectionNode;
+    private int textureValue = 0;
 
-    public DebugNavigationBlock(WorldGameState worldGameState, Location location, UUID regionUUID, InstancedGridTexture instancedGridTexture) {
-        super(BlockType.DEBUG_NAVIGATION_BLOCK,worldGameState, location, regionUUID, instancedGridTexture);
+    public DebugNavigationBlock(WorldGameState worldGameState, Location location, UUID regionUUID) {
+        super(BlockType.DEBUG_NAVIGATION_BLOCK,worldGameState, location, regionUUID, AssetLoader.getInstanceGridTexture("Navigation_Grid"));
         this.connectionNode = new ConnectionNode(this);
     }
 
-    public DebugNavigationBlock(WorldGameState worldGameState, InputBitUtility inputBitUtility, UUID regionUUID, InstancedGridTexture instancedGridTexture) throws IOException {
-        super(BlockType.DEBUG_NAVIGATION_BLOCK, worldGameState, inputBitUtility, regionUUID, instancedGridTexture);
+    public DebugNavigationBlock(WorldGameState worldGameState, InputBitUtility inputBitUtility, UUID regionUUID) throws IOException {
+        super(BlockType.DEBUG_NAVIGATION_BLOCK, worldGameState, inputBitUtility, regionUUID, AssetLoader.getInstanceGridTexture("Navigation_Grid"));
         this.connectionNode = new ConnectionNode(this);
     }
 
     @Override
     public Block getCopy() {
-        return new DebugNavigationBlock(worldGameState, location, regionUUID, getInstancedGridTexture());
+        return new DebugNavigationBlock(worldGameState, location, regionUUID);
     }
 
     @Override
@@ -56,16 +57,20 @@ public class DebugNavigationBlock extends DesignerBlock implements NavigableBloc
     @Override
     public void initializeConnections() {
         // This block is only looking at the 4 Cardinal Locations
+        int count = 0;
         for(Direction direction: Direction.getCardinal()) {
             Location directionLocation = location.getOffsetDirectionLocation(direction);
 
-            // Does a block exist here at all
+
+                    // Does a block exist here at all
+            boolean foundDirection = false;
             if(worldGameState.isBlockAtLocation(directionLocation)) {
                 // If this block is in the same region we don't need to check for magical multi-overlap region nonsense
                 if(worldGameState.isLocationInSameRegion(directionLocation,getRegionUUID())) {
                     Block block = worldGameState.getBlockAtLocation(directionLocation);
                     if(block instanceof DebugNavigationBlock) {
                         connectionNode.getPathConnections().put(((DebugNavigationBlock) block).getConnectionNode(), PathType.FLOOR);
+                        foundDirection = true;
                     }
                 } else {
                     // Multiple Overlap regions! Quick add a connection type for each region interfering in our grand plans
@@ -89,16 +94,24 @@ public class DebugNavigationBlock extends DesignerBlock implements NavigableBloc
                             switch (blockRegionConnection) {
                                 case NORMAL:
                                     connectionNode.getPathConnections().put(((DebugNavigationBlock) block).getConnectionNode(), PathType.FLOOR);
+                                    foundDirection = true;
                                     break;
                                 default:
                                     connectionNode.getPathConnections().put(((DebugNavigationBlock) block).getConnectionNode(), PathType.DEBUG);
+                                    foundDirection = true;
                                     break;
                             }
                         }
                     }
                 }
             }
+            textureValue += foundDirection ? Math.pow(2.0,count) : 0;
+
+            count++;
         }
+
+        setFaceState(Direction.ABOVE,true);
+        setTextureID(Direction.ABOVE,textureValue);
 
         // Now we set our top plate of our block to show our current region connection, lol
 

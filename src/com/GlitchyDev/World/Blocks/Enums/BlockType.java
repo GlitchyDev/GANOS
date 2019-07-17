@@ -2,11 +2,8 @@ package com.GlitchyDev.World.Blocks.Enums;
 
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
+import com.GlitchyDev.World.Blocks.*;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
-import com.GlitchyDev.World.Blocks.AirBlock;
-import com.GlitchyDev.World.Blocks.DebugBlock;
-import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
-import com.GlitchyDev.World.Blocks.DesignerDebugBlock;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -32,6 +29,8 @@ public enum BlockType {
                 return new DebugCustomRenderBlock(worldGameState, inputBitUtility, regionUUID);
             case DESIGNER_DEBUG_BLOCK:
                 return new DesignerDebugBlock(worldGameState, inputBitUtility, regionUUID);
+            case DEBUG_NAVIGATION_BLOCK:
+                return new DebugNavigationBlock(worldGameState,inputBitUtility,regionUUID);
             default:
                 System.out.println("ERROR BlockType " + this + " not registered");
                 return new AirBlock(worldGameState, inputBitUtility, regionUUID);
