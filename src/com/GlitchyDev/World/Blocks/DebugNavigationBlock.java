@@ -24,6 +24,7 @@ import java.util.UUID;
 public class DebugNavigationBlock extends DesignerBlock implements NavigableBlock, TickableBlock {
     private final ConnectionNode connectionNode;
     private int textureValue = 0;
+    private boolean inPath = false;
 
     public DebugNavigationBlock(WorldGameState worldGameState, Location location, UUID regionUUID) {
         super(BlockType.DEBUG_NAVIGATION_BLOCK,worldGameState, location, regionUUID, AssetLoader.getInstanceGridTexture("Navigation_Grid"));
@@ -124,15 +125,23 @@ public class DebugNavigationBlock extends DesignerBlock implements NavigableBloc
 
     @Override
     public void tick() {
-        if(connectionNode.getPreviousNode() == null) {
-            setInstancedGridTexture(AssetLoader.getInstanceGridTexture("Navigation_Grid_Unused"));
+        if(!inPath) {
+            if (connectionNode.getPreviousNode() == null) {
+                setInstancedGridTexture(AssetLoader.getInstanceGridTexture("Navigation_Grid_Unused"));
+            } else {
+                setInstancedGridTexture(AssetLoader.getInstanceGridTexture("Navigation_Grid"));
+            }
         } else {
-            setInstancedGridTexture(AssetLoader.getInstanceGridTexture("Navigation_Grid"));
+            setInstancedGridTexture(AssetLoader.getInstanceGridTexture("Navigation_Grid_Selected"));
         }
     }
 
     @Override
     public String toString() {
         return super.toString();
+    }
+
+    public void setInPath(boolean inPath) {
+        this.inPath = inPath;
     }
 }

@@ -1,6 +1,7 @@
 package com.GlitchyDev.World.Navigation;
 
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.World.Blocks.DebugNavigationBlock;
 import com.GlitchyDev.World.Location;
 
 import java.util.ArrayList;
@@ -36,8 +37,7 @@ public class NavigationManager {
         }
 
         ArrayList<NavigableBlock> blockPathList = new ArrayList<>();
-        ConnectionNode finalNode = currentNode;
-        while(currentNode != finalNode) {
+        while(currentNode.getPreviousNode() != null) {
             blockPathList.add(currentNode.getNavigableBlock());
             currentNode = currentNode.getPreviousNode();
         }
@@ -85,10 +85,28 @@ public class NavigationManager {
 
         System.out.println("New Selected Node " + currentNode);
 
+        System.out.println(currentNode.getNavigableBlock().getLocation() + "     " + endingLocation);
         if(currentNode.getNavigableBlock().getLocation().equals(endingLocation)) {
             System.out.println("Navigation Manager has completed a path from " + startingLocation + " to " + endingLocation);
+
+            while(currentNode.getPreviousNode() != null) {
+                if(currentNode.getNavigableBlock() instanceof DebugNavigationBlock) {
+                    ((DebugNavigationBlock) currentNode.getNavigableBlock()).setInPath(true);
+                }
+                currentNode = currentNode.getPreviousNode();
+            }
+
+
+            for(ConnectionNode connectionNode: closedNodes) {
+                connectionNode.resetNavigation();
+            }
+            for(ConnectionNode connectionNode: availableNodes) {
+                connectionNode.resetNavigation();
+            }
+
             currentNode = null;
             startingNode = null;
+
         }
     }
 

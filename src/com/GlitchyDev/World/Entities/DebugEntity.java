@@ -134,7 +134,7 @@ public class DebugEntity extends Entity implements CustomVisibleEntity, CustomTr
     }
 
     @Override
-    public int getMovementCost(PathType pathType) {
-        return 5;
+    public double getMovementCost(PathType pathType) {
+        return 0.1;
     }
 }

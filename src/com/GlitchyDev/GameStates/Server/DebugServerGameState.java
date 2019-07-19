@@ -403,7 +403,6 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         //375
         if(gameInputTimings.getActiveMouseButton1Time() == 1) {
-
             Block block = selectBlock2D(blockList,globalGameData.getGameWindow(),mousePos,camera);
             if (block != null) {
                 ((DebugBlock) block).setTestValue((((DebugBlock) block).getTestValue() + 1) % 3);
@@ -413,7 +412,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         if(gameInputTimings.getActiveMouseButton2Time() == 1) {
             System.out.println("Advance Navigation");
-            NavigationManager.debugDirectPath(this,new Location(5,0,5,spawnWorld),new Location(7,0,5,spawnWorld),debugEntity);
+            NavigationManager.debugDirectPath(this,new Location(5,0,5,spawnWorld),new Location(13,0,-3,spawnWorld),debugEntity);
         }
 
     }

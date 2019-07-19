@@ -1,5 +1,5 @@
 package com.GlitchyDev.World.Navigation;
 
 public interface NavigatingEntity {
-    int getMovementCost(PathType pathType);
+    double getMovementCost(PathType pathType);
 }

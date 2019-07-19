@@ -26,7 +26,7 @@ public class ConnectionNode {
     public void addDirectlyNavigatedNodes(NavigatingEntity navigatingEntity, ArrayList<ConnectionNode> availableNodes, ArrayList<ConnectionNode> closedList, Location navigationTarget) {
         for(ConnectionNode connectionNode: pathConnections.keySet()) {
             if (!closedList.contains(connectionNode)) {
-                int movementCost = navigatingEntity.getMovementCost(pathConnections.get(connectionNode));
+                double movementCost = navigatingEntity.getMovementCost(pathConnections.get(connectionNode));
                 if (!availableNodes.contains(connectionNode)) {
                     connectionNode.directlyNavigatedNode(this, navigatingEntity.getMovementCost(pathConnections.get(connectionNode)), navigationTarget);
                     availableNodes.add(connectionNode);
@@ -39,7 +39,7 @@ public class ConnectionNode {
         }
     }
 
-    public void directlyNavigatedNode(ConnectionNode previousNode, int movementCost, Location navigationTarget) {
+    public void directlyNavigatedNode(ConnectionNode previousNode, double movementCost, Location navigationTarget) {
         this.previousNode = previousNode;
         Location currentLocation = navigableBlock.getLocation();
         accumulatedMovementCost = previousNode.getAccumulatedMovementCost() + movementCost;
@@ -53,9 +53,6 @@ public class ConnectionNode {
         accumulatedMovementCost = 0;
     }
 
-    public void resetPathConnections() {
-        pathConnections.clear();
-    }
 
 
     public double getAccumulatedMovementCost() {

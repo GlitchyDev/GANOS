@@ -142,10 +142,19 @@ public class Location {
 
     @Override
     public String toString() {
-        return "l@" + getX() + "," + getY() + "," + getZ();
+        return "l@" + getX() + "," + getY() + "," + getZ() + "," + worldUUID;
     }
 
     // Getters
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Location) {
+            return ((Location) obj).getX() == getX() && ((Location) obj).getY() == getY() && ((Location) obj).getZ() == getZ() && ((Location) obj).getWorldUUID().equals(getWorldUUID());
+        }
+        return false;
+    }
 
     public int getX() {
         return (int) position.x;
