@@ -123,7 +123,7 @@ public class Location {
      * @return The distance between the current and the provided Location
      */
     public double getDistance(Location location) {
-        if(worldUUID == location.getWorldUUID()) {
+        if(worldUUID.equals(location.getWorldUUID())) {
             return Math.sqrt(Math.pow(location.getX() - getX(), 2) + Math.pow(location.getY() - getY(), 2) + Math.pow(location.getZ() - getZ(), 2));
         } else {
             return Double.MAX_VALUE;
@@ -133,6 +133,10 @@ public class Location {
     public double getDistance(Vector3f position) {
         return Math.sqrt(Math.pow(position.x() - getX(), 2) + Math.pow(position.y() - getY(), 2) + Math.pow(position.z() - getZ(), 2));
 
+    }
+
+    public boolean isLocationCloser(Location location1, Location location2) {
+        return getDistance(location1) < getDistance(location2);
     }
 
     @Override
