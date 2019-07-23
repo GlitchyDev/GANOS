@@ -53,7 +53,7 @@ public class DebugCommunicationEntity extends Entity implements CommunicationLis
         textItem.setRotation(0,-45,180);
 
         if(worldGameState instanceof ServerWorldGameState) {
-    2        ((ServerWorldGameState) worldGameState).getCommunicationManager().join(this);
+            ((ServerWorldGameState) worldGameState).getCommunicationManager().join(this);
         }
 
     }

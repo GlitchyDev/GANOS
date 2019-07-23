@@ -154,7 +154,7 @@ public class DebugServerGameState extends ServerWorldGameState {
             region1.setBlockRelative(0,0,0,new DebugCustomRenderBlock(this,region1.getLocation().getOffsetLocation(0,0,0), region1.getRegionUUID()));
 
             DesignerDebugBlock designerDebugBlock = new DesignerDebugBlock(this,region1.getLocation().getOffsetLocation(0,3,0), region1.getRegionUUID());
-            for(Direction direction: Direction.values()) {
+            for(Direction direction: Direction.getCompleteCardinal()) {
                 designerDebugBlock.setFaceState(direction,true);
                 designerDebugBlock.setTextureID(direction,10);
             }
@@ -205,7 +205,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         }
 
 
-        getWorld(spawnWorld).initNavigatableBlockConnections();
+        getWorld(spawnWorld).initNavigableBlockConnections();
 
 
         debugEntity = new DebugEntity(this,getRegionAtLocation(new Location(5,1,0,spawnWorld)).getRegionUUID(), new Location(5,1,0,spawnWorld), Direction.NORTH);
@@ -520,6 +520,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
     @Override
     public void render() {
+
         renderer.prepWindowRender(globalGameData.getGameWindow());
         renderer.setRenderSpace(0,0,500,500);
 

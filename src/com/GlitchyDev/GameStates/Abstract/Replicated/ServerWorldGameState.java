@@ -20,19 +20,27 @@ import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerSpawnRegionPa
 import com.GlitchyDev.Networking.ServerNetworkManager;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisibleBlock;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.LightableBlock;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Effects.Abstract.BlockEffect;
+import com.GlitchyDev.World.Effects.Abstract.Effect;
 import com.GlitchyDev.World.Effects.Abstract.EntityEffect;
+import com.GlitchyDev.World.Effects.Abstract.TickableEffect;
 import com.GlitchyDev.World.Entities.AbstractEntities.CustomVisibleEntity;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
+import com.GlitchyDev.World.Entities.AbstractEntities.TickableEntity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Events.Communication.CommunicationManager;
 import com.GlitchyDev.World.Events.Network.NetworkManager;
 import com.GlitchyDev.World.Events.WorldEvents.WorldEventManager;
+import com.GlitchyDev.World.Lighting.LightingManager;
 import com.GlitchyDev.World.Location;
+import com.GlitchyDev.World.Navigation.NavigableBlock;
 import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.Views.EntityView;
+import com.GlitchyDev.World.World;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,6 +55,8 @@ public abstract class ServerWorldGameState extends WorldGameState {
     protected final NetworkManager networkManager;
     protected final CommunicationManager communicationManager;
     protected final WorldEventManager worldEventManager;
+    protected final LightingManager lightingManager;
+
 
     public ServerWorldGameState(GlobalGameData globalGameDataBase, GameStateType gameStateType, int assignedPort) {
         super(globalGameDataBase, gameStateType);
@@ -56,6 +66,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
         this.networkManager = new NetworkManager();
         this.communicationManager = new CommunicationManager();
         this.worldEventManager = new WorldEventManager();
+        this.lightingManager = new LightingManager();
     }
 
     @Override
@@ -298,6 +309,17 @@ public abstract class ServerWorldGameState extends WorldGameState {
         // This is replicated, mark for Entities who can view its region
         super.spawnEntity(entity, spawnReason);
         spawnedEntities.put(entity,new ServerSpawnEntityPacket(entity));
+
+        World world = getWorld(entity.getWorldUUID());
+        if(entity instanceof TickableEntity) {
+            world.getTickableEntities().add((TickableEntity) entity);
+        }
+        for(Effect effect: entity.getCurrentEffects()) {
+            if(effect instanceof TickableEffect) {
+                world.getTickableEffects().add((TickableEffect) effect);
+            }
+        }
+
         worldEventManager.triggerEntitySpawn(entity,spawnReason);
     }
 
@@ -309,6 +331,17 @@ public abstract class ServerWorldGameState extends WorldGameState {
         Entity entity = getEntity(entityUUID,worldUUID);
         super.despawnEntity(entityUUID, worldUUID, despawnReason);
         despawnedEntities.put(entity,new ServerDespawnEntityPacket(entityUUID, worldUUID)); // Moved down one line
+
+        World world = getWorld(entity.getWorldUUID());
+        if(entity instanceof TickableEntity) {
+            world.getTickableEntities().remove(entity);
+        }
+        for(Effect effect: entity.getCurrentEffects()) {
+            if(effect instanceof TickableEffect) {
+                world.getTickableEffects().remove(effect);
+            }
+        }
+
         worldEventManager.triggerEntityDespawn(entity,despawnReason);
     }
 
@@ -391,18 +424,120 @@ public abstract class ServerWorldGameState extends WorldGameState {
     }
 
     @Override
-    public void setBlock(Block block, UUID regionUUID) {
-        Region region = getRegion(regionUUID,block.getLocation().getWorldUUID());
-        Location difference = region.getLocation().getLocationDifference(block.getLocation());
+    public void setBlock(Block newBlock, UUID regionUUID) {
+        World world = getWorld(newBlock.getWorld());
+        Region region = getRegion(regionUUID, newBlock.getLocation().getWorldUUID());
+        Location difference = region.getLocation().getLocationDifference(newBlock.getLocation());
         Block previousBlock = region.getBlockRelative(difference);
 
-        super.setBlock(block,regionUUID);
+        super.setBlock(newBlock,regionUUID);
+
+        // Do all Server sided updates
+        if (previousBlock instanceof TickableBlock) {
+            world.getTickableBlocks().remove(previousBlock);
+        }
+        for(Effect effect: previousBlock.getCurrentEffects()) {
+            if(effect instanceof TickableEffect) {
+                world.getTickableEffects().remove(effect);
+            }
+        }
+        if(previousBlock instanceof NavigableBlock) {
+            world.getNavigableBlocks().remove(previousBlock);
+        }
+        if(previousBlock instanceof LightableBlock) {
+            lightingManager.deregisterBlock((LightableBlock) previousBlock);
+        }
+        //
+        if (newBlock instanceof TickableBlock) {
+            world.getTickableBlocks().add((TickableBlock) newBlock);
+        }
+        for(Effect effect: newBlock.getCurrentEffects()) {
+            if(effect instanceof TickableEffect) {
+                world.getTickableEffects().add((TickableEffect) effect);
+            }
+        }
+        if(newBlock instanceof NavigableBlock) {
+            world.getNavigableBlocks().add((NavigableBlock) newBlock);
+        }
+        if(newBlock instanceof LightableBlock) {
+            lightingManager.registerBlock((LightableBlock) previousBlock);
+        }
+
+
         // This is replicated, mark for entities who can view it
         if(!changedBlocks.containsKey(regionUUID)) {
             changedBlocks.put(regionUUID, new ArrayList<>());
         }
-        changedBlocks.get(regionUUID).add(new ServerChangeBlockPacket(block));
-        worldEventManager.triggerBlockChange(previousBlock,block,region.getRegionUUID());
+        changedBlocks.get(regionUUID).add(new ServerChangeBlockPacket(newBlock));
+        worldEventManager.triggerBlockChange(previousBlock, newBlock,region.getRegionUUID());
+    }
+
+    @Override
+    public void addRegionToGame(Region region) {
+        super.addRegionToGame(region);
+        World world = getWorld(region.getWorldUUID());
+
+        for (Entity entity : region.getEntities()) {
+            if(entity instanceof TickableEntity) {
+                world.getTickableEntities().add((TickableEntity) entity);
+            }
+            for(Effect effect: entity.getCurrentEffects()) {
+                if(effect instanceof TickableEffect) {
+                    world.getTickableEffects().add((TickableEffect) effect);
+                }
+            }
+        }
+
+        for (Block block : region.getBlocksArray()) {
+            if (block instanceof TickableBlock) {
+                getWorld(region.getWorldUUID()).getTickableBlocks().add((TickableBlock) block);
+            }
+            for(Effect effect: block.getCurrentEffects()) {
+                if(effect instanceof TickableEffect) {
+                    world.getTickableEffects().add((TickableEffect) effect);
+                }
+            }
+            if(block instanceof NavigableBlock) {
+                world.getNavigableBlocks().add((NavigableBlock) block);
+            }
+            if(block instanceof LightableBlock) {
+                lightingManager.registerBlock((LightableBlock) block);
+            }
+        }
+    }
+
+    @Override
+    public void removeRegionFromGame(UUID regionUUID, UUID worldUUID) {
+        super.removeRegionFromGame(regionUUID, worldUUID);
+        World world = new World(worldUUID);
+        Region region = getWorld(worldUUID).getRegions().get(regionUUID);
+        for (Entity entity : region.getEntities()) {
+            world.getEntities().remove(entity.getUUID());
+            if(entity instanceof TickableEntity) {
+                world.getTickableEntities().remove(entity);
+            }
+            for(Effect effect: entity.getCurrentEffects()) {
+                if(effect instanceof TickableEffect) {
+                    world.getTickableEffects().remove(effect);
+                }
+            }
+        }
+        for (Block block : region.getBlocksArray()) {
+            if (block instanceof TickableBlock) {
+                getWorld(worldUUID).getTickableBlocks().remove(block.getLocation());
+            }
+            for(Effect effect: block.getCurrentEffects()) {
+                if(effect instanceof TickableEffect) {
+                    world.getTickableEffects().remove(effect);
+                }
+            }
+            if(block instanceof NavigableBlock) {
+                world.getNavigableBlocks().remove(block);
+            }
+            if(block instanceof LightableBlock) {
+                lightingManager.deregisterBlock((LightableBlock) block);
+            }
+        }
     }
 
     // Check to make sure the correct "Region" is sent, visibility and all

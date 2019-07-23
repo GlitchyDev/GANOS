@@ -96,7 +96,7 @@ public class World {
     }
 
 
-    public void initNavigatableBlockConnections() {
+    public void initNavigableBlockConnections() {
         for(NavigableBlock navigableBlock: navigableBlocks) {
             navigableBlock.initializeConnections();
         }

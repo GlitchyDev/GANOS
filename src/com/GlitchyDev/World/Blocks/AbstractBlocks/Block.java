@@ -112,6 +112,10 @@ public abstract class Block {
         return blockType;
     }
 
+    public UUID getWorld() {
+        return location.getWorldUUID();
+    }
+
     public boolean isDoDisableFrustumCulling() {
         return doDisableFrustumCulling;
     }

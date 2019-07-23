@@ -9,6 +9,11 @@ public enum Direction {
     WEST,
     ;
 
+
+    private static final Direction[] cardinal = {NORTH,EAST,SOUTH,WEST};
+    private static final Direction[] completeCardinal = {ABOVE,BELOW,NORTH,EAST,SOUTH,WEST};
+
+
     public Direction reverse() {
         switch(this) {
             case ABOVE:
@@ -42,7 +47,11 @@ public enum Direction {
     }
 
     public static Direction[] getCardinal() {
-        Direction[] temp = {NORTH,EAST,SOUTH,WEST};
-        return temp;
+        return Direction.cardinal;
     }
+
+    public static Direction[] getCompleteCardinal() {
+        return completeCardinal;
+    }
+
 }

@@ -228,7 +228,6 @@ public class Renderer {
 
 
     public void renderDesignerBlocks(Camera camera, ArrayList<DesignerBlock> designerBlocks, PartialCubicInstanceMesh partialCubicInstanceMesh, String shaderName) {
-
         ShaderProgram shader = loadedShaders.get(shaderName);
         if(!previousShader.equals(shaderName)) {
             shader.bind();

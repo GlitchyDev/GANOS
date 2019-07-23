@@ -8,7 +8,6 @@ import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Effects.Abstract.Effect;
 import com.GlitchyDev.World.Effects.Abstract.TickableEffect;
 import com.GlitchyDev.World.Entities.AbstractEntities.CustomRenderEntity;
@@ -18,7 +17,6 @@ import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.General.CustomTransparentRenderable;
 import com.GlitchyDev.World.Location;
-import com.GlitchyDev.World.Navigation.NavigableBlock;
 import com.GlitchyDev.World.Region.Enum.RegionConnection;
 import com.GlitchyDev.World.Region.Region;
 import com.GlitchyDev.World.World;
@@ -200,40 +198,15 @@ public abstract class WorldGameState extends EnvironmentGameState {
         setBlock(block, regionUUID);
     }
 
-    public void setBlock(Block block, UUID regionUUID) {
-        UUID worldUUID = block.getLocation().getWorldUUID();
+    public void setBlock(Block newBlock, UUID regionUUID) {
+        UUID worldUUID = newBlock.getLocation().getWorldUUID();
         Region region = getRegion(regionUUID, worldUUID);
-        Location difference = region.getLocation().getLocationDifference(block.getLocation());
-        World world = getWorld(worldUUID);
+        Location difference = region.getLocation().getLocationDifference(newBlock.getLocation());
 
 
-        Block previousBlock = region.getBlockRelative(difference);
-        if (previousBlock instanceof TickableBlock) {
-            world.getTickableBlocks().remove(previousBlock);
-        }
-        for(Effect effect: previousBlock.getCurrentEffects()) {
-            if(effect instanceof TickableEffect) {
-                world.getTickableEffects().remove((TickableEffect) effect);
-            }
-        }
-        if(previousBlock instanceof NavigableBlock) {
-            world.getNavigableBlocks().remove(previousBlock);
-        }
+        newBlock.setRegionUUID(regionUUID);
+        region.setBlockRelative(difference, newBlock);
 
-
-        block.setRegionUUID(regionUUID);
-        region.setBlockRelative(difference, block);
-        if (block instanceof TickableBlock) {
-            world.getTickableBlocks().add((TickableBlock) block);
-        }
-        for(Effect effect: block.getCurrentEffects()) {
-            if(effect instanceof TickableEffect) {
-                world.getTickableEffects().add((TickableEffect) effect);
-            }
-        }
-        if(block instanceof NavigableBlock) {
-            world.getNavigableBlocks().add((NavigableBlock) block);
-        }
     }
 
     public void addRegionToGame(Region region) {
@@ -243,58 +216,10 @@ public abstract class WorldGameState extends EnvironmentGameState {
         for (Entity entity : region.getEntities()) {
             world.addEntity(entity);
             entity.onSpawn(SpawnReason.REGION_MANUALLY_ADDED);
-            if(entity instanceof TickableEntity) {
-                world.getTickableEntities().add((TickableEntity) entity);
-            }
-            for(Effect effect: entity.getCurrentEffects()) {
-                if(effect instanceof TickableEffect) {
-                    world.getTickableEffects().add((TickableEffect) effect);
-                }
-            }
-        }
-
-        for (Block block : region.getBlocksArray()) {
-            if (block instanceof TickableBlock) {
-                getWorld(region.getWorldUUID()).getTickableBlocks().add((TickableBlock) block);
-            }
-            for(Effect effect: block.getCurrentEffects()) {
-                if(effect instanceof TickableEffect) {
-                    world.getTickableEffects().add((TickableEffect) effect);
-                }
-            }
-            if(block instanceof NavigableBlock) {
-                world.getNavigableBlocks().add((NavigableBlock) block);
-            }
         }
     }
 
     public void removeRegionFromGame(UUID regionUUID, UUID worldUUID) {
-        World world = new World(worldUUID);
-        Region region = getWorld(worldUUID).getRegions().get(regionUUID);
-        for (Entity entity : region.getEntities()) {
-            world.getEntities().remove(entity.getUUID());
-            if(entity instanceof TickableEntity) {
-                world.getTickableEntities().remove(entity);
-            }
-            for(Effect effect: entity.getCurrentEffects()) {
-                if(effect instanceof TickableEffect) {
-                    world.getTickableEffects().remove(effect);
-                }
-            }
-        }
-        for (Block block : region.getBlocksArray()) {
-            if (block instanceof TickableBlock) {
-                getWorld(worldUUID).getTickableBlocks().remove(block.getLocation());
-            }
-            for(Effect effect: block.getCurrentEffects()) {
-                if(effect instanceof TickableEffect) {
-                    world.getTickableEffects().remove(effect);
-                }
-            }
-            if(block instanceof NavigableBlock) {
-                world.getNavigableBlocks().remove(block);
-            }
-        }
         getWorld(worldUUID).getRegions().remove(regionUUID);
     }
 
@@ -306,15 +231,6 @@ public abstract class WorldGameState extends EnvironmentGameState {
         getRegion(entity.getCurrentRegionUUID(), entity.getWorldUUID()).getEntities().add(entity);
         World world = getWorld(entity.getLocation().getWorldUUID());
         world.addEntity(entity);
-
-        if(entity instanceof TickableEntity) {
-            world.getTickableEntities().add((TickableEntity) entity);
-        }
-        for(Effect effect: entity.getCurrentEffects()) {
-            if(effect instanceof TickableEffect) {
-                world.getTickableEffects().add((TickableEffect) effect);
-            }
-        }
     }
 
 

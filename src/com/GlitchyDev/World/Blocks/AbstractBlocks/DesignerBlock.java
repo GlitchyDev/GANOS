@@ -11,15 +11,17 @@ import com.GlitchyDev.World.Location;
 import java.io.IOException;
 import java.util.UUID;
 
-public abstract class DesignerBlock extends Block {
+public abstract class DesignerBlock extends Block implements LightableBlock {
     private boolean[] faceStates;
     private int[] textureID;
+    private int[] lightLevels;
     private InstancedGridTexture instancedGridTexture;
 
     public DesignerBlock(BlockType blockType,WorldGameState worldGameState, Location location, UUID regionUUID, InstancedGridTexture instancedGridTexture) {
         super(blockType, worldGameState, location, regionUUID);
         faceStates = new boolean[6];
         textureID = new int[6];
+        lightLevels = new int[6];
         this.instancedGridTexture = instancedGridTexture;
     }
 
@@ -27,9 +29,10 @@ public abstract class DesignerBlock extends Block {
         super(blockType, worldGameState, inputBitUtility, regionUUID);
         faceStates = new boolean[6];
         textureID = new int[6];
+        lightLevels = new int[6];
         this.instancedGridTexture = instancedGridTexture;
 
-        for(Direction direction: Direction.values()) {
+        for(Direction direction: Direction.getCompleteCardinal()) {
             boolean faceState =  inputBitUtility.getNextBit();
             setFaceState(direction,faceState);
             if(faceState) {
@@ -41,7 +44,7 @@ public abstract class DesignerBlock extends Block {
     @Override
     public void writeData(OutputBitUtility outputBitUtility) throws IOException {
         super.writeData(outputBitUtility);
-        for(Direction direction: Direction.values()) {
+        for(Direction direction: Direction.getCompleteCardinal()) {
             outputBitUtility.writeNextBit(getFaceState(direction));
             if(getFaceState(direction)) {
                 outputBitUtility.writeNextInteger(getTextureID(direction));
@@ -50,9 +53,26 @@ public abstract class DesignerBlock extends Block {
     }
 
     protected void copyInformation(DesignerBlock destinationBlock) {
-        for(Direction direction: Direction.values()) {
+        for(Direction direction: Direction.getCompleteCardinal()) {
             destinationBlock.setFaceState(direction,getFaceState(direction));
             destinationBlock.setTextureID(direction,getTextureID(direction));
+        }
+    }
+
+    @Override
+    public void setBlockLight(Direction direction, int lightLevel) {
+        lightLevels[direction.ordinal()] = lightLevel;
+    }
+
+    @Override
+    public int getLightLevel(Direction direction) {
+        return lightLevels[direction.ordinal()];
+    }
+
+    @Override
+    public void resetLight() {
+        for(Direction direction: Direction.getCompleteCardinal()) {
+            lightLevels[direction.ordinal()] = 0;
         }
     }
 

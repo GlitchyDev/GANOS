@@ -67,7 +67,7 @@ public abstract class Entity {
         this.currentRegionUUID = currentRegionUUID;
         // This location will be updated on Spawn\
         this.location = relativeLocation;
-        this.direction = Direction.values()[inputBitUtility.getNextCorrectedIntBit(3)];
+        this.direction = Direction.getCompleteCardinal()[inputBitUtility.getNextCorrectedIntBit(3)];
         int totalEffects = inputBitUtility.getNextCorrectIntByte();
         this.currentEffects = new ArrayList<>(totalEffects);
         for(int i = 0; i < totalEffects; i++) {

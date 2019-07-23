@@ -4,8 +4,10 @@ layout (location=0) in vec3 position;
 layout (location=1) in vec2 texCoord;
 layout (location=2) in mat4 modelViewMatrix;
 layout (location=6) in vec2 texSelect;
+layout (location=7) in float light;
 
 out vec2 outTexCoord;
+out float lightLevel;
 
 uniform mat4 projectionMatrix;
 uniform vec2 textureGridSize;
@@ -18,4 +20,5 @@ void main()
 
 
     outTexCoord = vec2(texXSize * texSelect.x + texXSize * texCoord.x, texYSize * texSelect.y + texYSize * texCoord.y);
+    lightLevel = light;
 }

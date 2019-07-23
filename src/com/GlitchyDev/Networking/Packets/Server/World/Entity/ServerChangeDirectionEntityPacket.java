@@ -26,7 +26,7 @@ public class ServerChangeDirectionEntityPacket extends WorldStateModifyingPacket
         super(PacketType.SERVER_MOVE_ENTITY, inputBitUtility, worldGameState);
         this.entityUUID = inputBitUtility.getNextUUID();
         this.worldUUID = inputBitUtility.getNextUUID();
-        this.newDirection = Direction.values()[inputBitUtility.getNextCorrectedIntBit(3)];
+        this.newDirection = Direction.getCompleteCardinal()[inputBitUtility.getNextCorrectedIntBit(3)];
     }
 
     @Override
