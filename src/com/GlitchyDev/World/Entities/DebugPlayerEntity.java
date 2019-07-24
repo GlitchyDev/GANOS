@@ -7,18 +7,22 @@ import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.LightableBlock;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.CustomRenderEntity;
 import com.GlitchyDev.World.Entities.AbstractEntities.PlayerEntity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
+import com.GlitchyDev.World.Lighting.DynamicLightProducer;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
 import java.util.UUID;
 
-public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntity {
+public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntity, DynamicLightProducer, TickableBlock {
     private GameItem gameItem;
 
     public DebugPlayerEntity(WorldGameState worldGameState, UUID currentRegionUUID, Location location, Direction direction) {
@@ -51,14 +55,41 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
         super.writeData(outputBitUtility);
     }
 
-    @Override
-    public void setLocation(Location location) {
-        super.setLocation(location);
-    }
 
     @Override
     public void renderCustomEntity(Renderer renderer, Camera camera) {
         gameItem.setPosition(getLocation().getNormalizedPosition());
         renderer.render3DElement(camera,gameItem, "Default3D");
+    }
+
+    @Override
+    public boolean needLightingUpdate() {
+        return true;
+    }
+
+    @Override
+    public Direction[] getDirectionsProduced() {
+        Direction[] directions = new Direction[1];
+        directions[0] = Direction.BELOW;
+        return directions;
+    }
+
+    @Override
+    public int getLightLevelProduced(Direction direction) {
+        return 5;
+    }
+
+    @Override
+    public Location getEmissionLocation() {
+        return getLocation().clone();
+    }
+
+    @Override
+    public void tick() {
+        Location location = new Location(getLocation().getX(),0,getLocation().getZ(),getWorldUUID());
+        Block block = worldGameState.getBlockAtLocation(location);
+        if(block instanceof LightableBlock) {
+            ((LightableBlock) block).setStaticLightLevel(Direction.ABOVE,10);
+        }
     }
 }

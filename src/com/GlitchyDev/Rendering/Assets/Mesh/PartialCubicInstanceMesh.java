@@ -118,7 +118,7 @@ public class PartialCubicInstanceMesh extends InstancedMesh {
                     int y = num / instancedGridTexture.getHorizontalGridNam();
                     textureCords.add(new Vector2f(x,y));
 
-                    lights.add(LightingManager.getLightPercentage(block.getLightLevel(direction)));
+                    lights.add(LightingManager.getLightPercentage(block.getCurrentLightLevel(direction)));
                 }
             }
         }

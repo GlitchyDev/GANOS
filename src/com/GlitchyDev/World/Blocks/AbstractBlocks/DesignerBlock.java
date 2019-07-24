@@ -9,27 +9,39 @@ import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.UUID;
 
 public abstract class DesignerBlock extends Block implements LightableBlock {
     private boolean[] faceStates;
     private int[] textureID;
-    private int[] lightLevels;
+    private int[] staticLightLevels;
+    private int[] dynamicLightLevels;
+    private int[] currentLightLevels;
+    private int[] previousLightLevels;
     private InstancedGridTexture instancedGridTexture;
 
     public DesignerBlock(BlockType blockType,WorldGameState worldGameState, Location location, UUID regionUUID, InstancedGridTexture instancedGridTexture) {
         super(blockType, worldGameState, location, regionUUID);
         faceStates = new boolean[6];
         textureID = new int[6];
-        lightLevels = new int[6];
+        staticLightLevels = new int[6];
+        dynamicLightLevels = new int[6];
+        currentLightLevels = new int[6];
+        previousLightLevels = new int[6];
         this.instancedGridTexture = instancedGridTexture;
     }
+
+    // Reminder, light blocks will be without light on spawn
 
     public DesignerBlock(BlockType blockType, WorldGameState worldGameState, InputBitUtility inputBitUtility, UUID regionUUID, InstancedGridTexture instancedGridTexture) throws IOException {
         super(blockType, worldGameState, inputBitUtility, regionUUID);
         faceStates = new boolean[6];
         textureID = new int[6];
-        lightLevels = new int[6];
+        staticLightLevels = new int[6];
+        dynamicLightLevels = new int[6];
+        currentLightLevels = new int[6];
+        previousLightLevels = new int[6];
         this.instancedGridTexture = instancedGridTexture;
 
         for(Direction direction: Direction.getCompleteCardinal()) {
@@ -59,22 +71,57 @@ public abstract class DesignerBlock extends Block implements LightableBlock {
         }
     }
 
-    @Override
-    public void setBlockLight(Direction direction, int lightLevel) {
-        lightLevels[direction.ordinal()] = lightLevel;
-    }
+    //*********************
 
     @Override
-    public int getLightLevel(Direction direction) {
-        return lightLevels[direction.ordinal()];
+    public void setStaticLightLevel(Direction direction, int lightLevel) {
+        staticLightLevels[direction.ordinal()] = lightLevel;
+    }
+    @Override
+    public void setDynamicLightLevel(Direction direction, int lightLevel) {
+        dynamicLightLevels[direction.ordinal()] = lightLevel;
+    }
+    @Override
+    public void setCurrentLightLevel(Direction direction, int lightLevel) {
+        currentLightLevels[direction.ordinal()] = lightLevel;
     }
 
+
+    // To check if a light is minimal
     @Override
-    public void resetLight() {
+    public int getStaticLightLevel(Direction direction) {
+        return staticLightLevels[direction.ordinal()];
+    }
+    @Override
+    public int getDynamicLightLevel(Direction direction) {
+        return dynamicLightLevels[direction.ordinal()];
+    }
+    @Override
+    public int getCurrentLightLevel(Direction direction) {
+        return currentLightLevels[direction.ordinal()];
+    }
+    @Override
+    public int getPreviousLightLevel(Direction direction) {
+        return previousLightLevels[direction.ordinal()];
+    }
+
+    // Since resetting Static lights is unnecessary
+    @Override
+    public void resetDynamicLight() {
+        Arrays.fill(dynamicLightLevels,0);
         for(Direction direction: Direction.getCompleteCardinal()) {
-            lightLevels[direction.ordinal()] = 0;
+            currentLightLevels[direction.ordinal()] = staticLightLevels[direction.ordinal()];
         }
     }
+
+    @Override
+    public void finalizeLight() {
+        for(Direction direction: Direction.getCompleteCardinal()) {
+            currentLightLevels[direction.ordinal()] = Math.max(staticLightLevels[direction.ordinal()], dynamicLightLevels[direction.ordinal()]);
+            previousLightLevels[direction.ordinal()] = currentLightLevels[direction.ordinal()];
+        }
+    }
+
 
 
 

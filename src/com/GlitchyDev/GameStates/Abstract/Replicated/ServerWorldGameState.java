@@ -35,6 +35,7 @@ import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Events.Communication.CommunicationManager;
 import com.GlitchyDev.World.Events.Network.NetworkManager;
 import com.GlitchyDev.World.Events.WorldEvents.WorldEventManager;
+import com.GlitchyDev.World.Lighting.LightProducer;
 import com.GlitchyDev.World.Lighting.LightingManager;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Navigation.NavigableBlock;
@@ -77,7 +78,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
                 processPacket(playerUUID, packet);
             }
         }
+
         for(UUID worldUUID: getWorlds()) {
+            lightingManager.preformWorldLightingUpdate(worldUUID);
             getWorld(worldUUID).tick();
         }
 
@@ -140,17 +143,13 @@ public abstract class ServerWorldGameState extends WorldGameState {
             }
 
 
-            System.out.println("Updated block visibility check " + updatedBlockVisibility.size());
             for (Block block : updatedBlockVisibility) {
                 UUID regionUUID = block.getRegionUUID();
-                System.out.println("L " + regionUUID);
                 if (playerView.containsRegion(regionUUID)) {
-                    System.out.println("Updated Block " + block + " for " + player);
                     if (block instanceof CustomVisibleBlock) {
                         Block viewedBlock = ((CustomVisibleBlock) block).getVisibleBlock(player);
                         Location regionLocation = player.getEntityView().getRegion(regionUUID).getLocation();
                         Location blockRelative = regionLocation.getLocationDifference(block.getLocation());
-
                             serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerChangeBlockPacket(viewedBlock));
                             player.getEntityView().getRegion(regionUUID).setBlockRelative(blockRelative, viewedBlock);
 
@@ -302,6 +301,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
     }
 
 
+
     // Spawning entities triggers an viewcheck on EVERY Player in the world, the Server View should already show an update
     private HashMap<Entity, ServerSpawnEntityPacket> spawnedEntities = new HashMap<>();
     @Override
@@ -318,6 +318,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
             if(effect instanceof TickableEffect) {
                 world.getTickableEffects().add((TickableEffect) effect);
             }
+        }
+        if(entity instanceof LightProducer) {
+            lightingManager.registerLightProducer((LightProducer) entity);
         }
 
         worldEventManager.triggerEntitySpawn(entity,spawnReason);
@@ -340,6 +343,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
             if(effect instanceof TickableEffect) {
                 world.getTickableEffects().remove(effect);
             }
+        }
+        if(entity instanceof LightProducer) {
+            lightingManager.deregisterLightProducer((LightProducer) entity);
         }
 
         worldEventManager.triggerEntityDespawn(entity,despawnReason);
@@ -425,7 +431,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
     @Override
     public void setBlock(Block newBlock, UUID regionUUID) {
-        World world = getWorld(newBlock.getWorld());
+        World world = getWorld(newBlock.getWorldUUID());
         Region region = getRegion(regionUUID, newBlock.getLocation().getWorldUUID());
         Location difference = region.getLocation().getLocationDifference(newBlock.getLocation());
         Block previousBlock = region.getBlockRelative(difference);
@@ -447,6 +453,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
         if(previousBlock instanceof LightableBlock) {
             lightingManager.deregisterBlock((LightableBlock) previousBlock);
         }
+        if(previousBlock instanceof LightProducer) {
+            lightingManager.deregisterLightProducer((LightProducer) previousBlock);
+        }
         //
         if (newBlock instanceof TickableBlock) {
             world.getTickableBlocks().add((TickableBlock) newBlock);
@@ -461,6 +470,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
         }
         if(newBlock instanceof LightableBlock) {
             lightingManager.registerBlock((LightableBlock) previousBlock);
+        }
+        if(newBlock instanceof LightProducer) {
+            lightingManager.registerLightProducer((LightProducer) newBlock);
         }
 
 
@@ -486,6 +498,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
                     world.getTickableEffects().add((TickableEffect) effect);
                 }
             }
+            if(entity instanceof LightProducer) {
+                lightingManager.registerLightProducer((LightProducer) entity);
+            }
         }
 
         for (Block block : region.getBlocksArray()) {
@@ -502,6 +517,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
             }
             if(block instanceof LightableBlock) {
                 lightingManager.registerBlock((LightableBlock) block);
+            }
+            if(block instanceof LightProducer) {
+                lightingManager.registerLightProducer((LightProducer) block);
             }
         }
     }
@@ -521,10 +539,13 @@ public abstract class ServerWorldGameState extends WorldGameState {
                     world.getTickableEffects().remove(effect);
                 }
             }
+            if(entity instanceof LightProducer) {
+                lightingManager.deregisterLightProducer((LightProducer) entity);
+            }
         }
         for (Block block : region.getBlocksArray()) {
             if (block instanceof TickableBlock) {
-                getWorld(worldUUID).getTickableBlocks().remove(block.getLocation());
+                getWorld(worldUUID).getTickableBlocks().remove(block);
             }
             for(Effect effect: block.getCurrentEffects()) {
                 if(effect instanceof TickableEffect) {
@@ -536,6 +557,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
             }
             if(block instanceof LightableBlock) {
                 lightingManager.deregisterBlock((LightableBlock) block);
+            }
+            if(block instanceof LightProducer) {
+                lightingManager.deregisterLightProducer((LightProducer) block);
             }
         }
     }

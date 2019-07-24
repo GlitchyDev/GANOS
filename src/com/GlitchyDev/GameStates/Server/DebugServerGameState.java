@@ -205,7 +205,6 @@ public class DebugServerGameState extends ServerWorldGameState {
         }
 
 
-        getWorld(spawnWorld).initNavigableBlockConnections();
 
 
         debugEntity = new DebugEntity(this,getRegionAtLocation(new Location(5,1,0,spawnWorld)).getRegionUUID(), new Location(5,1,0,spawnWorld), Direction.NORTH);
@@ -247,7 +246,8 @@ public class DebugServerGameState extends ServerWorldGameState {
         gameWindow.setCursor("DebugCursor");
 
         walkieTalkie = new WalkieTalkieBase();
-
+        getWorld(spawnWorld).initNavigableBlockConnections();
+        lightingManager.preformInitWorldLightingUpdate(spawnWorld);
 
 
     }
@@ -326,7 +326,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         if(gameInputTimings.getActiveKeyTime(GLFW_KEY_U) == 1) {
             System.out.println("Broadcast Message");
             CommunicationMessage message = new CommunicationMessage(0, LanguageType.English,"Soma");
-            getCommunicationManager().transmitMessage(message,new Location(0,0,0,spawnWorld),new CommunicationServerSource());
+            communicationManager.transmitMessage(message,new Location(0,0,0,spawnWorld),new CommunicationServerSource());
         }
 
 

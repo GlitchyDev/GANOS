@@ -112,7 +112,7 @@ public abstract class Block {
         return blockType;
     }
 
-    public UUID getWorld() {
+    public UUID getWorldUUID() {
         return location.getWorldUUID();
     }
 

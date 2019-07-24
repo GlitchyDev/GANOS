@@ -67,7 +67,7 @@ public class DebugEntity extends Entity implements CustomVisibleEntity, CustomTr
 
 
             /*
-            for(Entity entity: worldGameState.getWorld(getWorldUUID()).getEntities()) {
+            for(Entity entity: worldGameState.getWorldUUID(getWorldUUID()).getEntities()) {
 
                 if(isVisible) {
                     entity.applyEffect(new ServerPacketReplicationEffect(worldGameState));
