@@ -1,5 +1,7 @@
 package com.GlitchyDev.World.Lighting;
 
+import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.LightableBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Location;
@@ -23,7 +25,7 @@ public class LightingManager {
 
 
 
-    public void updateDynamicLighting(UUID world) {
+    public void updateDynamicLighting(UUID world, ServerWorldGameState serverWorldGameState) {
         boolean requireUpdate = false;
         for(DynamicLightProducer dynamicLightProducer: dynamicLightProducers.get(world)) {
             if(dynamicLightProducer.needLightingUpdate()) {
@@ -36,73 +38,64 @@ public class LightingManager {
             for(LightableBlock lightableBlock: lightableBlocks.get(world).values()) {
                 lightableBlock.resetDynamicLight();
             }
-        }
-
-        // Light sources who intersect will share Light cache
-        HashMap<Location, Integer> lightCache = new HashMap<>();
-        ArrayList<Integer> hashMapTest = new ArrayList<>();
-        int hashCount = 0;
-        int totalPolled = 0;
-        for(DynamicLightProducer dynamicLightProducer: dynamicLightProducers.get(world)) {
-            ArrayList<LightPropagationNode> lightToBePolled = new ArrayList<>();
 
 
-            for(Direction direction: dynamicLightProducer.getDirectionsProduced()) {
-                lightToBePolled.add(new LightPropagationNode(dynamicLightProducer.getEmissionLocation(),direction,direction,dynamicLightProducer.getLightLevelProduced()));
-            }
+            // Light sources who intersect will share Light cache
+            HashMap<Location, Integer> lightCache = new HashMap<>();
+            int totalPolled = 0;
+            for(DynamicLightProducer dynamicLightProducer: dynamicLightProducers.get(world)) {
+                ArrayList<LightPropagationNode> lightToBePolled = new ArrayList<>();
 
-            while(lightToBePolled.size() != 0) {
-                totalPolled++;
-                LightPropagationNode lightPropagationNode = lightToBePolled.get(0);
-                lightToBePolled.remove(0);
-                Location location = lightPropagationNode.getLocation();
-                Direction emissionDirection = lightPropagationNode.getEmissionDirection();
-                Direction currentDirection = lightPropagationNode.getCurrentDirection();
-                int lightLevel = lightPropagationNode.getLightLevel();
 
-                if(lightableBlocks.get(world).containsKey(lightPropagationNode.getLocation())) {
-                    LightableBlock lightableBlock = lightableBlocks.get(world).get(location);
-                    lightableBlock.setDynamicLightLevel(currentDirection.reverse(),lightLevel);
-                } else {
-                    for(Direction newDirection: Direction.getCompleteCardinal()) {
-                        // We don't wanna go backwards in emission
-                        if(newDirection != emissionDirection.reverse() && newDirection != currentDirection.reverse()) {
-                            int newLightLevel = degradeLight(lightLevel);
-                            if (newLightLevel > 0) {
-                                Location newLocation = location.getOffsetDirectionLocation(newDirection);
+                for (Direction direction : dynamicLightProducer.getDirectionsProduced()) {
+                    lightToBePolled.add(new LightPropagationNode(dynamicLightProducer.getEmissionLocation(), direction, direction, dynamicLightProducer.getLightLevelProduced()));
+                }
 
-                                    if (lightCache.containsKey(newLocation)) {
-                                        if (lightCache.get(newLocation) < newLightLevel) {
+                while (lightToBePolled.size() != 0) {
+                    totalPolled++;
+                    LightPropagationNode lightPropagationNode = lightToBePolled.get(0);
+                    lightToBePolled.remove(0);
+                    Location location = lightPropagationNode.getLocation();
+                    Direction emissionDirection = lightPropagationNode.getEmissionDirection();
+                    Direction currentDirection = lightPropagationNode.getCurrentDirection();
+                    int lightLevel = lightPropagationNode.getLightLevel();
+
+                    Block block = serverWorldGameState.getBlockAtLocation(location);
+                    if (lightableBlocks.get(world).containsKey(block.getLocation())) {
+                        LightableBlock lightableBlock = lightableBlocks.get(world).get(block.getLocation());
+                        lightableBlock.setDynamicLightLevel(currentDirection.reverse(), lightLevel);
+                    } else {
+                        for (Direction newDirection : Direction.getCompleteCardinal()) {
+                            // We don't wanna go backwards in emission
+                            if (newDirection != emissionDirection.reverse() && newDirection != currentDirection.reverse()) {
+                                int newLightLevel = degradeLight(lightLevel);
+                                if (newLightLevel > 0) {
+                                    Location newLocation = location.getOffsetDirectionLocation(newDirection);
+                                    if(serverWorldGameState.isBlockAtLocation(newLocation)) {
+                                        Location blockLocation = serverWorldGameState.getBlockAtLocation(newLocation).getLocation();
+                                        if (lightCache.containsKey(blockLocation)) {
+                                            if (lightCache.get(blockLocation) < newLightLevel) {
+                                                lightToBePolled.add(new LightPropagationNode(newLocation, emissionDirection, newDirection, newLightLevel));
+                                            }
+                                        } else {
+                                            lightCache.put(blockLocation, newLightLevel);
                                             lightToBePolled.add(new LightPropagationNode(newLocation, emissionDirection, newDirection, newLightLevel));
                                         }
-                                    } else {
-                                        lightCache.put(newLocation, newLightLevel);
-                                        if(hashMapTest.contains(newLocation.hashCode())) {
-                                            System.out.println("Duplicated Hash Detected " + newLocation.hashCode() + " " + hashCount++);
-                                        }
-
-                                        hashMapTest.add(newLocation.hashCode());
-                                        lightToBePolled.add(new LightPropagationNode(newLocation, emissionDirection, newDirection, newLightLevel));
                                     }
-
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            for(LightableBlock lightableBlock: lightableBlocks.get(world).values()) {
-                lightableBlock.finalizeLight();
+                for (LightableBlock lightableBlock : lightableBlocks.get(world).values()) {
+                    lightableBlock.finalizeLight();
+                }
             }
-
-            System.out.println("Total polled " + totalPolled);
+            //System.out.println("Total polled " + totalPolled);
         }
     }
 
-    private final int MAX_LIGHT_HEIGHT = 10;
-    public boolean checkValidLocation(Location location) {
-        return location.getY() >= 0 || location.getY() <= MAX_LIGHT_HEIGHT;
-    }
 
 
 

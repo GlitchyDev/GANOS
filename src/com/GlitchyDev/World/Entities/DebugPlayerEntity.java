@@ -22,6 +22,7 @@ import java.util.UUID;
 
 public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntity, DynamicLightProducer, TickableEntity {
     private GameItem gameItem;
+    private Location previousLocation;
 
     public DebugPlayerEntity(WorldGameState worldGameState, UUID currentRegionUUID, Location location, Direction direction) {
         super(worldGameState, currentRegionUUID, EntityType.DEBUG_PLAYER, location, direction);
@@ -38,6 +39,8 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
         this.gameItem = new GameItem(AssetLoader.getMeshAsset("cube").clone());
         gameItem.getMesh().setTexture(AssetLoader.getTextureAsset("DefaultTexture"));
         gameItem.setPosition(getLocation().getNormalizedPosition());
+
+        previousLocation = getLocation();
     }
 
 
@@ -63,6 +66,16 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
     @Override
     public boolean needLightingUpdate() {
         return true;
+        /*
+        if(previousLocation.equals(getLocation())) {
+            return false;
+        } else {
+            previousLocation = getLocation();
+            return true;
+
+        }
+         */
+
     }
 
     @Override

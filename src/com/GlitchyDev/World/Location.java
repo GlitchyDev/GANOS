@@ -4,7 +4,6 @@ package com.GlitchyDev.World;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.UUID;
 
 public class Location {
@@ -166,10 +165,7 @@ public class Location {
         return false;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getX(),getY(),getZ(),worldUUID);
-    }
+
 
     public int getX() {
         return (int) position.x;
