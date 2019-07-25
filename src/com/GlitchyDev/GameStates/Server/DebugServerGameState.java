@@ -247,7 +247,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         walkieTalkie = new WalkieTalkieBase();
         getWorld(spawnWorld).initNavigableBlockConnections();
-        lightingManager.preformInitWorldLightingUpdate(spawnWorld);
+
 
 
     }

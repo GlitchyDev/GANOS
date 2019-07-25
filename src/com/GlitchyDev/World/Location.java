@@ -3,6 +3,7 @@ package com.GlitchyDev.World;
 
 import org.joml.Vector3f;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Location {
@@ -158,6 +159,11 @@ public class Location {
             return ((Location) obj).getX() == getX() && ((Location) obj).getY() == getY() && ((Location) obj).getZ() == getZ() && ((Location) obj).getWorldUUID().equals(getWorldUUID());
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getX(),getY(),getZ(),worldUUID);
     }
 
     public int getX() {

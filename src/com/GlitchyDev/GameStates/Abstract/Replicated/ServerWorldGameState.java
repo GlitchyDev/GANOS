@@ -80,7 +80,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
         }
 
         for(UUID worldUUID: getWorlds()) {
-            lightingManager.preformWorldLightingUpdate(worldUUID);
+            lightingManager.updateDynamicLighting(worldUUID);
             getWorld(worldUUID).tick();
         }
 

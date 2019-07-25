@@ -1,12 +1,10 @@
 package com.GlitchyDev.World.Lighting;
 
-import com.GlitchyDev.Game.Player;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.LightableBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Location;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -23,108 +21,87 @@ public class LightingManager {
         lightableBlocks = new HashMap<>();
     }
 
-    public void updateLighting(UUID world, Collection<Player> players) {
-        boolean preformUpdate = false;
+
+
+    public void updateDynamicLighting(UUID world) {
+        boolean requireUpdate = false;
         for(DynamicLightProducer dynamicLightProducer: dynamicLightProducers.get(world)) {
             if(dynamicLightProducer.needLightingUpdate()) {
-                preformUpdate = true;
+                requireUpdate = true;
                 break;
             }
         }
 
-        if(preformUpdate) {
-            for(Player player: players) {
-                preformPlayerLightingUpdate(player, world);
-            }
-            preformWorldLightingUpdate(world);
-        }
-    }
-
-
-
-    //*****
-
-    public void preformInitWorldLightingUpdate(UUID world) {
-        doStaticLightUpdate(world);
-        doDynamicLightUpdate(world);
-        finalizeLighting(world);
-    }
-
-    public void preformWorldLightingUpdate(UUID world) {
-        for(LightableBlock lightableBlock: lightableBlocks.get(world).values()) {
-            lightableBlock.resetDynamicLight();
-        }
-        doDynamicLightUpdate(world);
-        finalizeLighting(world);
-    }
-
-    public void preformPlayerLightingUpdate(Player player, UUID world) {
-        // TODO CODE THIS :_:
-    }
-
-    private void doStaticLightUpdate(UUID world) {
-        if(staticLightProducers.containsKey(world)) {
-            for (LightableBlock lightableBlock : lightableBlocks.get(world).values()) {
+        if(requireUpdate) {
+            for(LightableBlock lightableBlock: lightableBlocks.get(world).values()) {
                 lightableBlock.resetDynamicLight();
             }
         }
-    }
-    private void doDynamicLightUpdate(UUID world) {
-        if(dynamicLightProducers.containsKey(world)) {
-            for (DynamicLightProducer dynamicLightProducer : dynamicLightProducers.get(world)) {
-                for (Direction direction : dynamicLightProducer.getDirectionsProduced()) {
-                    spreadDynamicLight(world, dynamicLightProducer.getEmissionLocation(), direction, dynamicLightProducer.getLightLevelProduced(direction));
-                }
+
+        // Light sources who intersect will share Light cache
+        HashMap<Location, Integer> lightCache = new HashMap<>();
+        ArrayList<Integer> hashMapTest = new ArrayList<>();
+        int hashCount = 0;
+        int totalPolled = 0;
+        for(DynamicLightProducer dynamicLightProducer: dynamicLightProducers.get(world)) {
+            ArrayList<LightPropagationNode> lightToBePolled = new ArrayList<>();
+
+
+            for(Direction direction: dynamicLightProducer.getDirectionsProduced()) {
+                lightToBePolled.add(new LightPropagationNode(dynamicLightProducer.getEmissionLocation(),direction,direction,dynamicLightProducer.getLightLevelProduced()));
             }
-        }
-    }
-    private void finalizeLighting(UUID world) {
-        for(LightableBlock lightableBlock: lightableBlocks.get(world).values()) {
-            lightableBlock.finalizeLight();
-        }
-    }
 
+            while(lightToBePolled.size() != 0) {
+                totalPolled++;
+                LightPropagationNode lightPropagationNode = lightToBePolled.get(0);
+                lightToBePolled.remove(0);
+                Location location = lightPropagationNode.getLocation();
+                Direction emissionDirection = lightPropagationNode.getEmissionDirection();
+                Direction currentDirection = lightPropagationNode.getCurrentDirection();
+                int lightLevel = lightPropagationNode.getLightLevel();
 
-
-
-    public void spreadStaticLight(UUID world, Location currentLocation, Direction currentDirection, int currentLightLevel, boolean doUseNoVerticalDegradation) {
-        for(Direction direction: Direction.getCompleteCardinal()) {
-            if(currentDirection.reverse() != direction) {
-                Location currentSpreadLocation = currentLocation.getOffsetDirectionLocation(direction);
-                if(lightableBlocks.get(world).containsKey(currentSpreadLocation)) {
-                    LightableBlock lightableBlock = lightableBlocks.get(world).get(currentSpreadLocation);
-                    if(lightableBlock.getDynamicLightLevel(direction.reverse()) < currentLightLevel) {
-                        lightableBlock.setDynamicLightLevel(direction.reverse(),currentLightLevel);
-                    }
+                if(lightableBlocks.get(world).containsKey(lightPropagationNode.getLocation())) {
+                    LightableBlock lightableBlock = lightableBlocks.get(world).get(location);
+                    lightableBlock.setDynamicLightLevel(currentDirection.reverse(),lightLevel);
                 } else {
-                    if(degradeLight(currentLightLevel) > 0) {
-                        if (direction == Direction.BELOW && doUseNoVerticalDegradation && currentSpreadLocation.getY() > 0) {
-                            spreadDynamicLight(world, currentSpreadLocation, direction, currentLightLevel);
-                        } else {
-                            spreadDynamicLight(world, currentSpreadLocation, direction, degradeLight(currentLightLevel));
+                    for(Direction newDirection: Direction.getCompleteCardinal()) {
+                        // We don't wanna go backwards in emission
+                        if(newDirection != emissionDirection.reverse() && newDirection != currentDirection.reverse()) {
+                            int newLightLevel = degradeLight(lightLevel);
+                            if (newLightLevel > 0) {
+                                Location newLocation = location.getOffsetDirectionLocation(newDirection);
+
+                                    if (lightCache.containsKey(newLocation)) {
+                                        if (lightCache.get(newLocation) < newLightLevel) {
+                                            lightToBePolled.add(new LightPropagationNode(newLocation, emissionDirection, newDirection, newLightLevel));
+                                        }
+                                    } else {
+                                        lightCache.put(newLocation, newLightLevel);
+                                        if(hashMapTest.contains(newLocation.hashCode())) {
+                                            System.out.println("Duplicated Hash Detected " + newLocation.hashCode() + " " + hashCount++);
+                                        }
+
+                                        hashMapTest.add(newLocation.hashCode());
+                                        lightToBePolled.add(new LightPropagationNode(newLocation, emissionDirection, newDirection, newLightLevel));
+                                    }
+
+                            }
                         }
                     }
                 }
             }
+
+            for(LightableBlock lightableBlock: lightableBlocks.get(world).values()) {
+                lightableBlock.finalizeLight();
+            }
+
+            System.out.println("Total polled " + totalPolled);
         }
     }
 
-    public void spreadDynamicLight(UUID world, Location currentLocation, Direction currentDirection, int currentLightLevel) {
-        for(Direction direction: Direction.getCompleteCardinal()) {
-            if(currentDirection.reverse() != direction) {
-                Location currentSpreadLocation = currentLocation.getOffsetDirectionLocation(direction);
-                if(lightableBlocks.get(world).containsKey(currentSpreadLocation)) {
-                    LightableBlock lightableBlock = lightableBlocks.get(world).get(currentSpreadLocation);
-                    if(lightableBlock.getDynamicLightLevel(direction.reverse()) < currentLightLevel) {
-                        lightableBlock.setDynamicLightLevel(direction.reverse(),currentLightLevel);
-                    }
-                } else {
-                    if(degradeLight(currentLightLevel) > 0) {
-                        spreadDynamicLight(world, currentSpreadLocation, direction, degradeLight(currentLightLevel));
-                    }
-                }
-            }
-        }
+    private final int MAX_LIGHT_HEIGHT = 10;
+    public boolean checkValidLocation(Location location) {
+        return location.getY() >= 0 || location.getY() <= MAX_LIGHT_HEIGHT;
     }
 
 
@@ -135,7 +112,7 @@ public class LightingManager {
     }
 
     public static float getLightPercentage(int lightLevel) {
-        return 1.0f/2.0f * lightLevel;
+        return (float) Math.min(1.0f/16.0f * lightLevel,1.0);
     }
 
     public void registerLightProducer(LightProducer lightProducer) {
@@ -182,4 +159,36 @@ public class LightingManager {
     }
 
 
+
+    private class LightPropagationNode {
+        private final Location location;
+        private final Direction emissionDirection;
+        private final Direction currentDirection;
+        private final int lightLevel;
+
+        public LightPropagationNode(Location location, Direction emissionDirection, Direction currentDirection, int lightLevel) {
+            this.location = location;
+            this.emissionDirection = emissionDirection;
+            this.currentDirection = currentDirection;
+            this.lightLevel = lightLevel;
+        }
+
+
+        public Location getLocation() {
+            return location;
+        }
+
+        public Direction getEmissionDirection() {
+            return emissionDirection;
+        }
+
+        public Direction getCurrentDirection() {
+            return currentDirection;
+        }
+
+        public int getLightLevel() {
+            return lightLevel;
+        }
+
+    }
 }
