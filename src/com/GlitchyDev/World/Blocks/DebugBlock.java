@@ -69,7 +69,7 @@ public class DebugBlock extends Block implements CustomRenderBlock {
 
     @Override
     public Block getCopy() {
-        return new DebugBlock(worldGameState, getLocation().clone(), regionUUID, testValue);
+        return new DebugBlock(worldGameState, getLocation(), regionUUID, testValue);
     }
 
     @Override

@@ -32,7 +32,7 @@ public class AirBlock extends Block {
 
     @Override
     public Block getCopy() {
-        return new AirBlock(worldGameState, getLocation().clone(), regionUUID);
+        return new AirBlock(worldGameState, getLocation(), regionUUID);
     }
 
     @Override

@@ -79,7 +79,7 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
 
     @Override
     public Location getEmissionLocation() {
-        return getLocation().clone();
+        return getLocation();
     }
 
     @Override

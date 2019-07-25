@@ -3,28 +3,37 @@ package com.GlitchyDev.World;
 
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
 public class Location {
+    // Use factory
+    public static ArrayList<Location> cacheLocations = new ArrayList<>();
+
+    public static Location getLocation(int x, int y, int z, UUID worldUUID) {
+        for(Location location: cacheLocations) {
+            if(location.getX() == x && location.getY() == y && location.getZ() == z && worldUUID.equals(location.getWorldUUID())) {
+                return location;
+            }
+        }
+        Location location = new Location(x,y,z,worldUUID);
+        cacheLocations.add(location);
+        return location;
+    }
+
+
+
+
     private final Vector3f position;
     private final UUID worldUUID;
 
-
-    public Location(UUID worldUUID) {
-        position = new Vector3f();
-        this.worldUUID = worldUUID;
-    }
 
     public Location(int x, int y, int z, UUID worldUUID) {
         position = new Vector3f(x, y, z);
         this.worldUUID = worldUUID;
     }
 
-    public Location(Location location) {
-        position = new Vector3f(location.getPosition());
-        this.worldUUID = location.getWorldUUID();
-    }
 
 
     /**
@@ -140,10 +149,6 @@ public class Location {
         return getDistance(location1) < getDistance(location2);
     }
 
-    @Override
-    public Location clone() {
-        return new Location(getX(), getY(), getZ(), worldUUID);
-    }
 
     @Override
     public String toString() {

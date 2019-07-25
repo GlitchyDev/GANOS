@@ -198,7 +198,7 @@ public class Region {
 
 
     public Region createCopy() {
-        Region copy = new Region(worldGameState, worldUUID, getWidth(), getLength(), getHeight(), location.clone(), regionUUID);
+        Region copy = new Region(worldGameState, worldUUID, getWidth(), getLength(), getHeight(), location, regionUUID);
         for(int y = 0; y < getHeight(); y++) {
             for(int x = 0; x < getWidth(); x++) {
                 for(int z = 0; z < getLength(); z++) {
