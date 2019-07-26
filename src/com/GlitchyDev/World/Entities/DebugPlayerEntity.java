@@ -14,13 +14,13 @@ import com.GlitchyDev.World.Entities.AbstractEntities.TickableEntity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
-import com.GlitchyDev.World.Lighting.DynamicLightProducer;
+import com.GlitchyDev.World.Lighting.RadiantLightProducer;
 import com.GlitchyDev.World.Location;
 
 import java.io.IOException;
 import java.util.UUID;
 
-public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntity, DynamicLightProducer, TickableEntity {
+public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntity, RadiantLightProducer, TickableEntity {
     private GameItem gameItem;
     private Location previousLocation;
 
@@ -64,17 +64,8 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
     }
 
     @Override
-    public boolean needLightingUpdate() {
+    public boolean doNeedLightUpdate() {
         return true;
-        /*
-        if(previousLocation.equals(getLocation())) {
-            return false;
-        } else {
-            previousLocation = getLocation();
-            return true;
-
-        }
-         */
 
     }
 
@@ -94,6 +85,13 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
     public Location getEmissionLocation() {
         return getLocation();
     }
+
+    @Override
+    public boolean isDynamic() {
+        return true;
+    }
+
+
 
     @Override
     public void tick() {

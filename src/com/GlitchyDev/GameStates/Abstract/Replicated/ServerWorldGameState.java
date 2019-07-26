@@ -35,7 +35,7 @@ import com.GlitchyDev.World.Entities.Enums.SpawnReason;
 import com.GlitchyDev.World.Events.Communication.CommunicationManager;
 import com.GlitchyDev.World.Events.Network.NetworkManager;
 import com.GlitchyDev.World.Events.WorldEvents.WorldEventManager;
-import com.GlitchyDev.World.Lighting.LightProducer;
+import com.GlitchyDev.World.Lighting.Abstract.LightProducer;
 import com.GlitchyDev.World.Lighting.LightingManager;
 import com.GlitchyDev.World.Location;
 import com.GlitchyDev.World.Navigation.NavigableBlock;
