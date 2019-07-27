@@ -73,27 +73,34 @@ public class LightingManager {
                         Block block = serverWorldGameState.getBlockAtLocation(location);
                         if (lightableBlocks.get(world).containsKey(block.getLocation())) {
                             LightableBlock lightableBlock = lightableBlocks.get(world).get(block.getLocation());
-                            lightableBlock.setDynamicLightLevel(currentDirection.reverse(), lightLevel);
+                            if(lightableBlock.getDynamicLightLevel(currentDirection) < lightLevel) {
+                                lightableBlock.setDynamicLightLevel(currentDirection.reverse(), lightLevel);
+                            }
                         } else {
                             for (Direction newDirection : Direction.getCompleteCardinal()) {
                                 // We don't wanna go backwards in emission
-                                if (newDirection != emissionDirection.reverse() && newDirection != currentDirection.reverse()) {
-                                    int newLightLevel = degradeLight(lightLevel);
-                                    if (newLightLevel > 0) {
-                                        Location newLocation = location.getOffsetDirectionLocation(newDirection);
-                                        if (serverWorldGameState.isBlockAtLocation(newLocation)) {
-                                            Location blockLocation = serverWorldGameState.getBlockAtLocation(newLocation).getLocation();
-                                            if (lightCache.containsKey(blockLocation)) {
-                                                if (lightCache.get(blockLocation) < newLightLevel) {
+                                if (newDirection != currentDirection.reverse()) {
+                                int newLightLevel = degradeLight(lightLevel);
+                                if (newLightLevel > 0) {
+                                    Location newLocation = location.getOffsetDirectionLocation(newDirection);
+                                    if (serverWorldGameState.isARegionAtLocation(newLocation)) {
+                                        Location blockLocation = serverWorldGameState.getBlockAtLocation(newLocation).getLocation();
+                                        if (lightCache.containsKey(blockLocation)) {
+                                            if (lightCache.get(blockLocation) < newLightLevel) {
+                                                lightToBePolled.add(new LightPropagationNode(newLocation, emissionDirection, newDirection, newLightLevel));
+                                                lightCache.put(blockLocation,newLightLevel);
+                                            } else {
+                                                if(lightableBlocks.get(world).containsKey(blockLocation)) {
                                                     lightToBePolled.add(new LightPropagationNode(newLocation, emissionDirection, newDirection, newLightLevel));
                                                 }
-                                            } else {
-                                                lightCache.put(blockLocation, newLightLevel);
-                                                lightToBePolled.add(new LightPropagationNode(newLocation, emissionDirection, newDirection, newLightLevel));
                                             }
+                                        } else {
+                                            lightCache.put(blockLocation, newLightLevel);
+                                            lightToBePolled.add(new LightPropagationNode(newLocation, emissionDirection, newDirection, newLightLevel));
                                         }
                                     }
                                 }
+                            }
                             }
                         }
                     }
@@ -283,6 +290,7 @@ public class LightingManager {
     }
 
 
+    // Add a boolean called 1 time ignore, and allow for an emissions flow once???
 
     private class LightPropagationNode {
         private final Location location;

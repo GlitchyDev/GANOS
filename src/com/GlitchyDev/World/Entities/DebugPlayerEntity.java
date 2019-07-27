@@ -65,8 +65,12 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
 
     @Override
     public boolean doNeedLightUpdate() {
+        if(previousLocation.equals(getLocation())) {
+            return false;
+        }
+        previousLocation = getLocation();
+        radius++;
         return true;
-
     }
 
     @Override
@@ -74,9 +78,10 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
         return Direction.getCompleteCardinal();
     }
 
+    int radius = 1;
     @Override
     public int getLightLevelFromDirection(Direction direction) {
-        return 10;
+        return radius;
     }
 
     @Override
