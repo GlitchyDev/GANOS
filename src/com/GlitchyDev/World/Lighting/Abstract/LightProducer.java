@@ -6,7 +6,6 @@ import java.util.UUID;
 
 public interface LightProducer {
     // Further optimizations could allow for it to only update lighting within its "Old Update radius"
-    int getLightLevelProduced();
     Location getEmissionLocation();
     UUID getWorldUUID();
 

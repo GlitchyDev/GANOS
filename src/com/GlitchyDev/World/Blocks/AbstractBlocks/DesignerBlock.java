@@ -80,7 +80,7 @@ public abstract class DesignerBlock extends Block implements LightableBlock {
         return textureIDs;
     }
 
-    protected boolean equvilentInformation(DesignerDebugBlock designerDebugBlock) {
+    protected boolean equivalentInformation(DesignerDebugBlock designerDebugBlock) {
         return Arrays.equals(getFaceStates(), designerDebugBlock.getFaceStates()) && Arrays.equals(getTextureIDs(), designerDebugBlock.getTextureIDs());
     }
 

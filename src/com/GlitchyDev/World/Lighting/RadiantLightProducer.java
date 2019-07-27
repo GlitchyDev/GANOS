@@ -5,4 +5,5 @@ import com.GlitchyDev.World.Lighting.Abstract.LightProducer;
 
 public interface RadiantLightProducer extends LightProducer {
     Direction[] getDirectionsProduced();
+    int getLightLevelFromDirection(Direction direction);
 }

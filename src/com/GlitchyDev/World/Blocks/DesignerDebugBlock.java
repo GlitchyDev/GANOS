@@ -40,7 +40,7 @@ public class DesignerDebugBlock extends DesignerBlock {
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof DesignerDebugBlock) {
-            return equvilentInformation((DesignerDebugBlock) obj);
+            return equivalentInformation((DesignerDebugBlock) obj);
         }
         return false;
     }

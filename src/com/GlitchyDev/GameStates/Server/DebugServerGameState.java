@@ -126,8 +126,10 @@ public class DebugServerGameState extends ServerWorldGameState {
                     for(int y = 0; y < region1.getHeight(); y++) {
                         Location blockLocation = region1.getLocation().getOffsetLocation(x, y, z);
                         if(y == 0) {
-                            DebugNavigationBlock debugNavigationBlock = new DebugNavigationBlock(this, blockLocation, region1.getRegionUUID());
-                            region1.setBlockRelative(x, y, z, debugNavigationBlock);
+                            DesignerDebugBlock designerDebugBlock = new DesignerDebugBlock(this, blockLocation, region1.getRegionUUID());
+                            region1.setBlockRelative(x, y, z, designerDebugBlock);
+                            designerDebugBlock.setFaceState(Direction.ABOVE,true);
+                            designerDebugBlock.setTextureID(Direction.ABOVE,0);
                         } else {
                             if(z == 0) {
                                 DesignerDebugBlock designerDebugBlock = new DesignerDebugBlock(this, blockLocation, region1.getRegionUUID());
@@ -486,12 +488,15 @@ public class DebugServerGameState extends ServerWorldGameState {
 
             if(controller.getToggleDirectionPad() != ControllerDirectionPad.NONE) {
                 testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getOffsetDirectionLocation(controller.getDirectionPad().getDirection()), EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().setDirection(controller.getDirectionPad().getDirection());
             }
             if(controller.getToggleNorthButton()) {
                 testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getOffsetDirectionLocation(Direction.ABOVE),EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().setDirection(Direction.ABOVE);
             }
             if(controller.getToggleSouthButton()) {
                 testPlayer.getPlayerEntity().move(testPlayer.getPlayerEntity().getLocation().getOffsetDirectionLocation(Direction.BELOW),EntityMovementType.WALKING);
+                testPlayer.getPlayerEntity().setDirection(Direction.BELOW);
             }
         } else {
             if(gameInput.getKeyValue(GLFW_KEY_UP) >= 1) {

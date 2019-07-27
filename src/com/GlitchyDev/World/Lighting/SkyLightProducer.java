@@ -6,4 +6,5 @@ public interface SkyLightProducer extends LightProducer {
     int getWidth();
     int getLength();
     boolean useVerticalDegregation();
+    int getSkyLightLevel();
 }

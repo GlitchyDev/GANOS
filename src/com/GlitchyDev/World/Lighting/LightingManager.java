@@ -45,8 +45,21 @@ public class LightingManager {
                 if(lightProducer instanceof RadiantLightProducer) {
                     ArrayList<LightPropagationNode> lightToBePolled = new ArrayList<>();
 
+                    int maxLightLevel = 0;
                     for (Direction direction : ((RadiantLightProducer) lightProducer).getDirectionsProduced()) {
-                        lightToBePolled.add(new LightPropagationNode(lightProducer.getEmissionLocation(), direction, direction, lightProducer.getLightLevelProduced()));
+                        if(serverWorldGameState.isBlockAtLocation(lightProducer.getEmissionLocation().getOffsetDirectionLocation(direction))) {
+                            lightToBePolled.add(new LightPropagationNode(lightProducer.getEmissionLocation().getOffsetDirectionLocation(direction), direction, direction, ((RadiantLightProducer) lightProducer).getLightLevelFromDirection(direction)));
+                            if (((RadiantLightProducer) lightProducer).getLightLevelFromDirection(direction) > maxLightLevel) {
+                                maxLightLevel = ((RadiantLightProducer) lightProducer).getLightLevelFromDirection(direction);
+                            }
+                        }
+                    }
+                    Location producerBlockLocation = serverWorldGameState.getBlockAtLocation(lightProducer.getEmissionLocation()).getLocation();
+                    lightCache.put(producerBlockLocation,maxLightLevel);
+                    if(lightableBlocks.get(world).containsKey(producerBlockLocation)) {
+                        for(Direction direction: Direction.getCompleteCardinal()) {
+                            lightableBlocks.get(world).get(producerBlockLocation).setDynamicLightLevel(direction,maxLightLevel);
+                        }
                     }
 
                     while (lightToBePolled.size() != 0) {
@@ -87,7 +100,7 @@ public class LightingManager {
                 } else {
                     if(lightProducer instanceof SkyLightProducer) {
                         Location location = lightProducer.getEmissionLocation();
-                        int lightStrength = lightProducer.getLightLevelProduced();
+                        int lightStrength = ((SkyLightProducer) lightProducer).getSkyLightLevel();
                         int width = ((SkyLightProducer) lightProducer).getWidth();
                         int length = ((SkyLightProducer) lightProducer).getLength();
                         for(int x = 0; x < ((SkyLightProducer) lightProducer).getWidth(); x++) {
@@ -133,8 +146,20 @@ public class LightingManager {
             if (lightProducer instanceof RadiantLightProducer) {
                 ArrayList<LightPropagationNode> lightToBePolled = new ArrayList<>();
 
+
+                int maxLightLevel = 0;
                 for (Direction direction : ((RadiantLightProducer) lightProducer).getDirectionsProduced()) {
-                    lightToBePolled.add(new LightPropagationNode(lightProducer.getEmissionLocation(), direction, direction, lightProducer.getLightLevelProduced()));
+                    lightToBePolled.add(new LightPropagationNode(lightProducer.getEmissionLocation().getOffsetDirectionLocation(direction), direction, direction, ((RadiantLightProducer) lightProducer).getLightLevelFromDirection(direction)));
+                    if(((RadiantLightProducer) lightProducer).getLightLevelFromDirection(direction) > maxLightLevel) {
+                        maxLightLevel = ((RadiantLightProducer) lightProducer).getLightLevelFromDirection(direction);
+                    }
+                }
+                Location producerBlockLocation = serverWorldGameState.getBlockAtLocation(lightProducer.getEmissionLocation()).getLocation();
+                lightCache.put(producerBlockLocation,maxLightLevel);
+                if(lightableBlocks.get(world).containsKey(producerBlockLocation)) {
+                    for(Direction direction: Direction.getCompleteCardinal()) {
+                        lightableBlocks.get(world).get(producerBlockLocation).setStaticLightLevel(direction,maxLightLevel);
+                    }
                 }
 
                 while (lightToBePolled.size() != 0) {
@@ -175,7 +200,7 @@ public class LightingManager {
             } else {
                 if (lightProducer instanceof SkyLightProducer) {
                     Location location = lightProducer.getEmissionLocation();
-                    int lightStrength = lightProducer.getLightLevelProduced();
+                    int lightStrength = ((SkyLightProducer) lightProducer).getSkyLightLevel();
                     int width = ((SkyLightProducer) lightProducer).getWidth();
                     int length = ((SkyLightProducer) lightProducer).getLength();
                     for (int x = 0; x < ((SkyLightProducer) lightProducer).getWidth(); x++) {

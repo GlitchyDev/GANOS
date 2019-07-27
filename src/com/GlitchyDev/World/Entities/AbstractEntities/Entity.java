@@ -164,6 +164,7 @@ public abstract class Entity {
         return direction;
     }
 
+
     public EntityType getEntityType() {
         return entityType;
     }

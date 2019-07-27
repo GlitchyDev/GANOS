@@ -75,7 +75,7 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
     }
 
     @Override
-    public int getLightLevelProduced() {
+    public int getLightLevelFromDirection(Direction direction) {
         return 10;
     }
 
