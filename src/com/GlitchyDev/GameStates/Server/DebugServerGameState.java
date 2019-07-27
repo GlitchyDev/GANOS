@@ -123,9 +123,38 @@ public class DebugServerGameState extends ServerWorldGameState {
             System.out.println("-------------------");
             for(int x = 0; x < region1.getWidth(); x++) {
                 for(int z = 0; z < region1.getLength(); z++) {
-                    Location blockLocation = region1.getLocation().getOffsetLocation(x,0,z);
-                    DebugNavigationBlock debugNavigationBlock = new DebugNavigationBlock(this,blockLocation,region1.getRegionUUID());
-                    region1.setBlockRelative(x,0,z,debugNavigationBlock);
+                    for(int y = 0; y < region1.getHeight(); y++) {
+                        Location blockLocation = region1.getLocation().getOffsetLocation(x, y, z);
+                        if(y == 0) {
+                            DebugNavigationBlock debugNavigationBlock = new DebugNavigationBlock(this, blockLocation, region1.getRegionUUID());
+                            region1.setBlockRelative(x, y, z, debugNavigationBlock);
+                        } else {
+                            if(z == 0) {
+                                DesignerDebugBlock designerDebugBlock = new DesignerDebugBlock(this, blockLocation, region1.getRegionUUID());
+                                region1.setBlockRelative(x, y, z, designerDebugBlock);
+                                designerDebugBlock.setFaceState(Direction.SOUTH,true);
+                                designerDebugBlock.setTextureID(Direction.SOUTH,0);
+                            }
+                            if(z == region1.getLength()-1) {
+                                DesignerDebugBlock designerDebugBlock = new DesignerDebugBlock(this, blockLocation, region1.getRegionUUID());
+                                region1.setBlockRelative(x, y, z, designerDebugBlock);
+                                designerDebugBlock.setFaceState(Direction.NORTH,true);
+                                designerDebugBlock.setTextureID(Direction.NORTH,10);
+                            }
+                            if(x == 0) {
+                                DesignerDebugBlock designerDebugBlock = new DesignerDebugBlock(this, blockLocation, region1.getRegionUUID());
+                                region1.setBlockRelative(x, y, z, designerDebugBlock);
+                                designerDebugBlock.setFaceState(Direction.EAST,true);
+                                designerDebugBlock.setTextureID(Direction.EAST,11);
+                            }
+                            if(y == region1.getHeight()-1) {
+                                DesignerDebugBlock designerDebugBlock = new DesignerDebugBlock(this, blockLocation, region1.getRegionUUID());
+                                region1.setBlockRelative(x, y, z, designerDebugBlock);
+                                designerDebugBlock.setFaceState(Direction.BELOW,true);
+                                designerDebugBlock.setTextureID(Direction.BELOW,20);
+                            }
+                        }
+                    }
                 }
             }
             for(int x = 0; x < region2.getWidth(); x++) {
@@ -210,7 +239,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         debugEntity = new DebugEntity(this,getRegionAtLocation(new Location(5,1,0,spawnWorld)).getRegionUUID(), new Location(5,1,0,spawnWorld), Direction.NORTH);
         spawnEntity(debugEntity, SpawnReason.DEBUG);
 
-        DebugPlayerEntity playerEntity = new DebugPlayerEntity(this,getRegionAtLocation(new Location(0,1,0,spawnWorld)).getRegionUUID(), new Location(0,1,0,spawnWorld), Direction.NORTH);
+        DebugPlayerEntity playerEntity = new DebugPlayerEntity(this,getRegionAtLocation(new Location(3,1,3,spawnWorld)).getRegionUUID(), new Location(3,1,3,spawnWorld), Direction.NORTH);
         this.testPlayer = new Player(this,UUID.randomUUID(),playerEntity);
         spawnEntity(playerEntity, SpawnReason.DEBUG);
         playerEntity.recalculateView();

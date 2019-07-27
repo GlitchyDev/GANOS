@@ -4,6 +4,7 @@ import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Rendering.Assets.Texture.InstancedGridTexture;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
+import com.GlitchyDev.World.Blocks.DesignerDebugBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Location;
@@ -14,7 +15,7 @@ import java.util.UUID;
 
 public abstract class DesignerBlock extends Block implements LightableBlock {
     private boolean[] faceStates;
-    private int[] textureID;
+    private int[] textureIDs;
     private int[] staticLightLevels;
     private int[] dynamicLightLevels;
     private int[] currentLightLevels;
@@ -24,7 +25,7 @@ public abstract class DesignerBlock extends Block implements LightableBlock {
     public DesignerBlock(BlockType blockType,WorldGameState worldGameState, Location location, UUID regionUUID, InstancedGridTexture instancedGridTexture) {
         super(blockType, worldGameState, location, regionUUID);
         faceStates = new boolean[6];
-        textureID = new int[6];
+        textureIDs = new int[6];
         staticLightLevels = new int[6];
         dynamicLightLevels = new int[6];
         currentLightLevels = new int[6];
@@ -37,7 +38,7 @@ public abstract class DesignerBlock extends Block implements LightableBlock {
     public DesignerBlock(BlockType blockType, WorldGameState worldGameState, InputBitUtility inputBitUtility, UUID regionUUID, InstancedGridTexture instancedGridTexture) throws IOException {
         super(blockType, worldGameState, inputBitUtility, regionUUID);
         faceStates = new boolean[6];
-        textureID = new int[6];
+        textureIDs = new int[6];
         staticLightLevels = new int[6];
         dynamicLightLevels = new int[6];
         currentLightLevels = new int[6];
@@ -69,6 +70,18 @@ public abstract class DesignerBlock extends Block implements LightableBlock {
             destinationBlock.setFaceState(direction,getFaceState(direction));
             destinationBlock.setTextureID(direction,getTextureID(direction));
         }
+    }
+
+    protected boolean[] getFaceStates() {
+        return faceStates;
+    }
+
+    protected int[] getTextureIDs() {
+        return textureIDs;
+    }
+
+    protected boolean equvilentInformation(DesignerDebugBlock designerDebugBlock) {
+        return Arrays.equals(getFaceStates(), designerDebugBlock.getFaceStates()) && Arrays.equals(getTextureIDs(), designerDebugBlock.getTextureIDs());
     }
 
     //*********************
@@ -135,11 +148,11 @@ public abstract class DesignerBlock extends Block implements LightableBlock {
     }
 
     public void setTextureID(Direction direction, int texture) {
-        textureID[direction.ordinal()] = texture;
+        textureIDs[direction.ordinal()] = texture;
     }
 
     public int getTextureID(Direction direction) {
-        return textureID[direction.ordinal()];
+        return textureIDs[direction.ordinal()];
     }
 
     public InstancedGridTexture getInstancedGridTexture() {

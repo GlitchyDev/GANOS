@@ -29,7 +29,7 @@ public enum Direction {
             case WEST:
                 return EAST;
         }
-        return ABOVE;
+        return null;
     }
 
     public int getRotation() {

@@ -71,14 +71,12 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
 
     @Override
     public Direction[] getDirectionsProduced() {
-        Direction[] directions = new Direction[1];
-        directions[0] = Direction.BELOW;
-        return directions;
+        return Direction.getCompleteCardinal();
     }
 
     @Override
     public int getLightLevelProduced() {
-        return 30;
+        return 10;
     }
 
     @Override

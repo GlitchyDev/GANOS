@@ -39,6 +39,9 @@ public class DesignerDebugBlock extends DesignerBlock {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof DesignerDebugBlock;
+        if(obj instanceof DesignerDebugBlock) {
+            return equvilentInformation((DesignerDebugBlock) obj);
+        }
+        return false;
     }
 }
