@@ -15,6 +15,7 @@ import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerChangeDirecti
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerDespawnEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerMoveEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerSpawnEntityPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Lighting.ServerRecalculateLight;
 import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerDespawnRegionPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerSpawnRegionPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.ServerDespawnWorldPacket;
@@ -55,6 +56,8 @@ public enum PacketType {
     SERVER_REMOVE_ENTITY_EFFECT,
     SERVER_ADD_BLOCK_EFFECT,
     SERVER_REMOVE_BLOCK_EFFECT,
+
+    SERVER_RECALCULATE_LIGHT
     ;
 
 
@@ -96,6 +99,8 @@ public enum PacketType {
                 return new ServerAddBlockEffectPacket(inputBitUtility,worldGameState);
             case SERVER_REMOVE_BLOCK_EFFECT:
                 return new ServerRemoveBlockEffectPacket(inputBitUtility,worldGameState);
+            case SERVER_RECALCULATE_LIGHT:
+                return new ServerRecalculateLight(inputBitUtility,worldGameState);
 
             default:
                 System.out.println("PacketType: ERROR NO VALID PACKTYPE REGISTERED");

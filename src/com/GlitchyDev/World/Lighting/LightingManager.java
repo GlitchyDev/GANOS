@@ -1,5 +1,6 @@
 package com.GlitchyDev.World.Lighting;
 
+import com.GlitchyDev.Game.Player;
 import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.LightableBlock;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 // The Valid values of light is 0-255
 public class LightingManager {
+    private static final int MAX_LIGHT_LEVEL = 15;
     private final HashMap<UUID,ArrayList<LightProducer>> staticLightProducers;
     private final HashMap<UUID,ArrayList<LightProducer>> dynamicLightProducers;
     private final HashMap<UUID,HashMap<Location,LightableBlock>> lightableBlocks;
@@ -24,62 +26,55 @@ public class LightingManager {
         lightableBlocks = new HashMap<>();
     }
 
-
-
-    public void updateDynamicLighting(UUID world, ServerWorldGameState serverWorldGameState) {
-        boolean requireUpdate = false;
-        for(LightProducer lightProducer: dynamicLightProducers.get(world)) {
+    public boolean doRequireUpdate(UUID worldUUID) {
+        for(LightProducer lightProducer: dynamicLightProducers.get(worldUUID)) {
             if(lightProducer.doNeedLightUpdate()) {
-                requireUpdate = true;
-                break;
+                return true;
             }
         }
+        return false;
+    }
 
-        if(requireUpdate) {
-            for(LightableBlock lightableBlock: lightableBlocks.get(world).values()) {
-                lightableBlock.resetDynamicLight();
-            }
 
-            HashMap<Location, Integer> lightCache = new HashMap<>();
-            for(LightProducer lightProducer: dynamicLightProducers.get(world)) {
-                if(lightProducer instanceof RadiantLightProducer) {
-                    ArrayList<LightPropagationNode> lightToBePolled = new ArrayList<>();
+    public void updateServerDynamicLighting(UUID world, ServerWorldGameState serverWorldGameState) {
+        for(LightableBlock lightableBlock: lightableBlocks.get(world).values()) {
+            lightableBlock.resetDynamicLight();
+        }
 
-                    int maxLightLevel = 0;
-                    for (Direction direction : ((RadiantLightProducer) lightProducer).getDirectionsProduced()) {
-                        if(serverWorldGameState.isBlockAtLocation(lightProducer.getEmissionLocation().getOffsetDirectionLocation(direction))) {
-                            lightToBePolled.add(new LightPropagationNode(lightProducer.getEmissionLocation().getOffsetDirectionLocation(direction), direction, direction, ((RadiantLightProducer) lightProducer).getLightLevelFromDirection(direction)));
-                            if (((RadiantLightProducer) lightProducer).getLightLevelFromDirection(direction) > maxLightLevel) {
-                                maxLightLevel = ((RadiantLightProducer) lightProducer).getLightLevelFromDirection(direction);
-                            }
+        HashMap<Location, Integer> lightCache = new HashMap<>();
+        for(LightProducer lightProducer: dynamicLightProducers.get(world)) {
+            if(lightProducer instanceof RadiantLightProducer) {
+                ArrayList<LightPropagationNode> lightToBePolled = new ArrayList<>();
+
+                int maxLightLevel = 0;
+                for (Direction direction : Direction.getCompleteCardinal()) {
+                    if(serverWorldGameState.isARegionAtLocation(lightProducer.getEmissionLocation().getOffsetDirectionLocation(direction))) {
+                        lightToBePolled.add(new LightPropagationNode(lightProducer.getEmissionLocation().getOffsetDirectionLocation(direction), direction, direction, ((RadiantLightProducer) lightProducer).getLightLevel()));
+                        if (((RadiantLightProducer) lightProducer).getLightLevel() > maxLightLevel) {
+                            maxLightLevel = ((RadiantLightProducer) lightProducer).getLightLevel();
                         }
                     }
-                    Location producerBlockLocation = serverWorldGameState.getBlockAtLocation(lightProducer.getEmissionLocation()).getLocation();
-                    lightCache.put(producerBlockLocation,maxLightLevel);
-                    if(lightableBlocks.get(world).containsKey(producerBlockLocation)) {
-                        for(Direction direction: Direction.getCompleteCardinal()) {
-                            lightableBlocks.get(world).get(producerBlockLocation).setDynamicLightLevel(direction,maxLightLevel);
+                }
+
+
+                while (lightToBePolled.size() != 0) {
+                    LightPropagationNode lightPropagationNode = lightToBePolled.get(0);
+                    lightToBePolled.remove(0);
+                    Location location = lightPropagationNode.getLocation();
+                    Direction emissionDirection = lightPropagationNode.getEmissionDirection();
+                    Direction currentDirection = lightPropagationNode.getCurrentDirection();
+                    int lightLevel = lightPropagationNode.getLightLevel();
+
+                    Block block = serverWorldGameState.getBlockAtLocation(location);
+                    if (lightableBlocks.get(world).containsKey(block.getLocation())) {
+                        LightableBlock lightableBlock = lightableBlocks.get(world).get(block.getLocation());
+                        if(lightableBlock.getDynamicLightLevel(currentDirection) < lightLevel) {
+                            lightableBlock.setDynamicLightLevel(currentDirection.reverse(), lightLevel);
                         }
-                    }
-
-                    while (lightToBePolled.size() != 0) {
-                        LightPropagationNode lightPropagationNode = lightToBePolled.get(0);
-                        lightToBePolled.remove(0);
-                        Location location = lightPropagationNode.getLocation();
-                        Direction emissionDirection = lightPropagationNode.getEmissionDirection();
-                        Direction currentDirection = lightPropagationNode.getCurrentDirection();
-                        int lightLevel = lightPropagationNode.getLightLevel();
-
-                        Block block = serverWorldGameState.getBlockAtLocation(location);
-                        if (lightableBlocks.get(world).containsKey(block.getLocation())) {
-                            LightableBlock lightableBlock = lightableBlocks.get(world).get(block.getLocation());
-                            if(lightableBlock.getDynamicLightLevel(currentDirection) < lightLevel) {
-                                lightableBlock.setDynamicLightLevel(currentDirection.reverse(), lightLevel);
-                            }
-                        } else {
-                            for (Direction newDirection : Direction.getCompleteCardinal()) {
-                                // We don't wanna go backwards in emission
-                                if (newDirection != currentDirection.reverse()) {
+                    } else {
+                        for (Direction newDirection : Direction.getCompleteCardinal()) {
+                            // We don't wanna go backwards in emission
+                            if (newDirection != currentDirection.reverse()) {
                                 int newLightLevel = degradeLight(lightLevel);
                                 if (newLightLevel > 0) {
                                     Location newLocation = location.getOffsetDirectionLocation(newDirection);
@@ -101,64 +96,66 @@ public class LightingManager {
                                     }
                                 }
                             }
-                            }
                         }
                     }
-                } else {
-                    if(lightProducer instanceof SkyLightProducer) {
-                        Location location = lightProducer.getEmissionLocation();
-                        int lightStrength = ((SkyLightProducer) lightProducer).getSkyLightLevel();
-                        int width = ((SkyLightProducer) lightProducer).getWidth();
-                        int length = ((SkyLightProducer) lightProducer).getLength();
-                        for(int x = 0; x < ((SkyLightProducer) lightProducer).getWidth(); x++) {
-                            for(int z = 0; z < ((SkyLightProducer) lightProducer).getLength(); z++) {
-                                for(int y = 0; y >= 0; y--) {
-                                    Location newLocation = location.getOffsetLocation(-width/2 + x,0,-length/2+z);
-                                    if(serverWorldGameState.isBlockAtLocation(newLocation)) {
-                                        Location blockLocation = serverWorldGameState.getBlockAtLocation(newLocation).getLocation();
-                                        if(lightCache.containsKey(blockLocation)) {
-                                            if(lightCache.get(blockLocation) < lightStrength) {
-                                                lightCache.put(blockLocation,lightStrength);
-                                                if (lightableBlocks.get(world).containsKey(blockLocation)) {
-                                                    lightableBlocks.get(world).get(blockLocation).setDynamicLightLevel(Direction.ABOVE, lightStrength);
-                                                    break;
-                                                }
-                                            }
-                                        } else {
+                }
+            } else {
+                if(lightProducer instanceof SkyLightProducer) {
+                    Location location = lightProducer.getEmissionLocation();
+                    int lightStrength = ((SkyLightProducer) lightProducer).getSkyLightLevel();
+                    int width = ((SkyLightProducer) lightProducer).getWidth();
+                    int length = ((SkyLightProducer) lightProducer).getLength();
+                    for(int x = 0; x < ((SkyLightProducer) lightProducer).getWidth(); x++) {
+                        for(int z = 0; z < ((SkyLightProducer) lightProducer).getLength(); z++) {
+                            for(int y = 0; y >= 0; y--) {
+                                Location newLocation = location.getOffsetLocation(-width/2 + x,0,-length/2+z);
+                                if(serverWorldGameState.isBlockAtLocation(newLocation)) {
+                                    Location blockLocation = serverWorldGameState.getBlockAtLocation(newLocation).getLocation();
+                                    if(lightCache.containsKey(blockLocation)) {
+                                        if(lightCache.get(blockLocation) < lightStrength) {
                                             lightCache.put(blockLocation,lightStrength);
-                                            if(lightableBlocks.get(world).containsKey(blockLocation)) {
-                                                lightableBlocks.get(world).get(blockLocation).setDynamicLightLevel(Direction.ABOVE,lightStrength);
+                                            if (lightableBlocks.get(world).containsKey(blockLocation)) {
+                                                lightableBlocks.get(world).get(blockLocation).setDynamicLightLevel(Direction.ABOVE, lightStrength);
                                                 break;
                                             }
+                                        }
+                                    } else {
+                                        lightCache.put(blockLocation,lightStrength);
+                                        if(lightableBlocks.get(world).containsKey(blockLocation)) {
+                                            lightableBlocks.get(world).get(blockLocation).setDynamicLightLevel(Direction.ABOVE,lightStrength);
+                                            break;
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
+                } else {
+                    if(lightProducer instanceof SpotlightProducer) {
 
-                for (LightableBlock lightableBlock : lightableBlocks.get(world).values()) {
-                    lightableBlock.finalizeLight();
+                    }
                 }
             }
+
+            for (LightableBlock lightableBlock : lightableBlocks.get(world).values()) {
+                lightableBlock.finalizeLight();
+            }
+
             //System.out.println("Total polled " + totalPolled);
         }
     }
 
 
-    public void initStaticLight(UUID world, ServerWorldGameState serverWorldGameState) {
+    public void initServerStaticLight(UUID world, ServerWorldGameState serverWorldGameState) {
         HashMap<Location, Integer> lightCache = new HashMap<>();
         for (LightProducer lightProducer : dynamicLightProducers.get(world)) {
             if (lightProducer instanceof RadiantLightProducer) {
                 ArrayList<LightPropagationNode> lightToBePolled = new ArrayList<>();
-
-
                 int maxLightLevel = 0;
-                for (Direction direction : ((RadiantLightProducer) lightProducer).getDirectionsProduced()) {
-                    lightToBePolled.add(new LightPropagationNode(lightProducer.getEmissionLocation().getOffsetDirectionLocation(direction), direction, direction, ((RadiantLightProducer) lightProducer).getLightLevelFromDirection(direction)));
-                    if(((RadiantLightProducer) lightProducer).getLightLevelFromDirection(direction) > maxLightLevel) {
-                        maxLightLevel = ((RadiantLightProducer) lightProducer).getLightLevelFromDirection(direction);
+                for (Direction direction : Direction.getCompleteCardinal()) {
+                    lightToBePolled.add(new LightPropagationNode(lightProducer.getEmissionLocation().getOffsetDirectionLocation(direction), direction, direction, ((RadiantLightProducer) lightProducer).getLightLevel()));
+                    if(((RadiantLightProducer) lightProducer).getLightLevel() > maxLightLevel) {
+                        maxLightLevel = ((RadiantLightProducer) lightProducer).getLightLevel();
                     }
                 }
                 Location producerBlockLocation = serverWorldGameState.getBlockAtLocation(lightProducer.getEmissionLocation()).getLocation();
@@ -246,13 +243,128 @@ public class LightingManager {
 
 
 
+    public void updatePlayerLighting(UUID world, Player player, ServerWorldGameState serverWorldGameState) {
+
+        for(LightableBlock lightableBlock: lightableBlocks.get(world).values()) {
+            lightableBlock.resetDynamicLight();
+        }
+
+        HashMap<Location, Integer> lightCache = new HashMap<>();
+        for(LightProducer lightProducer: dynamicLightProducers.get(world)) {
+            if (lightProducer.doSeeLight(player.getPlayerEntity())) {
+                if (lightProducer instanceof RadiantLightProducer) {
+                    ArrayList<LightPropagationNode> lightToBePolled = new ArrayList<>();
+
+                    int maxLightLevel = 0;
+                    for (Direction direction : Direction.getCompleteCardinal()) {
+                        if (serverWorldGameState.isARegionAtLocation(lightProducer.getEmissionLocation().getOffsetDirectionLocation(direction))) {
+                            lightToBePolled.add(new LightPropagationNode(lightProducer.getEmissionLocation().getOffsetDirectionLocation(direction), direction, direction, ((RadiantLightProducer) lightProducer).getLightLevel()));
+                            if (((RadiantLightProducer) lightProducer).getLightLevel() > maxLightLevel) {
+                                maxLightLevel = ((RadiantLightProducer) lightProducer).getLightLevel();
+                            }
+                        }
+                    }
+
+
+                    while (lightToBePolled.size() != 0) {
+                        LightPropagationNode lightPropagationNode = lightToBePolled.get(0);
+                        lightToBePolled.remove(0);
+                        Location location = lightPropagationNode.getLocation();
+                        Direction emissionDirection = lightPropagationNode.getEmissionDirection();
+                        Direction currentDirection = lightPropagationNode.getCurrentDirection();
+                        int lightLevel = lightPropagationNode.getLightLevel();
+
+                        Block block = serverWorldGameState.getBlockAtLocation(location);
+                        if (lightableBlocks.get(world).containsKey(block.getLocation())) {
+                            LightableBlock lightableBlock = lightableBlocks.get(world).get(block.getLocation());
+                            if (lightableBlock.getDynamicLightLevel(currentDirection) < lightLevel) {
+                                lightableBlock.setDynamicLightLevel(currentDirection.reverse(), lightLevel);
+                            }
+                        } else {
+                            for (Direction newDirection : Direction.getCompleteCardinal()) {
+                                // We don't wanna go backwards in emission
+                                if (newDirection != currentDirection.reverse()) {
+                                    int newLightLevel = degradeLight(lightLevel);
+                                    if (newLightLevel > 0) {
+                                        Location newLocation = location.getOffsetDirectionLocation(newDirection);
+                                        if (serverWorldGameState.isARegionAtLocation(newLocation)) {
+                                            Location blockLocation = serverWorldGameState.getBlockAtLocation(newLocation).getLocation();
+                                            if (lightCache.containsKey(blockLocation)) {
+                                                if (lightCache.get(blockLocation) < newLightLevel) {
+                                                    lightToBePolled.add(new LightPropagationNode(newLocation, emissionDirection, newDirection, newLightLevel));
+                                                    lightCache.put(blockLocation, newLightLevel);
+                                                } else {
+                                                    if (lightableBlocks.get(world).containsKey(blockLocation)) {
+                                                        lightToBePolled.add(new LightPropagationNode(newLocation, emissionDirection, newDirection, newLightLevel));
+                                                    }
+                                                }
+                                            } else {
+                                                lightCache.put(blockLocation, newLightLevel);
+                                                lightToBePolled.add(new LightPropagationNode(newLocation, emissionDirection, newDirection, newLightLevel));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    if (lightProducer instanceof SkyLightProducer) {
+                        Location location = lightProducer.getEmissionLocation();
+                        int lightStrength = ((SkyLightProducer) lightProducer).getSkyLightLevel();
+                        int width = ((SkyLightProducer) lightProducer).getWidth();
+                        int length = ((SkyLightProducer) lightProducer).getLength();
+                        for (int x = 0; x < ((SkyLightProducer) lightProducer).getWidth(); x++) {
+                            for (int z = 0; z < ((SkyLightProducer) lightProducer).getLength(); z++) {
+                                for (int y = 0; y >= 0; y--) {
+                                    Location newLocation = location.getOffsetLocation(-width / 2 + x, 0, -length / 2 + z);
+                                    if (serverWorldGameState.isBlockAtLocation(newLocation)) {
+                                        Location blockLocation = serverWorldGameState.getBlockAtLocation(newLocation).getLocation();
+                                        if (lightCache.containsKey(blockLocation)) {
+                                            if (lightCache.get(blockLocation) < lightStrength) {
+                                                lightCache.put(blockLocation, lightStrength);
+                                                if (lightableBlocks.get(world).containsKey(blockLocation)) {
+                                                    lightableBlocks.get(world).get(blockLocation).setDynamicLightLevel(Direction.ABOVE, lightStrength);
+                                                    break;
+                                                }
+                                            }
+                                        } else {
+                                            lightCache.put(blockLocation, lightStrength);
+                                            if (lightableBlocks.get(world).containsKey(blockLocation)) {
+                                                lightableBlocks.get(world).get(blockLocation).setDynamicLightLevel(Direction.ABOVE, lightStrength);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        if (lightProducer instanceof SpotlightProducer) {
+
+                        }
+                    }
+                }
+
+                for (LightableBlock lightableBlock : lightableBlocks.get(world).values()) {
+                    lightableBlock.finalizeLight();
+
+                }
+                //System.out.println("Total polled " + totalPolled);
+            }
+        }
+    }
+
+
+
 
     private int degradeLight(int initialLightLevel) {
         return Math.max(initialLightLevel - 1,0);
     }
 
     public static float getLightPercentage(int lightLevel) {
-        return (float) Math.min(1.0f/16.0f * lightLevel,1.0);
+        return (float) Math.min(1.0f / MAX_LIGHT_LEVEL * lightLevel, 1.0);
+
     }
 
     public void registerLightProducer(LightProducer lightProducer) {

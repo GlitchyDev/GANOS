@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class ServerAddBlockEffectPacket extends WorldStateModifyingPackets {
     private final BlockEffect blockEffect;
-    private Location blockOffsetLocation;
+    private final Location blockOffsetLocation;
     private final UUID regionUUID;
 
 

@@ -1,5 +1,6 @@
 package com.GlitchyDev.World.Lighting.Abstract;
 
+import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Location;
 
 import java.util.UUID;
@@ -11,4 +12,5 @@ public interface LightProducer {
 
     boolean isDynamic();
     boolean doNeedLightUpdate();
+    boolean doSeeLight(Entity entity);
 }

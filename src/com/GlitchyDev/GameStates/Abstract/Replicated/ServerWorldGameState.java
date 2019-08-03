@@ -15,6 +15,7 @@ import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerChangeDirecti
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerDespawnEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerMoveEntityPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Entity.ServerSpawnEntityPacket;
+import com.GlitchyDev.Networking.Packets.Server.World.Lighting.ServerRecalculateLight;
 import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerDespawnRegionPacket;
 import com.GlitchyDev.Networking.Packets.Server.World.Region.ServerSpawnRegionPacket;
 import com.GlitchyDev.Networking.ServerNetworkManager;
@@ -80,7 +81,10 @@ public abstract class ServerWorldGameState extends WorldGameState {
         }
 
         for(UUID worldUUID: getWorlds()) {
-            lightingManager.updateDynamicLighting(worldUUID,this);
+            if(lightingManager.doRequireUpdate(worldUUID)) {
+                replicateUpdatedLighting(worldUUID);
+                lightingManager.updateServerDynamicLighting(worldUUID,this);
+            }
             getWorld(worldUUID).tick();
         }
 
@@ -239,6 +243,12 @@ public abstract class ServerWorldGameState extends WorldGameState {
             }
 
 
+            if(requireLightingUpdate.contains(player.getPlayerEntity().getWorldUUID())) {
+                lightingManager.updatePlayerLighting(player.getPlayerEntity().getWorldUUID(),player,this);
+                serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerRecalculateLight(player.getPlayerEntity().getWorldUUID(),player.getEntityView().getViewableRegions()));
+            }
+
+
 
         }
 
@@ -257,6 +267,7 @@ public abstract class ServerWorldGameState extends WorldGameState {
         removedEntityEffects.clear();
         addedBlockEffects.clear();
         removedBlockEffects.clear();
+        requireLightingUpdate.clear();
 
         // Move entities, spawn respawn and move
         // Check EACH PLAYER for requisite information
@@ -417,6 +428,11 @@ public abstract class ServerWorldGameState extends WorldGameState {
             removedBlockEffects.put(block,new ArrayList<>());
         }
         removedBlockEffects.get(block).add(blockEffect);
+    }
+
+    private ArrayList<UUID> requireLightingUpdate = new ArrayList<>();
+    public void replicateUpdatedLighting(UUID worldUUID) {
+        requireLightingUpdate.add(worldUUID);
     }
 
 
@@ -595,6 +611,8 @@ public abstract class ServerWorldGameState extends WorldGameState {
             serverNetworkManager.getUsersGameSocket(playerUUID).sendPacket(new ServerDespawnRegionPacket(regionUUID, worldUUID));
         }
     }
+
+
 
     public NetworkManager getNetworkManager() {
         return networkManager;
