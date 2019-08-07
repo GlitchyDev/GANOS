@@ -9,7 +9,6 @@ import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.CustomRenderEntity;
-import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
 import com.GlitchyDev.World.Entities.AbstractEntities.PlayerEntity;
 import com.GlitchyDev.World.Entities.AbstractEntities.TickableEntity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
@@ -74,12 +73,6 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
     }
 
     @Override
-    public boolean doSeeLight(Entity entity) {
-        return true;
-    }
-
-
-    @Override
     public Location getEmissionLocation() {
         return getLocation();
     }
@@ -96,13 +89,9 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
 
     }
 
-    @Override
-    public Direction[] getDirectionsProduced() {
-        return Direction.getCompleteCardinal();
-    }
 
     @Override
     public int getLightLevel() {
-        return 20;
+        return 10;
     }
 }

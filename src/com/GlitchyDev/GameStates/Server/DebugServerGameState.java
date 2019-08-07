@@ -149,12 +149,6 @@ public class DebugServerGameState extends ServerWorldGameState {
                                 designerDebugBlock.setFaceState(Direction.EAST,true);
                                 designerDebugBlock.setTextureID(Direction.EAST,11);
                             }
-                            if(y == region1.getHeight()-1) {
-                                DesignerDebugBlock designerDebugBlock = new DesignerDebugBlock(this, blockLocation, region1.getRegionUUID());
-                                region1.setBlockRelative(x, y, z, designerDebugBlock);
-                                designerDebugBlock.setFaceState(Direction.BELOW,true);
-                                designerDebugBlock.setTextureID(Direction.BELOW,20);
-                            }
                         }
                     }
                 }
@@ -217,7 +211,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
 
 
-            DebugCommunicationEntity debugCommunicationEntity = new DebugCommunicationEntity(this,getRegionAtLocation(new Location(3,1,0,spawnWorld)).getRegionUUID(), new Location(3,1,0,spawnWorld), Direction.NORTH);
+            DebugCommunicationEntity debugCommunicationEntity = new DebugCommunicationEntity(this,getRegionAtLocation(new Location(6,1,6,spawnWorld)).getRegionUUID(), new Location(6,1,6,spawnWorld), Direction.NORTH);
             spawnEntity(debugCommunicationEntity, SpawnReason.DEBUG);
 
 
@@ -278,6 +272,8 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         walkieTalkie = new WalkieTalkieBase();
         getWorld(spawnWorld).initNavigableBlockConnections();
+        lightingManager.initServerStaticLight(spawnWorld,this);
+        lightingManager.updateServerDynamicLighting(spawnWorld,this);
 
 
 

@@ -82,9 +82,9 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
         for(UUID worldUUID: getWorlds()) {
             if(lightingManager.doRequireUpdate(worldUUID)) {
-                replicateUpdatedLighting(worldUUID);
                 lightingManager.updateServerDynamicLighting(worldUUID,this);
-            }
+                replicateUpdatedLighting(worldUUID);
+        }
             getWorld(worldUUID).tick();
         }
 
@@ -244,7 +244,6 @@ public abstract class ServerWorldGameState extends WorldGameState {
 
 
             if(requireLightingUpdate.contains(player.getPlayerEntity().getWorldUUID())) {
-                lightingManager.updatePlayerLighting(player.getPlayerEntity().getWorldUUID(),player,this);
                 serverNetworkManager.getUsersGameSocket(player.getPlayerUUID()).sendPacket(new ServerRecalculateLight(player.getPlayerEntity().getWorldUUID(),player.getEntityView().getViewableRegions()));
             }
 

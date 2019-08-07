@@ -6,6 +6,7 @@ import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
+import com.GlitchyDev.World.Blocks.AbstractBlocks.DesignerBlock;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.LightableBlock;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Location;
@@ -41,13 +42,15 @@ public class ServerRecalculateLight extends WorldStateModifyingPackets {
             boolean[][][] lightStateMap = new boolean[regionHeight][regionWidth][regionLength];
             for(int i = 0; i < regionBlocks.length; i++) {
                 Block block = regionBlocks[i];
-                if(block instanceof LightableBlock) {
+                if(block instanceof LightableBlock && block instanceof DesignerBlock) {
                     int x = i / regionLength % regionLength;
                     int z = i % regionLength;
                     int y = i / (regionLength * regionWidth);
                     lightStateMap[y][x][z] = true;
                     for(Direction direction: Direction.getCompleteCardinal()) {
-                        this.lightingValues.add(((LightableBlock) block).getCurrentLightLevel(direction));
+                        if(((DesignerBlock) block).getFaceState(direction)) {
+                            this.lightingValues.add(((LightableBlock) block).getCurrentLightLevel(direction));
+                        }
                     }
                 }
             }
@@ -66,6 +69,7 @@ public class ServerRecalculateLight extends WorldStateModifyingPackets {
 
         for(int i = 0; i < numberOfRegions; i++) {
             this.regions.add(inputBitUtility.getNextUUID());
+
             int width = inputBitUtility.getNextCorrectIntByte();
             int length = inputBitUtility.getNextCorrectIntByte();
             int height = inputBitUtility.getNextCorrectIntByte();
@@ -74,6 +78,9 @@ public class ServerRecalculateLight extends WorldStateModifyingPackets {
                 for(int x = 0; x < width; x++) {
                     for(int z = 0; z < length; z++) {
                         lightingStateMap[y][x][z] = inputBitUtility.getNextBit();
+
+
+
                     }
                 }
             }
@@ -83,8 +90,9 @@ public class ServerRecalculateLight extends WorldStateModifyingPackets {
         int numLightingValues = inputBitUtility.getNextInteger();
         this.lightingValues = new ArrayList<>(numLightingValues);
         for(int i = 0; i < numLightingValues; i++) {
-            this.lightingValues.add(inputBitUtility.getNextCorrectIntByte());
+            this.lightingValues.add(inputBitUtility.getNextCorrectedIntBit(4));
         }
+        inputBitUtility.complete();
 
     }
 
@@ -105,10 +113,12 @@ public class ServerRecalculateLight extends WorldStateModifyingPackets {
                        Location relativeLocation = new Location(x,y,z,worldUUID);
                        boolean lightState = lightingStateMap[y][x][z];
                        if(lightState) {
-                           LightableBlock lightableBlock = (LightableBlock) region.getBlockRelative(relativeLocation);
+                           DesignerBlock lightableBlock = (DesignerBlock) region.getBlockRelative(relativeLocation);
                            for(Direction direction: Direction.getCompleteCardinal()) {
-                               lightableBlock.setCurrentLightLevel(direction,lightingValues.get(lightingIndex));
-                               lightingIndex++;
+                               if(lightableBlock.getFaceState(direction)) {
+                                   lightableBlock.setCurrentLightLevel(direction, lightingValues.get(lightingIndex));
+                                   lightingIndex++;
+                               }
                            }
                        }
                    }
@@ -119,7 +129,8 @@ public class ServerRecalculateLight extends WorldStateModifyingPackets {
 
     @Override
     protected void transmitPacketBody(OutputBitUtility outputBitUtility) throws IOException {
-        outputBitUtility.writeNextInteger(numberOfRegions);
+        outputBitUtility.writeNextUUID(worldUUID);
+        outputBitUtility.writeNextCorrectByteInt(numberOfRegions);
         int i = 0;
         for(UUID region: regions) {
             outputBitUtility.writeNextUUID(region);
@@ -145,7 +156,10 @@ public class ServerRecalculateLight extends WorldStateModifyingPackets {
 
         outputBitUtility.writeNextInteger(lightingValues.size());
         for(int lightingValue: lightingValues) {
-            outputBitUtility.writeNextInteger(lightingValue);
+            outputBitUtility.writeNextCorrectedBitsInt(lightingValue,4);
         }
+
+
+
     }
 }

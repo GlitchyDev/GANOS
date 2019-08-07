@@ -65,6 +65,7 @@ public abstract class DesignerBlock extends Block implements LightableBlock {
         }
     }
 
+
     protected void copyInformation(DesignerBlock destinationBlock) {
         for(Direction direction: Direction.getCompleteCardinal()) {
             destinationBlock.setFaceState(direction,getFaceState(direction));

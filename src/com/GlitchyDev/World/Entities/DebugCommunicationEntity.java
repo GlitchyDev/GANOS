@@ -20,13 +20,14 @@ import com.GlitchyDev.World.Events.Communication.Constructs.Messages.Communicati
 import com.GlitchyDev.World.Events.Communication.Constructs.Source.CommunicationSource;
 import com.GlitchyDev.World.Events.Communication.DetectionType;
 import com.GlitchyDev.World.General.CustomTransparentRenderable;
+import com.GlitchyDev.World.Lighting.SkyLightProducer;
 import com.GlitchyDev.World.Location;
 import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.util.UUID;
 
-public class DebugCommunicationEntity extends Entity implements CommunicationListener, CustomTransparentRenderable {
+public class DebugCommunicationEntity extends Entity implements CommunicationListener, CustomTransparentRenderable, SkyLightProducer {
     private SpriteItem spriteItem;
     private TextItem textItem;
 
@@ -99,4 +100,46 @@ public class DebugCommunicationEntity extends Entity implements CommunicationLis
     public double getDistance(Vector3f position) {
         return getLocation().getDistance(position);
     }
+
+    @Override
+    public int getWidth() {
+        return 3;
+    }
+
+    @Override
+    public int getLength() {
+        return 3;
+    }
+
+    @Override
+    public int xOffset() {
+        return 0;
+    }
+
+    @Override
+    public int zOffset() {
+        return 0;
+    }
+
+    @Override
+    public int getSkyLightLevel() {
+        return 15;
+    }
+
+    @Override
+    public Location getEmissionLocation() {
+        return getLocation().getOffsetLocation(0,5,0);
+    }
+
+    @Override
+    public boolean isDynamic() {
+        return false;
+    }
+
+    @Override
+    public boolean doNeedLightUpdate() {
+        return true;
+    }
+
+
 }

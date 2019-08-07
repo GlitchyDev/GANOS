@@ -38,7 +38,9 @@ public class DebugNavigationBlock extends DesignerBlock implements NavigableBloc
 
     @Override
     public Block getCopy() {
-        return new DebugNavigationBlock(worldGameState, location, regionUUID);
+        DebugNavigationBlock debugNavigationBlock = new DebugNavigationBlock(worldGameState, location, regionUUID);
+        copyInformation(debugNavigationBlock);
+        return debugNavigationBlock;
     }
 
     @Override
