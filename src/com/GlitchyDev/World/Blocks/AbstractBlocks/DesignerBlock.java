@@ -55,8 +55,8 @@ public abstract class DesignerBlock extends Block implements LightableBlock {
     }
 
     @Override
-    public void writeData(OutputBitUtility outputBitUtility) throws IOException {
-        super.writeData(outputBitUtility);
+    public void writeData(OutputBitUtility outputBitUtility, boolean isReplicated) throws IOException {
+        super.writeData(outputBitUtility, isReplicated);
         for(Direction direction: Direction.getCompleteCardinal()) {
             outputBitUtility.writeNextBit(getFaceState(direction));
             if(getFaceState(direction)) {

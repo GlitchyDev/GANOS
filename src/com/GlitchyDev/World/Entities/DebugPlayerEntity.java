@@ -52,8 +52,8 @@ public class DebugPlayerEntity extends PlayerEntity implements CustomRenderEntit
 
 
     @Override
-    public void writeData(OutputBitUtility outputBitUtility) throws IOException {
-        super.writeData(outputBitUtility);
+    public void writeData(OutputBitUtility outputBitUtility, boolean isReplicated) throws IOException {
+        super.writeData(outputBitUtility, isReplicated);
     }
 
 

@@ -117,7 +117,7 @@ public class Region {
     }
 
 
-    public void writeData(OutputBitUtility outputBitUtility) throws IOException {
+    public void writeData(OutputBitUtility outputBitUtility, boolean isReplicated) throws IOException {
         //outputBitUtility.writeNextCorrectByteInt(CURRENT_VERSION.ordinal());
         outputBitUtility.writeNextCorrectByteInt(RegionFileType.NORMAL.ordinal());
         outputBitUtility.writeNextUUID(regionUUID);
@@ -165,7 +165,7 @@ public class Region {
         // Write Palette
 
         for(Object block: HuffmanTreeUtility.encodeObjectList(headTreeNode)) {
-            ((Block)block).writeData(outputBitUtility);
+            ((Block)block).writeData(outputBitUtility, isReplicated);
         }
 
         // Write Huffman Tree Values
@@ -189,7 +189,7 @@ public class Region {
         outputBitUtility.writeNextCorrectByteInt(getEntities().size());
         if(entities.size() != 0) {
             for (Entity entity : getEntities()) {
-                entity.writeData(outputBitUtility);
+                entity.writeData(outputBitUtility, isReplicated);
             }
         }
 

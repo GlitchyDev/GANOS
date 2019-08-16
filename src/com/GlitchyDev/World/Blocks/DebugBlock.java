@@ -62,8 +62,8 @@ public class DebugBlock extends Block implements CustomRenderBlock {
 
 
     @Override
-    public void writeData(OutputBitUtility outputBitUtility) throws IOException {
-        super.writeData(outputBitUtility);
+    public void writeData(OutputBitUtility outputBitUtility, boolean isReplicated) throws IOException {
+        super.writeData(outputBitUtility, isReplicated);
         outputBitUtility.writeNextCorrectByteInt(testValue);
     }
 

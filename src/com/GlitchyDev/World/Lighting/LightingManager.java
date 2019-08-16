@@ -170,6 +170,7 @@ public class LightingManager {
         }
 
         HashMap<Location, Integer> lightCache = new HashMap<>();
+
         for(LightProducer lightProducer: staticLightProducers.get(world)) {
             if(lightProducer instanceof RadiantLightProducer) {
                 ArrayList<LightPropagationNode> lightToBePolled = new ArrayList<>();

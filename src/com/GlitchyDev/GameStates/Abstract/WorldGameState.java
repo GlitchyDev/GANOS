@@ -23,9 +23,11 @@ import java.util.*;
 public abstract class WorldGameState extends EnvironmentGameState {
     private final HashMap<UUID, World> currentWorlds;
 
+    protected final Camera mainCamera;
     public WorldGameState(GlobalGameData globalGameDataBase, GameStateType gameStateType) {
         super(globalGameDataBase, gameStateType);
         this.currentWorlds = new HashMap<>();
+        mainCamera = new Camera();
     }
 
 
@@ -253,7 +255,9 @@ public abstract class WorldGameState extends EnvironmentGameState {
         return getWorld(worldUUID).getEntity(entityUUID);
     }
 
-
+    public Camera getMainCamera() {
+        return mainCamera;
+    }
 }
 
 

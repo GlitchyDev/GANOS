@@ -128,7 +128,7 @@ public class DebugCommunicationEntity extends Entity implements CommunicationLis
 
     @Override
     public Location getEmissionLocation() {
-        return getLocation().getOffsetLocation(0,5,0);
+        return getLocation().getOffsetLocation(0,8,0);
     }
 
     @Override

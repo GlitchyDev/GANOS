@@ -42,7 +42,7 @@ public class ServerSpawnEntityPacket extends WorldStateModifyingPackets {
     protected void transmitPacketBody(OutputBitUtility outputBitUtility) throws IOException {
         outputBitUtility.writeNextUUID(entity.getLocation().getWorldUUID());
         outputBitUtility.writeNextUUID(entity.getCurrentRegionUUID());
-        entity.writeData(outputBitUtility);
+        entity.writeData(outputBitUtility,true);
         //entityBase.writeData(outputBitUtility);
     }
 

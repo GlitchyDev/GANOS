@@ -83,7 +83,7 @@ public abstract class Entity {
      * @param outputBitUtility
      * @throws IOException
      */
-    public void writeData(OutputBitUtility outputBitUtility) throws IOException {
+    public void writeData(OutputBitUtility outputBitUtility, boolean isReplicated) throws IOException {
         outputBitUtility.writeNextCorrectByteInt(entityType.ordinal());
         outputBitUtility.writeNextUUID(entityUUID);
 
@@ -97,7 +97,9 @@ public abstract class Entity {
 
         outputBitUtility.writeNextCorrectByteInt(currentEffects.size());
         for(int i = 0; i < currentEffects.size(); i++) {
-            currentEffects.get(i).writeData(outputBitUtility);
+            if(!isReplicated || currentEffects.get(i).isReplicatedEffect() ) {
+                currentEffects.get(i).writeData(outputBitUtility);
+            }
         }
 
     }

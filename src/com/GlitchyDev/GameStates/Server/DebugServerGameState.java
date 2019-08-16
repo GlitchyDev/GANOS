@@ -15,7 +15,6 @@ import com.GlitchyDev.Networking.Packets.Server.World.ServerSpawnWorldPacket;
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.Mesh.Mesh;
 import com.GlitchyDev.Rendering.Assets.Mesh.PartialCubicInstanceMesh;
-import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
@@ -60,7 +59,6 @@ import static org.lwjgl.glfw.GLFW.*;
 public class DebugServerGameState extends ServerWorldGameState {
     private final ArrayList<TextItem> debugItems;
     private final Player testPlayer;
-    private final Camera camera;
     private GameController controller;
 
     private final UUID spawnWorld;
@@ -241,9 +239,9 @@ public class DebugServerGameState extends ServerWorldGameState {
         playerEntity.recalculateView();
         playerEntity.applyEffect(new ServerDebugEffect(this));
 
-        camera = new Camera();
-        camera.setPosition(-10, 7, 30);
-        camera.setRotation(0, 45, -7);
+
+        getMainCamera().setPosition(-10, 7, 30);
+        getMainCamera().setRotation(0, 45, -7);
         controller = new XBox360Controller(0);
 
 
@@ -294,8 +292,8 @@ public class DebugServerGameState extends ServerWorldGameState {
         cameraControlsLogic();
 
         debugItems.get(0).setText("FPS: " + getCurrentFPS() + " WalkieTalkie: " + formatter.format(getRenderUtilization()) + " Logic: " + formatter.format(getLogicUtilization()));
-        debugItems.get(1).setText("Camera Pos: " + formatter.format(camera.getPosition().x) + "," + formatter.format(camera.getPosition().y) + "," + formatter.format(camera.getPosition().z));
-        debugItems.get(2).setText("Camera Rot: " + formatter.format(camera.getRotation().x) + "," + formatter.format(camera.getRotation().y) + "," + formatter.format(camera.getRotation().z));
+        debugItems.get(1).setText("Camera Pos: " + formatter.format(getMainCamera().getPosition().x) + "," + formatter.format(getMainCamera().getPosition().y) + "," + formatter.format(getMainCamera().getPosition().z));
+        debugItems.get(2).setText("Camera Rot: " + formatter.format(getMainCamera().getRotation().x) + "," + formatter.format(getMainCamera().getRotation().y) + "," + formatter.format(getMainCamera().getRotation().z));
         debugItems.get(3).setText("P: " + getRegionAtLocation(testPlayer.getPlayerEntity().getLocation()).getEntities().size());
         debugItems.get(4).setText("BlockType " + getBlockAtLocation(testPlayer.getPlayerEntity().getLocation()).getBlockType());
 
@@ -430,7 +428,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         //375
         if(gameInputTimings.getActiveMouseButton1Time() == 1) {
-            Block block = selectBlock2D(blockList,globalGameData.getGameWindow(),mousePos,camera);
+            Block block = selectBlock2D(blockList,globalGameData.getGameWindow(),mousePos,getMainCamera());
             if (block != null) {
                 ((DebugBlock) block).setTestValue((((DebugBlock) block).getTestValue() + 1) % 3);
             }
@@ -454,32 +452,32 @@ public class DebugServerGameState extends ServerWorldGameState {
         if(controller != null && controller.isCurrentlyActive()) {
             if (!controller.getLeftJoyStickButton() ) {
                 if (controller.getLeftJoyStickY() < -JOYSTICK_THRESHOLD) {
-                    camera.moveForward(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                    getMainCamera().moveForward(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
                 }
                 if (controller.getLeftJoyStickY() > JOYSTICK_THRESHOLD) {
-                    camera.moveBackwards(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                    getMainCamera().moveBackwards(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
                 }
                 if (controller.getLeftJoyStickX() > JOYSTICK_THRESHOLD) {
-                    camera.moveRight(controller.getLeftJoyStickX() * CAMERA_MOVEMENT_AMOUNT);
+                    getMainCamera().moveRight(controller.getLeftJoyStickX() * CAMERA_MOVEMENT_AMOUNT);
                 }
                 if (controller.getLeftJoyStickX() < -JOYSTICK_THRESHOLD) {
-                    camera.moveLeft(controller.getLeftJoyStickX() * CAMERA_MOVEMENT_AMOUNT);
+                    getMainCamera().moveLeft(controller.getLeftJoyStickX() * CAMERA_MOVEMENT_AMOUNT);
                 }
             } else {
                 if (controller.getLeftJoyStickY() > JOYSTICK_THRESHOLD) {
-                    camera.moveDown(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                    getMainCamera().moveDown(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
                 }
                 if (controller.getLeftJoyStickY() < -JOYSTICK_THRESHOLD) {
-                    camera.moveUp(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                    getMainCamera().moveUp(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
                 }
 
             }
 
             if (controller.getRightJoyStickX() > JOYSTICK_THRESHOLD || controller.getRightJoyStickX() < -JOYSTICK_THRESHOLD) {
-                camera.moveRotation(0, controller.getRightJoyStickX() * CAMERA_ROTATION_AMOUNT, 0);
+                getMainCamera().moveRotation(0, controller.getRightJoyStickX() * CAMERA_ROTATION_AMOUNT, 0);
             }
             if (controller.getRightJoyStickY() > JOYSTICK_THRESHOLD || controller.getRightJoyStickY() < -JOYSTICK_THRESHOLD) {
-                camera.moveRotation(controller.getRightJoyStickY() * CAMERA_ROTATION_AMOUNT, 0, 0);
+                getMainCamera().moveRotation(controller.getRightJoyStickY() * CAMERA_ROTATION_AMOUNT, 0, 0);
             }
 
             if(controller.getToggleDirectionPad() != ControllerDirectionPad.NONE) {
@@ -516,29 +514,29 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
 
             if(gameInput.getKeyValue(GLFW_KEY_Q) >= 1) {
-                camera.moveRotation(0,-1,0);
+                getMainCamera().moveRotation(0,-1,0);
             }
             if(gameInput.getKeyValue(GLFW_KEY_E) >= 1) {
-                camera.moveRotation(0,1,0);
+                getMainCamera().moveRotation(0,1,0);
             }
 
             if(gameInput.getKeyValue(GLFW_KEY_W) >= 1) {
-                camera.moveForward(1);
+                getMainCamera().moveForward(1);
             }
             if(gameInput.getKeyValue(GLFW_KEY_S) >= 1) {
-                camera.moveBackwards(1);
+                getMainCamera().moveBackwards(1);
             }
             if(gameInput.getKeyValue(GLFW_KEY_D) >= 1) {
-                camera.moveRight(1);
+                getMainCamera().moveRight(1);
             }
             if(gameInput.getKeyValue(GLFW_KEY_A) >= 1) {
-                camera.moveLeft(1);
+                getMainCamera().moveLeft(1);
             }
             if(gameInput.getKeyValue(GLFW_KEY_TAB) >= 1) {
-                camera.moveUp(1);
+                getMainCamera().moveUp(1);
             }
             if(gameInput.getKeyValue(GLFW_KEY_LEFT_SHIFT) >= 1) {
-                camera.moveDown(1);
+                getMainCamera().moveDown(1);
             }
         }
 
@@ -555,7 +553,7 @@ public class DebugServerGameState extends ServerWorldGameState {
         renderer.setRenderSpace(0,0,500,500);
 
 
-        renderEnvironment(camera,testPlayer.getPlayerEntity().getEntityView().getViewableRegions(), instancedGridMesh);
+        renderEnvironment(getMainCamera(),testPlayer.getPlayerEntity().getEntityView().getViewableRegions(), instancedGridMesh);
         renderer.enableTransparency();
         walkieTalkie.render(renderer,500);
         renderer.disableTransparency();
@@ -564,7 +562,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         renderer.setRenderSpace(500,0,500,500);
         if (currentPlayers.containsKey(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562"))) {
-            renderEnvironment(camera,currentPlayers.get(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562")).getEntityView().getViewableRegions(), instancedGridMesh);
+            renderEnvironment(getMainCamera(),currentPlayers.get(UUID.fromString("087954ba-2b12-4215-9a90-f7b810797562")).getEntityView().getViewableRegions(), instancedGridMesh);
         }
 
         renderer.setRenderSpace(1000,0,500,500);
@@ -745,7 +743,7 @@ public class DebugServerGameState extends ServerWorldGameState {
             outputBitUtility.writeNextInteger(location.getX());
             outputBitUtility.writeNextInteger(location.getY());
             outputBitUtility.writeNextInteger(location.getZ());
-            region.writeData(outputBitUtility);
+            region.writeData(outputBitUtility, false);
         }
 
 

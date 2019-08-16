@@ -14,7 +14,6 @@ import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnec
 import com.GlitchyDev.Rendering.Assets.Fonts.CustomFontTexture;
 import com.GlitchyDev.Rendering.Assets.Mesh.Mesh;
 import com.GlitchyDev.Rendering.Assets.Mesh.PartialCubicInstanceMesh;
-import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.World.Direction;
@@ -36,7 +35,6 @@ public class DebugClientGameState extends ClientWorldGameState {
     private final ArrayList<TextItem> textItems;
     private boolean isConnected = false;
     private GameController controller;
-    private Camera camera;
 
     private PartialCubicInstanceMesh partialCubicInstanceMesh;
 
@@ -56,9 +54,8 @@ public class DebugClientGameState extends ClientWorldGameState {
 
         controller = new XBox360Controller(0);
 
-        camera = new Camera();
-        camera.setPosition(-8.5f, 7f, -6f);
-        camera.setRotation(5f, 122f, -0f);
+        getMainCamera().setPosition(-8.5f, 7f, -6f);
+        getMainCamera().setRotation(5f, 122f, -0f);
 
         globalGameData.getGameWindow().setDimensions(500,500);
         globalGameData.getGameWindow().centerWindow();
@@ -78,8 +75,8 @@ public class DebugClientGameState extends ClientWorldGameState {
         cameraControlsLogic();
 
         textItems.get(0).setText("FPS: " + getCurrentFPS() + " WalkieTalkie: " + formatter.format(getRenderUtilization()) + " Logic: " + formatter.format(getLogicUtilization()));
-        textItems.get(1).setText("Camera Pos: " + formatter.format(camera.getPosition().x) + "," + formatter.format(camera.getPosition().y) + "," + formatter.format(camera.getPosition().z));
-        textItems.get(2).setText("Camera Rot: " + formatter.format(camera.getRotation().x) + "," + formatter.format(camera.getRotation().y) + "," + formatter.format(camera.getRotation().z));
+        textItems.get(1).setText("Camera Pos: " + formatter.format(getMainCamera().getPosition().x) + "," + formatter.format(getMainCamera().getPosition().y) + "," + formatter.format(getMainCamera().getPosition().z));
+        textItems.get(2).setText("Camera Rot: " + formatter.format(getMainCamera().getRotation().x) + "," + formatter.format(getMainCamera().getRotation().y) + "," + formatter.format(getMainCamera().getRotation().z));
 
 
         if(isConnected) {
@@ -146,32 +143,32 @@ public class DebugClientGameState extends ClientWorldGameState {
             if (controller != null && controller.isCurrentlyActive()) {
                 if (!controller.getLeftJoyStickButton()) {
                     if (controller.getLeftJoyStickY() < -JOYSTICK_THRESHOLD) {
-                        camera.moveForward(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                        getMainCamera().moveForward(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
                     }
                     if (controller.getLeftJoyStickY() > JOYSTICK_THRESHOLD) {
-                        camera.moveBackwards(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                        getMainCamera().moveBackwards(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
                     }
                     if (controller.getLeftJoyStickX() > JOYSTICK_THRESHOLD) {
-                        camera.moveRight(controller.getLeftJoyStickX() * CAMERA_MOVEMENT_AMOUNT);
+                        getMainCamera().moveRight(controller.getLeftJoyStickX() * CAMERA_MOVEMENT_AMOUNT);
                     }
                     if (controller.getLeftJoyStickX() < -JOYSTICK_THRESHOLD) {
-                        camera.moveLeft(controller.getLeftJoyStickX() * CAMERA_MOVEMENT_AMOUNT);
+                        getMainCamera().moveLeft(controller.getLeftJoyStickX() * CAMERA_MOVEMENT_AMOUNT);
                     }
                 } else {
                     if (controller.getLeftJoyStickY() > JOYSTICK_THRESHOLD) {
-                        camera.moveDown(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                        getMainCamera().moveDown(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
                     }
                     if (controller.getLeftJoyStickY() < -JOYSTICK_THRESHOLD) {
-                        camera.moveUp(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
+                        getMainCamera().moveUp(controller.getLeftJoyStickY() * CAMERA_MOVEMENT_AMOUNT);
                     }
 
                 }
 
                 if (controller.getRightJoyStickX() > JOYSTICK_THRESHOLD || controller.getRightJoyStickX() < -JOYSTICK_THRESHOLD) {
-                    camera.moveRotation(0, controller.getRightJoyStickX() * CAMERA_ROTATION_AMOUNT, 0);
+                    getMainCamera().moveRotation(0, controller.getRightJoyStickX() * CAMERA_ROTATION_AMOUNT, 0);
                 }
                 if (controller.getRightJoyStickY() > JOYSTICK_THRESHOLD || controller.getRightJoyStickY() < -JOYSTICK_THRESHOLD) {
-                    camera.moveRotation(controller.getRightJoyStickY() * CAMERA_ROTATION_AMOUNT, 0, 0);
+                    getMainCamera().moveRotation(controller.getRightJoyStickY() * CAMERA_ROTATION_AMOUNT, 0, 0);
                 }
 
                 if (controller.getToggleDirectionPad() != ControllerDirectionPad.NONE && isConnected) {
@@ -211,7 +208,7 @@ public class DebugClientGameState extends ClientWorldGameState {
             for(UUID worldUUID: getWorlds()) {
                 world = getWorld(worldUUID);
             }
-            renderEnvironment(camera,world.getRegions().values(),partialCubicInstanceMesh);
+            renderEnvironment(getMainCamera(),world.getRegions().values(),partialCubicInstanceMesh);
         }
 
         renderer.enableTransparency();

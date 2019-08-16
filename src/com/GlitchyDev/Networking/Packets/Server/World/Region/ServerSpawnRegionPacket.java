@@ -44,7 +44,7 @@ public class ServerSpawnRegionPacket extends WorldStateModifyingPackets {
         outputBitUtility.writeNextInteger(location.getY());
         outputBitUtility.writeNextInteger(location.getZ());
         outputBitUtility.writeNextUUID(location.getWorldUUID());
-        region.writeData(outputBitUtility);
+        region.writeData(outputBitUtility, true);
 
     }
 

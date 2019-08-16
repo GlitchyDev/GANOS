@@ -41,7 +41,7 @@ public class ServerChangeBlockPacket extends WorldStateModifyingPackets {
     @Override
     protected void transmitPacketBody(OutputBitUtility outputBitUtility) throws IOException {
         outputBitUtility.writeNextUUID(changedBlock.getRegionUUID());
-        changedBlock.writeData(outputBitUtility);
+        changedBlock.writeData(outputBitUtility, true);
         outputBitUtility.writeNextUUID(changedBlock.getLocation().getWorldUUID());
         outputBitUtility.writeNextInteger(changedBlock.getLocation().getX());
         outputBitUtility.writeNextInteger(changedBlock.getLocation().getY());

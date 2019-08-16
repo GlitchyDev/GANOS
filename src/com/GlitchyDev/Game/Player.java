@@ -60,11 +60,11 @@ public class Player {
 
         outputBitUtility.writeNextUUID(playerEntity.getLocation().getWorldUUID());
         outputBitUtility.writeNextUUID(worldGameState.getRegionAtLocation(playerEntity.getLocation()).getRegionUUID());
-        playerEntity.writeData(outputBitUtility);
+        playerEntity.writeData(outputBitUtility, false);
 
         outputBitUtility.writeNextCorrectByteInt(controlledEntities.size());
         for(int i = 0; i < controlledEntities.size(); i++) {
-            controlledEntities.get(i).writeData(outputBitUtility);
+            controlledEntities.get(i).writeData(outputBitUtility, false);
         }
     }
 
