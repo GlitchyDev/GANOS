@@ -7,17 +7,12 @@ import java.util.HashMap;
 
 public class TTSVoiceManager {
     // Remember, each voice can only be speaking in once place at one time!
-    private HashMap<String,Voice> loadedVoices = new HashMap<>();
+    private static HashMap<String,Voice> loadedVoices = new HashMap<>();
 
 
 
-    public TTSVoiceManager() {
+    public static void loadAllVoices() {
         System.setProperty("mbrola.base", "GameAssets/MBROLA_Voices");
-        loadAllVoices();
-    }
-
-
-    private void loadAllVoices() {
         System.out.println();
         System.out.println("TTSVoiceManager: Loading all TTS voices");
         VoiceManager voiceManager = VoiceManager.getInstance();
@@ -29,21 +24,21 @@ public class TTSVoiceManager {
         }
     }
 
-    public void voiceSpeakAsynchronous(String voice, String message) {
+    public static void voiceSpeakAsynchronous(String voice, String message) {
         new Thread(new VoiceTalkRunnable(loadedVoices.get(voice),message)).start();
     }
 
-    public void voiceSpeakSynchronous(String voice, String message) {
+    public static void voiceSpeakSynchronous(String voice, String message) {
         loadedVoices.get(voice).speak(message);
     }
 
-    public void cleanup() {
+    public static void cleanup() {
         for(String voice: loadedVoices.keySet()) {
             loadedVoices.get(voice).deallocate();
         }
     }
 
-    private class VoiceTalkRunnable implements Runnable {
+    private static class VoiceTalkRunnable implements Runnable {
         private final Voice voice;
         private final String message;
 

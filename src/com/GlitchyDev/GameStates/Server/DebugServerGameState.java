@@ -19,6 +19,7 @@ import com.GlitchyDev.Rendering.Assets.WorldElements.TextItem;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.Utility.OutputBitUtility;
+import com.GlitchyDev.Utility.TTSVoiceManager;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.DebugBlock;
 import com.GlitchyDev.World.Blocks.DebugCustomRenderBlock;
@@ -434,8 +435,12 @@ public class DebugServerGameState extends ServerWorldGameState {
             }
         }
 
-
         if(gameInputTimings.getActiveMouseButton2Time() == 1) {
+            TTSVoiceManager.voiceSpeakAsynchronous("mbrola_us1","Yo yo yo its your dawg donkey kong here");
+        }
+
+
+        if(gameInputTimings.getActiveMouseButton3Time() == 1) {
             System.out.println("Advance Navigation");
             NavigationManager.debugDirectPath(this,new Location(5,0,5,spawnWorld),new Location(13,0,-3,spawnWorld),debugEntity);
         }
