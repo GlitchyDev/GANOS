@@ -52,7 +52,14 @@ public abstract class Block {
     // Do not write Location, as that can be refereed engineered from the read protocol
     public void writeData(OutputBitUtility outputBitUtility, boolean isReplicated) throws IOException {
         outputBitUtility.writeNextCorrectByteInt(blockType.ordinal());
-        outputBitUtility.writeNextCorrectByteInt(currentEffects.size());
+
+        int replicatedEffectCount = 0;
+        for(int i = 0; i < currentEffects.size(); i++) {
+            if(!isReplicated || currentEffects.get(i).isReplicatedEffect() ) {
+                replicatedEffectCount++;
+            }
+        }
+        outputBitUtility.writeNextCorrectByteInt(replicatedEffectCount);
         for(int i = 0; i < currentEffects.size(); i++) {
             if(!isReplicated || currentEffects.get(i).isReplicatedEffect() ) {
                 currentEffects.get(i).writeData(outputBitUtility);

@@ -95,7 +95,14 @@ public abstract class Entity {
 
         outputBitUtility.writeNextCorrectedBitsInt(direction.ordinal(),3);
 
-        outputBitUtility.writeNextCorrectByteInt(currentEffects.size());
+        int replicatedEffectCount = 0;
+        for(int i = 0; i < currentEffects.size(); i++) {
+            if(!isReplicated || currentEffects.get(i).isReplicatedEffect() ) {
+                replicatedEffectCount++;
+            }
+        }
+
+        outputBitUtility.writeNextCorrectByteInt(replicatedEffectCount);
         for(int i = 0; i < currentEffects.size(); i++) {
             if(!isReplicated || currentEffects.get(i).isReplicatedEffect() ) {
                 currentEffects.get(i).writeData(outputBitUtility);

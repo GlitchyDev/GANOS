@@ -56,6 +56,7 @@ public class NavigationManager {
         System.out.println();
         if(currentNode == null) {
             System.out.println("Starting navigation for block at location " + startingLocation);
+
             startingNode = ((NavigableBlock) worldGameState.getBlockAtLocation(startingLocation)).getConnectionNode();
             currentNode = startingNode;
         }
