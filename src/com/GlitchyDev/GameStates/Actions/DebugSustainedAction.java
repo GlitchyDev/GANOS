@@ -8,6 +8,13 @@ import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
 import com.GlitchyDev.Rendering.Renderer;
 import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
+import org.joml.Vector2f;
+
+import static org.lwjgl.opengl.GL11C.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11C.glBindTexture;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE2;
+import static org.lwjgl.opengl.GL13C.GL_TEXTURE1;
+import static org.lwjgl.opengl.GL13C.glActiveTexture;
 
 public class DebugSustainedAction extends StateSustainedAction {
     private final Texture primaryImage;
@@ -44,9 +51,16 @@ public class DebugSustainedAction extends StateSustainedAction {
     int frameCount = 0;
     @Override
     public void onRender(Renderer renderer) {
-        renderer.getShader("DebugShader2D").setUniform("bitmap",bitmap.getId());
-        renderer.getShader("DebugShader2D").setUniform("replacementImage",replacementImage.getId());
-        renderer.getShader("DebugShader2D").setUniform("progress",0.5f);
+
+        System.out.println(bitmap.getId() + " " + replacementImage.getId() + " " + 0.5f);
+        renderer.getShader("DebugShader2D").bind();
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, bitmap.getId());
+        renderer.getShader("DebugShader2D").setUniform("bitmap",1);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, replacementImage.getId());
+        renderer.getShader("DebugShader2D").setUniform("replacementImage", 2);
+        renderer.getShader("DebugShader2D").setUniform("y", new Vector2f(((float)Math.random()),((float)Math.random())));
         renderer.render2DSpriteItem(spriteItem,"DebugShader2D");
     }
 

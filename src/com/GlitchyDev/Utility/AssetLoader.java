@@ -55,7 +55,7 @@ public class AssetLoader {
 
         long endTime = System.currentTimeMillis();
 
-        TTSVoiceManager.loadAllVoices();
+        //TTSVoiceManager.loadAllVoices();
         System.out.println("AssetLoader: Assets Created in " + (endTime - startTime)/1000.0 + "s");
     }
 

@@ -57,8 +57,7 @@ public class ShaderProgram {
             // Dump the matrix into a float buffer
             FloatBuffer fb = stack.mallocFloat(16);
             value.get(fb);
-            if(!uniforms.containsKey(uniformName))
-            {
+            if(!uniforms.containsKey(uniformName)) {
                 createUniform(uniformName);
             }
             glUniformMatrix4fv(uniforms.get(uniformName), false, fb);
