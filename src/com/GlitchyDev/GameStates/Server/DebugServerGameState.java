@@ -7,6 +7,7 @@ import com.GlitchyDev.GameInput.Controllers.ControllerDirectionPad;
 import com.GlitchyDev.GameInput.Controllers.GameController;
 import com.GlitchyDev.GameInput.Controllers.XBox360Controller;
 import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
+import com.GlitchyDev.GameStates.Actions.DebugSustainedAction;
 import com.GlitchyDev.GameStates.GameStateType;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.Client.Input.ClientSendInputPacket;
@@ -408,6 +409,9 @@ public class DebugServerGameState extends ServerWorldGameState {
             walkieTalkie.toggleMute();
         }
 
+        if(gameInputTimings.getActiveKeyTime(GLFW_KEY_B) == 1) {
+            registerAction(new DebugSustainedAction(this));
+        }
 
 
         walkieTalkie.tick();

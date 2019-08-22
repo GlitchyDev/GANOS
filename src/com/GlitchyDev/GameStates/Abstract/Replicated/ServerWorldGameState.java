@@ -2,7 +2,7 @@ package com.GlitchyDev.GameStates.Abstract.Replicated;
 
 import com.GlitchyDev.Game.GlobalGameData;
 import com.GlitchyDev.Game.Player;
-import com.GlitchyDev.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.GameStates.Abstract.ActionableGameState;
 import com.GlitchyDev.GameStates.GameStateType;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
@@ -50,7 +50,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class ServerWorldGameState extends WorldGameState {
+public abstract class ServerWorldGameState extends ActionableGameState {
     protected final ServerNetworkManager serverNetworkManager;
     protected final ConcurrentHashMap<UUID,Player> currentPlayers;
     // Managers

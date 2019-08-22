@@ -2,8 +2,8 @@ package com.GlitchyDev.Networking.Packets.Server;
 
 import com.GlitchyDev.GameStates.Abstract.ActionableGameState;
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
-import com.GlitchyDev.GameStates.Actions.StateAction;
-import com.GlitchyDev.GameStates.Actions.StateActionIdentifier;
+import com.GlitchyDev.GameStates.Actions.Abstract.StateAction;
+import com.GlitchyDev.GameStates.Actions.Abstract.StateActionIdentifier;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.WorldStateModifyingPackets;
 import com.GlitchyDev.Networking.Packets.Enums.PacketType;
 import com.GlitchyDev.Utility.InputBitUtility;

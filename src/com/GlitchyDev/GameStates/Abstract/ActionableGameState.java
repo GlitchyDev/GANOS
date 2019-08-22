@@ -1,9 +1,9 @@
 package com.GlitchyDev.GameStates.Abstract;
 
 import com.GlitchyDev.Game.GlobalGameData;
-import com.GlitchyDev.GameStates.Actions.StateAction;
-import com.GlitchyDev.GameStates.Actions.StateActionIdentifier;
-import com.GlitchyDev.GameStates.Actions.StateSustainedAction;
+import com.GlitchyDev.GameStates.Actions.Abstract.StateAction;
+import com.GlitchyDev.GameStates.Actions.Abstract.StateActionIdentifier;
+import com.GlitchyDev.GameStates.Actions.Abstract.StateSustainedAction;
 import com.GlitchyDev.GameStates.GameStateType;
 
 import java.util.ArrayList;

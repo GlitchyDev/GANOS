@@ -6,29 +6,19 @@ out vec4 fragColor;
 
 uniform sampler2D texture_sampler;
 uniform sampler2D bitmap;
-uniform sampler2D effect1;
-uniform sampler2D effect2;
-uniform sampler2D effect3;
+uniform sampler2D replacementImage;
 
 
-uniform float frame;
+uniform float progress;
 
 
 
 
 void main()
 {
-    if(texture(bitmap, outTexCoord).a < 0.1) {
+    if(texture(bitmap, outTexCoord).a > 0.1) {
         fragColor = texture(texture_sampler, outTexCoord);
     } else {
-        if(texture(bitmap, outTexCoord).r > 0.1) {
-            fragColor = texture(effect1, vec2(outTexCoord.x + frame*3,outTexCoord.y + frame*1) * 3);
-        } else {
-            if(texture(bitmap, outTexCoord).g > 0.1) {
-                fragColor = texture(effect1, vec2(outTexCoord.x - frame*2,outTexCoord.y + frame*2) * 2);
-             } else {
-                fragColor = texture(effect1, vec2(outTexCoord.x + frame*1,outTexCoord.y - frame*1));
-             }
-        }
+         fragColor = vec4(outTexCoord.x,progress,progress,1.0);
     }
 }

@@ -1,7 +1,7 @@
 package com.GlitchyDev.GameStates.Abstract.Replicated;
 
 import com.GlitchyDev.Game.GlobalGameData;
-import com.GlitchyDev.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.GameStates.Abstract.ActionableGameState;
 import com.GlitchyDev.GameStates.GameStateType;
 import com.GlitchyDev.Networking.Packets.AbstractPackets.PacketBase;
 import com.GlitchyDev.Networking.Packets.General.Authentication.NetworkDisconnectType;
@@ -14,7 +14,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public abstract class ClientWorldGameState extends WorldGameState {
+public abstract class ClientWorldGameState extends ActionableGameState {
     private ClientGameSocket gameSocket;
     private ArrayList<Effect> relivantEffects;
 

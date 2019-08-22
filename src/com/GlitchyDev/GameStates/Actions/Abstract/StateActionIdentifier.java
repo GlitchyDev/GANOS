@@ -1,4 +1,4 @@
-package com.GlitchyDev.GameStates.Actions;
+package com.GlitchyDev.GameStates.Actions.Abstract;
 
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Utility.InputBitUtility;
