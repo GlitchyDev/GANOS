@@ -308,6 +308,9 @@ public class GameWindow {
     }
 
 
+    public static boolean requireMaxVirtualDouble() {
+        return System.getProperty("os.name").toLowerCase().equals("max os x");
+    }
 
 
 }

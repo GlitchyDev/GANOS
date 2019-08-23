@@ -60,7 +60,10 @@ public class DebugSustainedAction extends StateSustainedAction {
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, replacementImage.getId());
         renderer.getShader("DebugShader2D").setUniform("replacementImage", 2);
-        renderer.getShader("DebugShader2D").setUniform("y", new Vector2f(((float)Math.random()),((float)Math.random())));
+        renderer.getShader("DebugShader2D").setUniform("replacementOffset", new Vector2f(((float)Math.random()),((float)Math.random())));
+        renderer.getShader("DebugShader2D").setUniform("replacementScaling", new Vector2f(((float)Math.random()),((float)Math.random())));
+        //renderer.getShader("DebugShader2D").setUniform("replacementScaling", new Vector2f(1.0f,1.0f));
+
         renderer.render2DSpriteItem(spriteItem,"DebugShader2D");
     }
 

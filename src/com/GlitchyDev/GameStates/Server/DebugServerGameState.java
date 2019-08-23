@@ -564,7 +564,7 @@ public class DebugServerGameState extends ServerWorldGameState {
 
         renderEnvironment(getMainCamera(),testPlayer.getPlayerEntity().getEntityView().getViewableRegions(), instancedGridMesh);
         renderer.enableTransparency();
-        walkieTalkie.render(renderer,500);
+        walkieTalkie.render(renderer,renderer.getRenderWidth());
         renderer.disableTransparency();
 
 

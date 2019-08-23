@@ -1,6 +1,7 @@
 package com.GlitchyDev.Rendering;
 
 
+import com.GlitchyDev.Game.GANOSGame;
 import com.GlitchyDev.Game.GameWindow;
 import com.GlitchyDev.Rendering.Assets.Mesh.PartialCubicInstanceMesh;
 import com.GlitchyDev.Rendering.Assets.Shaders.ShaderProgram;
@@ -60,9 +61,16 @@ public class Renderer {
     }
 
     public void setRenderSpace( int x, int y, int width, int height) {
-        glViewport(x, y, width, height);
-        renderWidth = width;
-        renderHeight = height;
+        if(GameWindow.requireMaxVirtualDouble()) {
+            glViewport(x * 2, y * 2, width * 2, height * 2);
+            renderWidth = width * 2;
+            renderHeight = height * 2;
+        } else {
+            glViewport(x, y, width, height);
+            renderWidth = width;
+            renderHeight = height;
+        }
+
     }
 
 
@@ -459,4 +467,14 @@ public class Renderer {
     public ShaderProgram getShader(String name) {
         return loadedShaders.get(name);
     }
+
+
+    public int getRenderWidth() {
+        return renderWidth;
+    }
+
+    public int getRenderHeight() {
+        return renderHeight;
+    }
 }
+
