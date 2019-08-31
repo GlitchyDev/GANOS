@@ -1,5 +1,6 @@
 package com.GlitchyDev.Utility;
 
+import com.GlitchyDev.Game.GameWindow;
 import com.GlitchyDev.Rendering.Assets.Mesh.Mesh;
 import com.GlitchyDev.Rendering.Assets.Sounds.SoundBuffer;
 import com.GlitchyDev.Rendering.Assets.Sounds.SoundManager;
@@ -55,7 +56,9 @@ public class AssetLoader {
 
         long endTime = System.currentTimeMillis();
 
-        //TTSVoiceManager.loadAllVoices();
+        if(!GameWindow.isMacOS()) {
+            TTSVoiceManager.loadAllVoices();
+        }
         System.out.println("AssetLoader: Assets Created in " + (endTime - startTime)/1000.0 + "s");
     }
 

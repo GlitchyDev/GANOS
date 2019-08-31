@@ -43,7 +43,6 @@ public class DebugSustainedAction extends StateSustainedAction {
 
     @Override
     public void onTick() {
-        System.out.println(frameCount);
         frameCount++;
     }
 
@@ -52,7 +51,6 @@ public class DebugSustainedAction extends StateSustainedAction {
     @Override
     public void onRender(Renderer renderer) {
 
-        System.out.println(bitmap.getId() + " " + replacementImage.getId() + " " + 0.5f);
         renderer.getShader("DebugShader2D").bind();
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, bitmap.getId());
@@ -60,9 +58,11 @@ public class DebugSustainedAction extends StateSustainedAction {
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, replacementImage.getId());
         renderer.getShader("DebugShader2D").setUniform("replacementImage", 2);
-        renderer.getShader("DebugShader2D").setUniform("replacementOffset", new Vector2f(((float)Math.random()),((float)Math.random())));
-        renderer.getShader("DebugShader2D").setUniform("replacementScaling", new Vector2f(((float)Math.random()),((float)Math.random())));
-        //renderer.getShader("DebugShader2D").setUniform("replacementScaling", new Vector2f(1.0f,1.0f));
+        float scroll = (float) Math.sin(Math.PI/1000.0 * frameCount);
+        renderer.getShader("DebugShader2D").setUniform("replacementOffset", new Vector2f(scroll,0));
+        renderer.getShader("DebugShader2D").setUniform("replacementScaling", new Vector2f(5f,5f));
+        System.out.println(Math.abs((float) 10 * Math.sin(Math.PI/1000.0 * frameCount)));
+        renderer.getShader("DebugShader2D").setUniform("debugScaling", (float) Math.abs((float) 10 * Math.sin(Math.PI/1000.0 * frameCount)));
 
         renderer.render2DSpriteItem(spriteItem,"DebugShader2D");
     }

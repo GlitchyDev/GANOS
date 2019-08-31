@@ -18,10 +18,10 @@ public class ActionApplyingPacket extends WorldStateModifyingPackets {
         this.stateAction = stateAction;
     }
 
-    public ActionApplyingPacket(InputBitUtility inputBitUtility, WorldGameState worldGameState) throws IOException {
-        super(PacketType.SERVER_APPLY_ACTION, inputBitUtility, worldGameState);
+    public ActionApplyingPacket(InputBitUtility inputBitUtility, ActionableGameState actionableGameState) throws IOException {
+        super(PacketType.SERVER_APPLY_ACTION, inputBitUtility, actionableGameState);
         StateActionIdentifier stateActionIdentifier = StateActionIdentifier.values()[inputBitUtility.getNextCorrectIntByte()];
-        this.stateAction = stateActionIdentifier.getActionFromInput(worldGameState,inputBitUtility);
+        this.stateAction = stateActionIdentifier.getActionFromInput(actionableGameState,inputBitUtility);
     }
 
     @Override

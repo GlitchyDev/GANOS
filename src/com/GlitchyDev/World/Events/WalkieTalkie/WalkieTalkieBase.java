@@ -1,7 +1,6 @@
 package com.GlitchyDev.World.Events.WalkieTalkie;
 
 
-import com.GlitchyDev.Game.GANOSGame;
 import com.GlitchyDev.Game.GameWindow;
 import com.GlitchyDev.Rendering.Assets.Texture.Texture;
 import com.GlitchyDev.Rendering.Assets.WorldElements.SpriteItem;
@@ -12,7 +11,7 @@ import org.joml.Vector2f;
 public class WalkieTalkieBase {
 
     // Sprites and Rendering
-    private final float WALKIE_TALKIE_SCALE = GameWindow.requireMaxVirtualDouble() ? 6.0f : 3.0f;
+    private final float WALKIE_TALKIE_SCALE = GameWindow.isMacOS() ? 6.0f : 3.0f;
     private final SpriteItem walkieTalkie_Body;
     private final SpriteItem walkieTalkie_Screen;
     private final SpriteItem walkieTalkie_Signal;

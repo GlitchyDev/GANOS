@@ -12,7 +12,7 @@ public class TTSVoiceManager {
 
 
     public static void loadAllVoices() {
-        System.setProperty("mbrola.base", "/GameAssets/MBROLA_Voices");
+        System.setProperty("mbrola.base", "GameAssets/MBROLA_Voices");
         System.out.println();
         System.out.println("TTSVoiceManager: Loading all TTS voices");
         VoiceManager voiceManager = VoiceManager.getInstance();

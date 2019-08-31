@@ -1,6 +1,7 @@
 package com.GlitchyDev.GameStates.Actions.Abstract;
 
-import com.GlitchyDev.GameStates.Abstract.WorldGameState;
+import com.GlitchyDev.GameStates.Abstract.ActionableGameState;
+import com.GlitchyDev.GameStates.Actions.DebugSustainedAction;
 import com.GlitchyDev.Utility.InputBitUtility;
 
 public enum StateActionIdentifier {
@@ -11,8 +12,10 @@ public enum StateActionIdentifier {
     ;
 
 
-    public StateAction getActionFromInput(WorldGameState worldGameState, InputBitUtility inputBitUtility) {
+    public StateAction getActionFromInput(ActionableGameState actionableGameState, InputBitUtility inputBitUtility) {
         switch(this) {
+            case DEBUG_SUSTAINED_ACTION:
+                return new DebugSustainedAction(actionableGameState,inputBitUtility);
             default:
                 return null;
         }

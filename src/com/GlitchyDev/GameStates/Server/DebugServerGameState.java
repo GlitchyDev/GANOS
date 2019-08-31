@@ -434,13 +434,13 @@ public class DebugServerGameState extends ServerWorldGameState {
         //375
         if(gameInputTimings.getActiveMouseButton1Time() == 1) {
             Block block = selectBlock2D(blockList,globalGameData.getGameWindow(),mousePos,getMainCamera());
-            if (block != null) {
+            if (block != null && block instanceof DebugBlock) {
                 ((DebugBlock) block).setTestValue((((DebugBlock) block).getTestValue() + 1) % 3);
             }
         }
 
         if(gameInputTimings.getActiveMouseButton2Time() == 1) {
-            TTSVoiceManager.voiceSpeakAsynchronous("mbrola_us1","Yo yo yo its your dawg donkey kong here");
+            TTSVoiceManager.voiceSpeakAsynchronous("mbrola_us2","Legosi is my awkward adorable child I love him you better not hurt him");
         }
 
 
