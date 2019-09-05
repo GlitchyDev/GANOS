@@ -2,7 +2,10 @@ package com.GlitchyDev.Utility;
 
 import com.sun.speech.freetts.Voice;
 import com.sun.speech.freetts.VoiceManager;
+import com.sun.speech.freetts.audio.AudioPlayer;
+import com.sun.speech.freetts.audio.SingleFileAudioPlayer;
 
+import javax.sound.sampled.AudioFileFormat;
 import java.util.HashMap;
 
 public class TTSVoiceManager {
@@ -30,6 +33,14 @@ public class TTSVoiceManager {
 
     public static void voiceSpeakSynchronous(String voice, String message) {
         loadedVoices.get(voice).speak(message);
+    }
+
+    public static void recordVoiceSpeak(String voice, String message, String name) {
+        AudioPlayer audioPlayer = new SingleFileAudioPlayer("C:/Users/Robert/Desktop/" + name, AudioFileFormat.Type.WAVE);
+        loadedVoices.get(voice).setAudioPlayer(audioPlayer);
+        loadedVoices.get(voice).speak(message);
+        audioPlayer.close();
+        loadedVoices.get(voice).setAudioPlayer(null);
     }
 
     public static void cleanup() {

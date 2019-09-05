@@ -4,12 +4,40 @@ import com.GlitchyDev.Utility.TTSVoiceManager;
 
 public class FreeTTS {
     public static void main(String[] args) {
-        TTSVoiceManager voiceManager = new TTSVoiceManager();
 
-        String message1 = "I see some of you saying that this has been proven to be false. For one, please understand that I did the research for it this morning. Second, I'm not seeing the proof, so if someone could provide me with a link from an Intel rep or reputable source, saying this isn't right, I'll either change the name or just take the video down. I definitely never intend to spread things that are knowingly false. Reply to this comment or message me on the Gamer Meld Discord (sometimes YouTube will flag comments with links). ";
-        voiceManager.voiceSpeakAsynchronous("mbrola_us1",message1);
-        voiceManager.voiceSpeakAsynchronous("mbrola_us2",message1);
-        voiceManager.voiceSpeakAsynchronous("mbrola_us3",message1);
+        TTSVoiceManager.loadAllVoices();
+        String message1 = "";
+
+
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Tsūshin debaisu ga atarashī yūzā o kenshutsu shimashita. Settei ga kaishi sa remashita. Chikaku no ishiki no aru entiti o sukyan shimasu. Entiti ga mitsukarimashita. Kichi no gengo o chūshutsu shimasu. Gengo ga tokutei sa remashita.");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Language Detected... Human 21st Century English");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Communication device booting... booting... booting");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Communication device connection . Booting into Safe Mode");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Safe Mode activated. You may begin communicating now");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Query of Partner's current status");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Query of Partner's Identifier");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Statement of Self Identifier Stagmo");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Statement of Positive Affirmation");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Statement of Communication device performance below ideal preformance values");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Statement of Objective of Communication Device performance improvement");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Query of current objectives");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Statement of affirmation concerning stated objective");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Statement of suggestion of escaping the immediate vicinity");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Statement of current repair of communication device");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Query of ideal battle formation");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Statement of Negative Affirmation");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin","Statement of possible communication device improvement");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin16","um... hello?");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin16","Is this working correctly?");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin16","Oh? Great news");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin16","I think I already introduced myself, I am Stagmo");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin16","I... think you said your name was David right?");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin16","You said it was your Self Identifier? Or it translated it as that");
+        TTSVoiceManager.voiceSpeakSynchronous("kevin16","Not exactly sure. I'm just ");
+
+
+
+
 
 
 
