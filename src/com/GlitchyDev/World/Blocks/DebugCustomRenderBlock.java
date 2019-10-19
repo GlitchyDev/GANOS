@@ -1,7 +1,5 @@
 package com.GlitchyDev.World.Blocks;
 
-import com.GlitchyDev.Game.Player;
-import com.GlitchyDev.GameStates.Abstract.Replicated.ServerWorldGameState;
 import com.GlitchyDev.GameStates.Abstract.WorldGameState;
 import com.GlitchyDev.Rendering.Assets.WorldElements.Camera;
 import com.GlitchyDev.Rendering.Assets.WorldElements.GameItem;
@@ -10,7 +8,6 @@ import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.Block;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomRenderBlock;
-import com.GlitchyDev.World.Blocks.AbstractBlocks.CustomVisibleBlock;
 import com.GlitchyDev.World.Blocks.AbstractBlocks.TickableBlock;
 import com.GlitchyDev.World.Blocks.Enums.BlockType;
 import com.GlitchyDev.World.Location;
@@ -19,7 +16,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
-public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, CustomVisibleBlock, TickableBlock {
+public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, TickableBlock {
     private final GameItem mesh;
     private final AirBlock replacementBlock;
 
@@ -57,10 +54,6 @@ public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, 
         renderer.render3DElement(camera, mesh, "Default3D");
     }
 
-    @Override
-    public Block getVisibleBlock(Player player) {
-        return isVisible ? this : replacementBlock;
-    }
 
     @Override
     public void setLocation(Location location) {
@@ -79,7 +72,6 @@ public class DebugCustomRenderBlock extends Block implements CustomRenderBlock, 
     @Override
     public void tick() {
         if(tickCount % 120 == 0) {
-            ((ServerWorldGameState)worldGameState).updateBlockVisibility(this);
             isVisible = !isVisible;
         }
         tickCount++;

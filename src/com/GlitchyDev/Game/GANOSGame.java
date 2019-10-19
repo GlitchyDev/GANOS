@@ -1,7 +1,7 @@
 package com.GlitchyDev.Game;
 
+import com.GlitchyDev.GameStates.Abstract.FallGameJamGameState;
 import com.GlitchyDev.GameStates.Abstract.GameStateBase;
-import com.GlitchyDev.GameStates.Client.DebugClientGameState;
 import com.GlitchyDev.GameStates.Server.DebugServerGameState;
 import com.GlitchyDev.Utility.AssetLoader;
 
@@ -33,25 +33,14 @@ public class GANOSGame {
     public void initGameStates(String[] args) {
         if(args.length != 0) {
             switch (args[0]) {
-                case "CLIENT":
-                    globalGameData.registerGameState(new DebugClientGameState(globalGameData));
-                    break;
                 case "SERVER":
                     globalGameData.registerGameState(new DebugServerGameState(globalGameData));
                     break;
-                case "GENERAL":
-                    //globalGameData.registerGameState(new DebugGameState3(globalGameData));
-                    break;
-                case "MAPBUILDER":
-                    //globalGameData.registerGameState(new MapBuilderGameState(globalGameData));
+                case "GAME_JAM":
+                    globalGameData.registerGameState(new FallGameJamGameState(globalGameData));
                     break;
             }
         }
-        else {
-           // Debug GameState
-            //globalGameData.registerGameState(new DebugGameState1(globalGameData));
-        }
-
     }
 
 

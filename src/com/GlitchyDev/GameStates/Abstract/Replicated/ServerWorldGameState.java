@@ -84,7 +84,7 @@ public abstract class ServerWorldGameState extends ActionableGameState {
             if(lightingManager.doRequireUpdate(worldUUID)) {
                 lightingManager.updateServerDynamicLighting(worldUUID,this);
                 replicateUpdatedLighting(worldUUID);
-        }
+          }
             getWorld(worldUUID).tick();
         }
 

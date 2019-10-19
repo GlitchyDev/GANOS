@@ -11,6 +11,7 @@ import com.GlitchyDev.Utility.AssetLoader;
 import com.GlitchyDev.Utility.InputBitUtility;
 import com.GlitchyDev.World.Direction;
 import com.GlitchyDev.World.Entities.AbstractEntities.Entity;
+import com.GlitchyDev.World.Entities.AbstractEntities.TickableEntity;
 import com.GlitchyDev.World.Entities.Enums.DespawnReason;
 import com.GlitchyDev.World.Entities.Enums.EntityType;
 import com.GlitchyDev.World.Entities.Enums.SpawnReason;
@@ -20,14 +21,14 @@ import com.GlitchyDev.World.Events.Communication.Constructs.Messages.Communicati
 import com.GlitchyDev.World.Events.Communication.Constructs.Source.CommunicationSource;
 import com.GlitchyDev.World.Events.Communication.DetectionType;
 import com.GlitchyDev.World.General.CustomTransparentRenderable;
-import com.GlitchyDev.World.Lighting.SkyLightProducer;
+import com.GlitchyDev.World.Lighting.RadiantLightProducer;
 import com.GlitchyDev.World.Location;
 import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.util.UUID;
 
-public class DebugCommunicationEntity extends Entity implements CommunicationListener, CustomTransparentRenderable, SkyLightProducer {
+public class DebugCommunicationEntity extends Entity implements TickableEntity, CommunicationListener, CustomTransparentRenderable, RadiantLightProducer {
     private SpriteItem spriteItem;
     private TextItem textItem;
 
@@ -88,10 +89,13 @@ public class DebugCommunicationEntity extends Entity implements CommunicationLis
     }
 
     @Override
-    public void renderTransparency(Renderer renderer, Camera camera) {
+    public void tick() {
         spriteItem.setPosition(getLocation().getNormalizedPosition());
         textItem.setPosition(getLocation().getNormalizedPosition().add(0,1,0));
+    }
 
+    @Override
+    public void renderTransparency(Renderer renderer, Camera camera) {
         renderer.renderBillboard3DSprite(camera,spriteItem,"Default3D");
         renderer.render3DElement(camera,textItem,"Default3D");
     }
@@ -101,44 +105,26 @@ public class DebugCommunicationEntity extends Entity implements CommunicationLis
         return getLocation().getDistance(position);
     }
 
-    @Override
-    public int getWidth() {
-        return 3;
-    }
-
-    @Override
-    public int getLength() {
-        return 3;
-    }
-
-    @Override
-    public int xOffset() {
-        return 0;
-    }
-
-    @Override
-    public int zOffset() {
-        return 0;
-    }
-
-    @Override
-    public int getSkyLightLevel() {
-        return 15;
-    }
 
     @Override
     public Location getEmissionLocation() {
-        return getLocation().getOffsetLocation(0,8,0);
+        return getLocation().getOffsetLocation(0,0,0);
     }
 
     @Override
     public boolean isDynamic() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean doNeedLightUpdate() {
         return true;
+    }
+
+
+    @Override
+    public int getLightLevel() {
+        return 40;
     }
 
 
