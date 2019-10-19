@@ -8,7 +8,7 @@ TEXTBOX VERSION
 You are a NECROMANCER. You have been hired by the SPIRIT OF LIFE to ressurect the dead. As payment, you and your loving elf girlfriend will recieve immortality. Today's quota just came in. You need XXXXX ammount of POINTS to clock out today, but time is short. You overslept and your work day is already almost over.
 You have XXXXX minutes to obtain up to XXXXXXX POINTS
 
-Use W-A-S-D to move and use SPACE to ressurect the dead.
+Use the D-PAD to move and use RT/*SQUARE* to ressurect the dead.
 
 FLOWERS & SMALL PLANTS = XXXXXX POINTS
 TREES & LARGE PLANTS = XXXXXXX POINTS
