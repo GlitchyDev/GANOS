@@ -1,0 +1,99 @@
+untitled necromancer game
+
+Bootup -> tutorial
+
+---------------------------------------------------------------------------------------------------
+TEXTBOX VERSION
+
+You are a NECROMANCER. You have been hired by the SPIRIT OF LIFE to ressurect the dead. As payment, you and your loving elf girlfriend will recieve immortality. Today's quota just came in. You need XXXXX ammount of POINTS to clock out today, but time is short. You overslept and your work day is already almost over.
+You have XXXXX minutes to obtain up to XXXXXXX POINTS
+
+Use W-A-S-D to move and use SPACE to ressurect the dead.
+
+FLOWERS & SMALL PLANTS = XXXXXX POINTS
+TREES & LARGE PLANTS = XXXXXXX POINTS
+
+SMALL ANIMALS = XXXXXXX POINTS
+LARGE ANIMALS = XXXXXXX POINTS
+
+JUST X MORE DAYS UNTIL YOU'RE ETERNAL REWARD.
+
+---------------------------------------------------------------------------------------------------
+CUTSCENE VERSION
+
+*life approaches the player, who is standing in a graveyard surrounded by dead plants and animals.*
+
+//Life:
+I see you've made it. Glad to see you actually listen to the voice in your head.//
+
+Ellen:
+Who're you?
+
+Life:
+Life itself. The all seeing blessing from the skies. The thing that gives you breath in the morning.
+
+Ellen:
+Sorry.
+
+Life:
+Dont worry about it, I get it all the time. Anyway, listen kid, I've got an idea, we're gonna get the one up on death. If I send you things when they go under, you think you can fix them up?
+
+Ellen:
+I'm a Necromancer, not a healer.
+
+Life:
+Weren't you listening? I'm sending you dead things. They're dead.
+
+Ellen:
+Okay, but what's in it for me?
+
+Life:
+*sighs* I guess SAVING THE PLANET isn't good enough anymore. Is immortality good?
+
+Ellen:
+Say no more. You've got a deal.
+
+-> Proceed to smaller version of textbox intro with controls on screen (WASD to move, SPACE to ressurect)
+
+--------------------------------------------------------------------------------------
+
+tutorial -> Gameplay
+
+---------------------------------------------------------------------------------------
+TALK WITH DEATH
+
+*ELLEN is teleported to a dark room at a table with DEATH sitting down.*
+
+Death:
+Aw, you made it. I'd tell you to have a seat, but you haven't really earned that in my eyes yet.
+
+Ellen:
+Great, another all powerful being come to make my life difficult?
+
+Death:
+Yes, my other half has already visited you. Listen, Ellen, darling. I know what you're doing, and you've got to stop. Do you have any idea, the circumstances you're putting the world in?
+
+Ellen:
+Everlasting peace and an eternity of life?
+
+Death:
+Guess again honey. Try plunging the planet itself into a dark era that not even the processes of nature can pull it out of. Drouts that last for centuries, storms that destroy entire cities, tsunamis and freezing cold fronts that will kill anything in its wake.
+
+Ellen:
+That doesnt sound right...
+
+Death:
+Ellen, darling, I know you mean the best, but there is a natural order here. Ever heard of over population?
+
+Ellen:
+Of course I have. Too many people in the world, polluting the air and water.
+
+Death:
+Don't you think there's a balance to it? Sickness, predators, people practically kill themselves these days.
+
+Ellen:
+If you're asking me to stop doing what I'm doing, you can stop there, cause you're not changing my mind.
+
+Death:
+You'll be back. Go one then. end your world as we know it. You'll be back.
+
