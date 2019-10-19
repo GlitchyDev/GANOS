@@ -38,6 +38,8 @@ GameAssets\Textures\Debug\Terrob.png
 GameAssets\Textures\Debug\Terrob_Effect_Bitmap.png
 GameAssets\Textures\Debug\Thade_Bitmap.png
 GameAssets\Textures\Debug\Thade_Color.png
+GameAssets\Textures\Debug\Untitled.png
+GameAssets\Textures\GeneratedImages\Debug1.png
 GameAssets\Textures\Icon\Cursor.png
 GameAssets\Textures\Icon\Cursor_Click.png
 GameAssets\Textures\Icon\Icon16x16.png
